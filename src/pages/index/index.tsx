@@ -3,10 +3,11 @@ import { useState } from "react";
 import "./index.less";
 
 export default () => {
-  const [state, setState] = useState("bobobo");
+  const [state, setState] = useState(0);
+  const onClick = () => setState((v) => ++v);
   return (
     <View className="index">
-      <Text>Hello world! {state}</Text>
+      <Text onClick={onClick}>Hello world! {state}</Text>
     </View>
   );
 };
