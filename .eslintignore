@@ -3,7 +3,7 @@
 /config
 .history
 public
-dist
+/dist
 mock
 *.js
 commitlint.config.js
