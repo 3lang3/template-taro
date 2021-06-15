@@ -1,6 +1,6 @@
 import { makeUpApi } from "./helper";
 
-const DOMAIN = "yigeyougou.com";
+const DOMAIN = "sijishows.com";
 
 export default {
   api: {

@@ -1,8 +1,6 @@
 import development from "./env/development";
 import production from "./env/production";
 
-const { envVersion } = process.env.NODE_ENV;
-
 export type ConfigType = {
   api: {
     current: string;
@@ -11,11 +9,15 @@ export type ConfigType = {
   };
   cdn: string;
   plugin: string;
+  tokenKey: string;
 };
 
 const config: ConfigType = {
   development,
   production,
-}[envVersion];
+}[process.env.NODE_ENV];
 
-export default config;
+export default {
+  ...config,
+  tokenKey: 'authorization'
+};

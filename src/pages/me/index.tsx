@@ -1,7 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { View, Button, Text } from '@tarojs/components';
 import { useRouter } from '@tarojs/taro';
-import { add, minus, asyncAdd } from '@/state/counter';
+import { add, minus } from '@/state/counter';
+import { getUser } from '@/state/user';
 import CustomTabBar from '@/components/CustomTabBar';
 
 import './index.less';
@@ -18,7 +19,7 @@ const Index = () => {
     dispatch(minus());
   };
   const asyncAddHandle = () => {
-    dispatch(asyncAdd());
+    dispatch(getUser());
   };
 
   return (
@@ -31,7 +32,7 @@ const Index = () => {
           -
         </Button>
         <Button className="dec_btn" onClick={asyncAddHandle}>
-          async
+          获取用户信息
         </Button>
         <View>
           <Text>{counter.num}</Text>

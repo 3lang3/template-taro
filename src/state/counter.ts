@@ -1,6 +1,6 @@
 // const
-export const ADD = "COUNTER/ADD";
-export const MINUS = "COUNTER/MINUS";
+export const ADD = 'COUNTER/ADD';
+export const MINUS = 'COUNTER/MINUS';
 
 // actions
 export const add = () => {
@@ -17,9 +17,7 @@ export const minus = () => {
 // async action
 export function asyncAdd() {
   return (dispatch) => {
-    setTimeout(() => {
-      dispatch(add());
-    }, 2000);
+    setTimeout(() => dispatch(add()), 2000);
   };
 }
 

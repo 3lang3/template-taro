@@ -4,7 +4,7 @@
   "description": "this is ydj miniprogram client",
   "appid": "wxf4dc21b64a826aeb",
   "setting": {
-    "urlCheck": true,
+    "urlCheck": false,
     "es6": false,
     "enhance": false,
     "postcss": false,
