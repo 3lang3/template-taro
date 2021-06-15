@@ -22,5 +22,6 @@ export async function loginLogic() {
     }
     // code获取用户信息
     const { data } = await getAuthorization({ code });
+    console.log(data)
   } catch (error) {}
 }
