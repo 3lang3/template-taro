@@ -3132,7 +3132,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.5:
+classnames@^2.2.5, classnames@^2.3.1:
   version "2.3.1"
   resolved "https://registry.npm.taobao.org/classnames/download/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
   integrity sha1-38+jiR4wbsHa0QXQ6I9EF7hTXo4=
@@ -8630,6 +8630,11 @@ prettier-plugin-style-order@^0.2.2:
   dependencies:
     postcss-sorting "5.0.1"
     resolve-cwd "^3.0.0"
+
+prettier@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.nlark.com/prettier/download/prettier-2.3.1.tgz?cache=0&sync_timestamp=1622888651004&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fprettier%2Fdownload%2Fprettier-2.3.1.tgz#76903c3f8c4449bc9ac597acefa24dc5ad4cbea6"
+  integrity sha1-dpA8P4xESbyaxZes76JNxa1MvqY=
 
 pretty-bytes@^5.3.0:
   version "5.6.0"
