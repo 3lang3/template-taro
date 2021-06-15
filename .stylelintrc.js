@@ -1,6 +1,15 @@
+const fabric = require('@umijs/fabric');
+
 module.exports = {
-  extends: [require.resolve("@umijs/fabric/dist/stylelint")],
+  ...fabric.stylelint,
   rules: {
-    "selector-type-no-unknown": null,
+    'at-rule-no-unknown': [
+      true,
+      {
+        ignoreAtRules: ['tailwind', 'apply', 'variants', 'responsive', 'screen'],
+      },
+    ],
+    'declaration-block-trailing-semicolon': null,
+    'no-descending-specificity': null,
   },
 };
