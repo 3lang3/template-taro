@@ -99,6 +99,7 @@ export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): Us
       payload.progress = +(audio.current.currentTime / audio.current.duration).toFixed(2);
       // 拖动中 dot的x偏移不再更新
       if (!dragging.current) {
+        // @todo dot本身宽度未计算
         payload.dotProgress = payload.progress * movable.current.width;
       }
       set((v) => ({ ...v, ...payload }));
