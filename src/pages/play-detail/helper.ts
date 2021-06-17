@@ -81,6 +81,10 @@ export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): Us
       audio.current.pause();
       audio.current.play();
     });
+    /**
+     * @todo
+     * - 截流优化
+     */
     audio.current.onTimeUpdate(() => {
       let payload = {
         currentFtm: formatSecToHmm(audio.current.currentTime),
