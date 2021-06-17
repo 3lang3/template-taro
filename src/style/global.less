@@ -1,0 +1,37 @@
+/* ellipsis */
+.multi-ellipsis(@lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: @lines;
+
+  /* autoprefixer: ignore next */
+  -webkit-box-orient: vertical;
+}
+
+.ellipsis() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+.ellipsis {
+  .ellipsis();
+}
+
+.ellipsis--l1 {
+  .ellipsis();
+}
+
+.ellipsis--l2 {
+  .multi-ellipsis(2);
+}
+
+.ellipsis--l3 {
+  .multi-ellipsis(3);
+}
+
+.ellipsis--l4 {
+  .multi-ellipsis(4);
+}

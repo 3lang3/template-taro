@@ -1,0 +1,48 @@
+.custom-navi {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 99999;
+  width: 100vw;
+
+  &__box {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  &__title {
+    position: absolute;
+    left: 50%;
+    font-size: 36px;
+    transform: translate(-50%, 0);
+  }
+}
+
+
+.message-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-left: 10px;
+  &__dot {
+    position: absolute;
+    top: 4px;
+    right: -7px;
+    width: 14px;
+    height: 14px;
+    background: #ed513b;
+    border-radius: 50%;
+  }
+  &__img {
+    display: block;
+    width: 44px;
+    height: 44px;
+  }
+}

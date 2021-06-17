@@ -1,4 +1,4 @@
-@import '../../style/var';
+@import '../../style/var.less';
 
 .custom-tabbar {
   position: fixed;
@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  height: 98px;
+  height: @custom-tabbar-height;
   padding-bottom: env(safe-area-inset-bottom);
   color: #b6b6b6;
   font-size: 22px;
@@ -31,4 +31,8 @@
     height: 44px;
     margin-bottom: 4px;
   }
+}
+
+.custom-tabbar-placeholder {
+  height: @custom-tabbar-height;
 }

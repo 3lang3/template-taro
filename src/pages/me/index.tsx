@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { View, Button, Text } from '@tarojs/components';
-import { useRouter } from '@tarojs/taro';
 import { add, minus } from '@/state/counter';
 import { getUser } from '@/state/user';
 import CustomTabBar from '@/components/CustomTabBar';
@@ -8,10 +7,8 @@ import CustomTabBar from '@/components/CustomTabBar';
 import './index.less';
 
 const Index = () => {
-  const router = useRouter();
   const counter = useSelector((state: any) => state.counter);
   const dispatch = useDispatch();
-  console.log(router);
   const addHandle = () => {
     dispatch(add());
   };
