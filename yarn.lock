@@ -1669,15 +1669,6 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@^16.7.3":
-  version "16.14.8"
-  resolved "https://registry.nlark.com/@types/react/download/@types/react-16.14.8.tgz?cache=0&sync_timestamp=1623247414072&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.14.8.tgz#4aee3ab004cb98451917c9b7ada3c7d7e52db3fe"
-  integrity sha1-Su46sATLmEUZF8m3raPH1+Uts/4=
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
 "@types/sass@^1.16.0":
   version "1.16.0"
   resolved "https://registry.nlark.com/@types/sass/download/@types/sass-1.16.0.tgz#b41ac1c17fa68ffb57d43e2360486ef526b3d57d"
@@ -2618,11 +2609,6 @@ binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.nlark.com/binary-extensions/download/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha1-dfUC7q+f/eQvyYgpZFvk6na9ni0=
-
-bind-decorator@^1.0.11:
-  version "1.0.11"
-  resolved "https://registry.npm.taobao.org/bind-decorator/download/bind-decorator-1.0.11.tgz#e41bc06a1f65dd9cec476c91c5daf3978488252f"
-  integrity sha1-5BvAah9l3ZzsR2yRxdrzl4SIJS8=
 
 bindings@^1.5.0:
   version "1.5.0"
@@ -10657,17 +10643,15 @@ taro-css-to-react-native@3.2.11:
     css-mediaquery "^0.1.2"
     postcss-value-parser "^3.3.0"
 
-taro-ui@^2.3.4:
-  version "2.3.4"
-  resolved "https://registry.npm.taobao.org/taro-ui/download/taro-ui-2.3.4.tgz#a7a2cdd67b2b4a49d10c351d89def4d28b9bb192"
-  integrity sha1-p6LN1nsrSknRDDUdid700oubsZI=
+taro-ui@^3.0.0-alpha.10:
+  version "3.0.0-alpha.10"
+  resolved "https://registry.npm.taobao.org/taro-ui/download/taro-ui-3.0.0-alpha.10.tgz#c6fb95ddb70d31c5b1e242cdc25fb11d630339a2"
+  integrity sha1-xvuV3bcNMcWx4kLNwl+xHWMDOaI=
   dependencies:
-    "@types/react" "^16.7.3"
-    bind-decorator "^1.0.11"
     classnames "^2.2.6"
     dayjs "^1.7.7"
     lodash "^4.17.10"
-    prop-types "^15.6.2"
+    prop-types "^15.7.2"
 
 terser-webpack-plugin@^1.4.3:
   version "1.4.5"

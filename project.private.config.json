@@ -23,6 +23,12 @@
           "pathName": "pages/play-detail/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/me/index",
+          "pathName": "pages/me/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

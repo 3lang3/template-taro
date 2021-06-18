@@ -10,6 +10,8 @@ type AudioStateProps = {
   durationFtm: string;
   progress: number;
   dotProgress: number;
+  lyricIndex?: number;
+  lyricTranslateY?: number;
 };
 
 type MovableStateProps = {
@@ -26,6 +28,7 @@ const audioInitialState: AudioStateProps = {
   dotProgress: 0,
 };
 
+// @todo 拓展audio属性设置
 type UseCustomAudioParams = {
   /**
    * 音频地址
@@ -36,6 +39,13 @@ type UseCustomAudioParams = {
    * movable-view组件的id
    */
   movableAreaId: string;
+  /**
+   * 歌词功能
+   */
+  lyric?: {
+    data: any[];
+    class: string;
+  };
 };
 type UseCustomAudioReturn = {
   /**
@@ -59,7 +69,11 @@ type UseCustomAudioReturn = {
 /**
  * @name 定制audio-hook
  */
-export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): UseCustomAudioReturn {
+export function useCustomAudio({
+  src,
+  movableAreaId,
+  lyric,
+}: UseCustomAudioParams): UseCustomAudioReturn {
   // 音频是否暂停
   const [paused, setPaused] = useState(true);
   const [state, set] = useState<AudioStateProps>(audioInitialState);
@@ -67,12 +81,16 @@ export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): Us
   const dragging = useRef(false);
   // 拖拽区域信息
   const movable = useRef<MovableStateProps>({ width: 0, x: 0 });
-  const audio = useRef<Taro.InnerAudioContext>({} as any);
+  const audio = useRef<Taro.InnerAudioContext>(createInnerAudioContext());
+  // 歌词相关
+  const lyricRef = useRef<any>({
+    lyricNodesHeight: [],
+    reverseData: lyric?.data.slice().reverse(),
+  });
 
   useEffect(() => {
-    audio.current = createInnerAudioContext();
     audio.current.src = src;
-    audio.current.autoplay = true;
+    audio.current.autoplay = false;
     audio.current.onPlay(() => setPaused(false));
     audio.current.onPause(() => setPaused(true));
     // @hack
@@ -102,10 +120,24 @@ export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): Us
         // @todo dot本身宽度未计算
         payload.dotProgress = payload.progress * movable.current.width;
       }
+
+      // 滚动歌词功能
+      if (lyric) {
+        const lyricReverseIdx = lyricRef.current.reverseData.findIndex(
+          (el) => el.time <= payload.current,
+        );
+        payload.lyricIndex = lyricRef.current.reverseData?.length - 1 - lyricReverseIdx;
+        payload.lyricTranslateY = getLyicTranslateY(
+          payload.lyricIndex,
+          lyricRef?.current?.lyricNodesHeight,
+        );
+      }
+      // 状态更新
       set((v) => ({ ...v, ...payload }));
     });
 
-    return () => audio.current?.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => audio.current.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -117,7 +149,18 @@ export function useCustomAudio({ src, movableAreaId }: UseCustomAudioParams): Us
         movable.current.width = rect.width;
       })
       .exec();
+
+    if (lyric) {
+      createSelectorQuery()
+        .selectAll(lyric.class)
+        .boundingClientRect((rects: any) => {
+          lyricRef.current.lyricNodesHeight = rects.map((el) => el.height);
+          lyricRef.current.lyricNodesHeight[0] = 0;
+        })
+        .exec();
+    }
   });
+
   // 进度条开始拖动
   const onTouchStart = () => {
     dragging.current = true;
@@ -159,4 +202,25 @@ function formatSecToHmm(s: number, includeHour = false): string {
   if (minu < 10) minu = '0' + minu;
   if (sec < 10) sec = '0' + sec;
   return includeHour ? `${hour}:${minu}:${sec}` : `${minu}:${sec}`;
+}
+
+/**
+ * @name 获取translateY的值
+ * @param {number} index
+ * @param {number[]} lyricHeightArr
+ * @returns {number} 返回translateY的值
+ */
+function getLyicTranslateY(index: number, lyricHeightArr: number[]): number {
+  let y = 0;
+  // 初始位置不计算
+  if (index < 2) return y;
+  lyricHeightArr.some((h, i) => {
+    if (i >= index) {
+      // 计算超过一行的余量
+      y += (h - lyricHeightArr[i - 1]) / 2;
+      return true;
+    }
+    y += h;
+  });
+  return y;
 }

@@ -10,7 +10,7 @@ type TypographyProps = {
 };
 
 type TextProps = {
-  type?: 'default' | 'danger' | 'secondary' | 'light';
+  type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
   size?: 'md' | 'sm' | 'xs' | 'lg';
   children?: React.ReactNode | string;
 } & TypographyProps;
@@ -46,9 +46,9 @@ type TitleProps = {
   /**
    *
    */
-  level: 1 | 2 | 3 | 4;
+  level?: 1 | 2 | 3 | 4;
   children: React.ReactNode | string;
-  type?: 'default' | 'danger' | 'secondary' | 'light';
+  type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
 } & TypographyProps;
 const Title = ({ level = 4, className, type, ellipsis, children, ...props }: TitleProps) => {
   const elli = ellipsis === true ? 1 : ellipsis;

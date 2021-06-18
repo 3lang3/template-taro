@@ -54,7 +54,7 @@ const HotSongItem = (props) => {
       <TaroImage
         mode="aspectFit"
         className="hot-song-item__img"
-        src={require(`@/assets/icon/rank_${rank}.png`)}
+        src={require(`@/assets/home/rank_${rank}.png`)}
       />
     );
   };
