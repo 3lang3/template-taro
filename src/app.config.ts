@@ -1,5 +1,5 @@
 export default {
-  pages: ["pages/index/index", "pages/lib/index", "pages/me/index"],
+  pages: ["pages/index/index", "pages/lib/index", "pages/me/index", "pages/play-detail/index"],
   tabBar: {
     custom: true,
     list: [

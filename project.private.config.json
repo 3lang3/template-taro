@@ -1,4 +1,5 @@
 {
+  "setting": {},
   "condition": {
     "plugin": {
       "list": []
@@ -14,6 +15,18 @@
         {
           "name": "pages/lib/index",
           "pathName": "pages/lib/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/play-detail/index",
+          "pathName": "pages/play-detail/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/me/index",
+          "pathName": "pages/me/index",
           "query": "",
           "scene": null
         }

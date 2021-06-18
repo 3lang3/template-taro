@@ -1,27 +1,55 @@
 import config from '@/config';
-import { getAuthorization } from '@/services/global';
-import { login, checkSession, getStorageSync } from '@tarojs/taro';
+import { login, getUserProfile, checkSession, getStorageSync, setStorageSync } from '@tarojs/taro';
+import store from '@/state/config/store';
+import { getProfile, getUser } from '@/state/user';
 
-// login logic
-export async function loginLogic() {
+// 静默登录
+export async function silentLogin() {
   try {
-    // 获取本地token
-    const locakToken = getStorageSync(config.tokenKey);
-    if (locakToken) return;
-    // 获取本地code
-    let code = getStorageSync('code');
+    // 获取缓存token
+    let token = getStorageSync(config.tokenKey);
+    // 获取缓存code
+    let code = getStorageSync('code') as string;
     if (code) {
-      // 检查code是否过期
+      // 检查缓存code是否过期
       const { errMsg } = await checkSession();
-      // code过期 重新调用login获取code
-      if (errMsg) {
-        const { code: newCode, errMsg: loginErrMsg } = await login();
-        if (loginErrMsg) throw new Error(errMsg);
-        code = newCode;
+      // 缓存code过期
+      // 重新调用login获取新code
+      // 缓存token失效
+      if (errMsg !== 'checkSession:ok') {
+        token = undefined;
+        code = await getCode();
       }
+    } else {
+      // 本地没有缓存code 重新获取code
+      // 缓存token失效
+      token = undefined;
+      code = await getCode();
     }
-    // code获取用户信息
-    const { data } = await getAuthorization({ code });
-    console.log(data)
-  } catch (error) {}
+
+    if (!token) throw new Error('需用调用getUserProfile获取用户的个人信息');
+    store.dispatch(getUser());
+  } catch (error) {
+    console.warn('静默登录失败:', error.message);
+  }
+}
+
+// 主动登录(用户授权)
+export async function userLogin(opts: getUserProfile.Option) {
+  try {
+    const { userInfo, ...res } = await getUserProfile(opts);
+    console.log(res);
+    store.dispatch(getProfile(userInfo));
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// 获取微信用户code
+async function getCode(): Promise<string> {
+  const res = await login();
+  const { code, errMsg } = res;
+  if (!code) throw new Error(`wx.login调用失败${errMsg}`);
+  setStorageSync('code', code);
+  return code;
 }

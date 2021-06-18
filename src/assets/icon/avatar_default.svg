@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>icon_wode</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="58" cy="58" r="58"></circle>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="我的页面选择身份" transform="translate(-24.000000, -188.000000)">
+            <g id="icon_wode" transform="translate(24.000000, 188.000000)">
+                <path d="M60,0 C93.137085,0 120,26.862915 120,60 C120,93.137085 93.137085,120 60,120 C26.862915,120 0,93.137085 0,60 C0,26.862915 26.862915,0 60,0 Z M60,2 C27.9674845,2 2,27.9674845 2,60 C2,92.0325155 27.9674845,118 60,118 C92.0325155,118 118,92.0325155 118,60 C118,27.9674845 92.0325155,2 60,2 Z" id="形状结合" fill="#FFFFFF"></path>
+                <g id="yonghu-2" transform="translate(2.000000, 2.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="蒙版" fill="#C9BBFF" xlink:href="#path-1"></use>
+                    <g mask="url(#mask-2)" fill="#FFFFFF" fill-rule="nonzero" id="路径">
+                        <g transform="translate(14.000000, 29.000000)">
+                            <path d="M64,20.0000459 C64,31.0454816 55.0455117,40 43.9993576,40 C32.9543048,40 24,31.0460322 24,20.0000459 C24,8.95461022 32.9545801,0 43.9993576,0 C55.0456035,0 64,8.95396779 64,20.0000459 Z"></path>
+                            <path d="M86.5,80.2386901 C86.5,100.253361 67.2473182,103 43.4990405,103 C19.7526818,103 0.5,100.255369 0.5,80.2400288 C0.5,60.2258935 19.7524076,44 43.5009595,44 C67.2489632,44 86.5,60.2249565 86.5,80.2381547 L86.5,80.2386901 Z"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

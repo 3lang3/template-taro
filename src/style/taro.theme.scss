@@ -1,0 +1,13 @@
+/* 改变主题变量，具体变量名可查看 taro-ui/dist/style/variables/default.scss 文件 */
+$hd: 2;
+
+$color-brand: #6236ff;
+$color-brand-light: #8968ff;
+$color-brand-dark: #4e2bcc;
+
+$border-radius-sm: 2px * $hd !default;
+$border-radius-md: 5px * $hd !default;
+$border-radius-lg: 10px * $hd !default;
+
+/* 引入 Taro UI 默认样式 */
+@import "taro-ui/dist/style/index.scss";
