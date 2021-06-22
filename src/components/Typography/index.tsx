@@ -11,7 +11,7 @@ type TypographyProps = {
 
 type TextProps = {
   type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
-  size?: 'md' | 'sm' | 'xs' | 'lg';
+  size?: 'md' | 'sm' | 'xs' | 'lg' | 'xl' | 'xxl';
   children?: React.ReactNode | string;
 } & TypographyProps;
 
@@ -46,11 +46,20 @@ type TitleProps = {
   /**
    *
    */
+  center?: boolean;
   level?: 1 | 2 | 3 | 4;
   children: React.ReactNode | string;
   type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
 } & TypographyProps;
-const Title = ({ level = 4, className, type, ellipsis, children, ...props }: TitleProps) => {
+const Title = ({
+  level = 4,
+  center,
+  className,
+  type,
+  ellipsis,
+  children,
+  ...props
+}: TitleProps) => {
   const elli = ellipsis === true ? 1 : ellipsis;
   return (
     <View
@@ -61,6 +70,7 @@ const Title = ({ level = 4, className, type, ellipsis, children, ...props }: Tit
         className,
         {
           [`ellipsis--l${elli}`]: ellipsis,
+          'text-center': center,
         },
       )}
       {...props}
@@ -71,13 +81,14 @@ const Title = ({ level = 4, className, type, ellipsis, children, ...props }: Tit
 };
 
 type LinkProps = {
+  size?: 'md' | 'sm' | 'xs' | 'lg' | 'xl' | 'xxl';
   children: React.ReactNode | string;
 } & TypographyProps;
-const Link = ({ className, ellipsis, children, ...props }: LinkProps) => {
+const Link = ({ className, size = 'md', ellipsis, children, ...props }: LinkProps) => {
   const elli = ellipsis === true ? 1 : ellipsis;
   return (
     <View
-      className={cls('typography__link', className, {
+      className={cls('typography__link', `typography__link--${size}`, className, {
         [`ellipsis--l${elli}`]: ellipsis,
       })}
       {...props}

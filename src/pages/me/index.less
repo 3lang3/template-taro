@@ -38,12 +38,6 @@ page {
   &__action {
     &-btn {
       width: 244px;
-      height: 76px;
-      color: @gray-8;
-      font-size: 28px;
-      background: @white;
-      border-radius: 39px;
-
       &__icon {
         width: 30px;
         height: 30px;
@@ -124,5 +118,37 @@ page {
 
   &__action {
     font-size: 26px !important;
+  }
+}
+
+.page-company {
+  .company-header {
+    height: 240px;
+    padding: 0 24px;
+    background: @gradient-primary;
+
+    &__avatar {
+      width: 120px;
+      height: 120px;
+      margin-right: 24px;
+      overflow: hidden;
+      border: 2px solid @white;
+      border-radius: 50%;
+    }
+
+    &__name {
+      flex: 1;
+    }
+  }
+
+  .company-body {
+    &__item {
+      margin-bottom: 20px;
+      padding: 20px 24px;
+      background: @white;
+      &-content {
+        flex: 1;
+      }
+    }
   }
 }

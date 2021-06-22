@@ -1,7 +1,6 @@
 @import '../../style/var.less';
 
 .typography__text {
-  font-size: @font-size-md;
   overflow-wrap: break-word;
 
   &--default {
@@ -21,9 +20,19 @@
     color: @primary;
   }
 
+  &--xxl {
+    font-size: @font-size-xxl;
+    line-height: 48px;
+  }
+
+  &--xl {
+    font-size: @font-size-xl;
+    line-height: 44px;
+  }
+
   &--lg {
     font-size: @font-size-lg;
-    line-height: 44px;
+    line-height: 42px;
   }
 
   &--md {
@@ -86,6 +95,35 @@
 
 .typography__link {
   color: @blue;
-  line-height: 40px;
   cursor: pointer;
+
+  &--xxl {
+    font-size: @font-size-xxl;
+    line-height: 48px;
+  }
+
+  &--xl {
+    font-size: @font-size-xl;
+    line-height: 44px;
+  }
+
+  &--lg {
+    font-size: @font-size-lg;
+    line-height: 42px;
+  }
+
+  &--md {
+    font-size: @font-size-md;
+    line-height: 40px;
+  }
+
+  &--sm {
+    font-size: @font-size-sm;
+    line-height: 38px;
+  }
+
+  &--xs {
+    font-size: @font-size-xs;
+    line-height: 30px;
+  }
 }

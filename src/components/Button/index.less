@@ -1,0 +1,84 @@
+@import '../../style/var.less';
+
+.custom-button {
+  align-items: center;
+  min-width: 120px;
+}
+
+.button-size {
+  &--xs {
+    height: 48px;
+    padding-right: 16px;
+    padding-left: 16px;
+    font-size: 26px;
+    line-height: 48px;
+  }
+
+  &--sm {
+    height: 56px;
+    padding-right: 22px;
+    padding-left: 22px;
+    font-size: 26px;
+    line-height: 56px;
+  }
+
+  &--md {
+    height: 76px;
+    font-size: 30px;
+    line-height: 76px;
+  }
+
+  &--lg {
+    height: 88px;
+    font-size: 32px;
+    line-height: 88px;
+  }
+}
+
+.button--outline {
+  background: transparent !important;
+}
+
+.button-type {
+  &--light {
+    color: @gray-8;
+    background-color: @white;
+    border-color: @white;
+  }
+
+  &--danger {
+    color: @white;
+    background-color: @red;
+    border-color: @red;
+    &.button--outline {
+      color: @red;
+    }
+  }
+
+  &--primary {
+    color: @white;
+    background-color: @primary;
+    border-color: @primary;
+    &.button--outline {
+      color: @primary;
+    }
+  }
+
+  &--default {
+    color: @white;
+    background-color: @gray-7;
+    border-color: @gray-7;
+    &.button--outline {
+      color: @gray-7;
+    }
+  }
+
+  &--secondary {
+    color: @white;
+    background-color: @gray-4;
+    border-color: @gray-4;
+    &.button--outline {
+      color: @gray-4;
+    }
+  }
+}

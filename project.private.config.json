@@ -29,6 +29,30 @@
           "pathName": "pages/me/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/settle-in/index",
+          "pathName": "pages/settle-in/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/settle-in/next",
+          "pathName": "pages/settle-in/next",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/company-bought/index",
+          "pathName": "pages/company-bought/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/company/index",
+          "pathName": "pages/company/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

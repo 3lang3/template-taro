@@ -1,0 +1,48 @@
+@import '../../style/var.less';
+
+page {
+  padding-top: 20px;
+  background-color: @gray-2;
+}
+
+.bought__item {
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  background: #fff;
+  &-content {
+    flex: 1;
+  }
+}
+
+.bought-modal {
+  &__input {
+    box-sizing: border-box;
+    width: 488px;
+    height: 88px;
+    margin: 40px auto 50px;
+    padding-right: 24px;
+    overflow: hidden;
+    border: 1px solid #979797;
+    border-radius: 7px;
+
+    .at-input {
+      flex: 1;
+      margin-bottom: 0 !important;
+      margin-left: 0 !important;
+      padding: 20px 24px !important;
+
+      &__input {
+        font-size: 28px;
+      }
+    }
+  }
+  &__btn {
+    width: 263px;
+  }
+  .at-modal__container {
+    width: 620px;
+  }
+  .at-modal__content {
+    padding: 40px 30px;
+  }
+}
