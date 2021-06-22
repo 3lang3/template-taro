@@ -3,6 +3,7 @@ import { Image, Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
+import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Tag from '@/components/Tag';
 import './index.less';
@@ -150,6 +151,7 @@ const SongItem = (props) => {
           />
         ) : null}
         <Image
+          onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
           mode="aspectFit"
           className="lib-song-item__icon-item"
           src={require('@/assets/icon/play_outline.svg')}

@@ -1,12 +1,11 @@
 import { View, Image as TaroImage } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
-import {TabNavigationBar} from '@/components/CustomNavigation';
+import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
-
+import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import './index.less';
-
 
 const rcAlbumData = [
   { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
@@ -19,7 +18,7 @@ const rcAlbumData = [
 
 const RcAlbumItem = (props) => {
   return (
-    <View className="rc-album-item">
+    <View className="rc-album-item" onClick={() => navigateTo({ url: '/pages/album/index' })}>
       <Image className="rc-album-item__img" src="" />
       <Typography.Text className="rc-album-item__title" ellipsis>
         {props.title}
@@ -101,20 +100,31 @@ const latestNewsData = [
 
 const LatestNewsItem = (props) => {
   return (
-    <View className="latest-news-item">
+    <View
+      className="latest-news-item"
+      onClick={() => navigateTo({ url: '/pages/news-detail/index' })}
+    >
       <Image className="latest-news-item__img" src={props.img} />
       <Typography.Text className="latest-news-item__title" ellipsis={2}>
         {props.title}
       </Typography.Text>
       <View className="latest-news-item__footer">
         <View className="latest-news-item__footer-item">
-          <TaroImage mode="aspectFit" className="latest-news-item__icon" src={require('@/assets/icon/clock_outline.svg')} />
+          <TaroImage
+            mode="aspectFit"
+            className="latest-news-item__icon"
+            src={require('@/assets/icon/clock_outline.svg')}
+          />
           <Typography.Text size="sm" type="secondary">
             {props.timestamp}
           </Typography.Text>
         </View>
         <View className="latest-news-item__footer-item">
-          <TaroImage mode="aspectFit" className="latest-news-item__icon" src={require('@/assets/icon/eye_outline.svg')} />
+          <TaroImage
+            mode="aspectFit"
+            className="latest-news-item__icon"
+            src={require('@/assets/icon/eye_outline.svg')}
+          />
           <Typography.Text size="sm" type="secondary">
             {props.view}
           </Typography.Text>
@@ -158,7 +168,11 @@ export default () => {
             <Typography.Title style={{ marginBottom: 0 }} level={2}>
               热门歌曲
             </Typography.Title>
-            <Typography.Text type="secondary" size="sm">
+            <Typography.Text
+              onClick={() => navigateTo({ url: '/pages/hot-board/index' })}
+              type="secondary"
+              size="sm"
+            >
               更多
             </Typography.Text>
           </View>
