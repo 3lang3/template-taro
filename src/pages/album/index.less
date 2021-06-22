@@ -1,0 +1,63 @@
+@import '../../style/var.less';
+
+page {
+  background: #fff;
+}
+
+@album-cover-height: 220px;
+
+.album {
+  &-header {
+    box-sizing: border-box;
+    width: 100%;
+    height: 536px;
+    padding: 198px 25px 0;
+    background: @gradient-primary;
+
+    &__cover {
+      width: @album-cover-height;
+      height: @album-cover-height;
+      margin-right: 30px;
+      border-radius: 10px;
+    }
+
+    &__content {
+      position: relative;
+      flex: 1;
+      height: @album-cover-height;
+      overflow: hidden;
+    }
+
+    &__share {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      z-index: 1;
+      width: 40px;
+      height: 40px;
+      padding: 20px;
+    }
+  }
+
+  &-body {
+    position: relative;
+    top: -70px;
+    box-sizing: border-box;
+    padding-top: 76px;
+    background: #fff;
+    border-radius: 70px 0 0 0;
+
+    &__item {
+      &-index {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 95px;
+        color: @gray-6;
+        font-size: 36px;
+      }
+
+      margin-bottom: 40px;
+    }
+  }
+}

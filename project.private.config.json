@@ -53,6 +53,30 @@
           "pathName": "pages/company/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/album/index",
+          "pathName": "pages/album/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/album-detail/index",
+          "pathName": "pages/album-detail/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/hot-board/index",
+          "pathName": "pages/hot-board/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/news-detail/index",
+          "pathName": "pages/news-detail/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

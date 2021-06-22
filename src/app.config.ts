@@ -1,13 +1,29 @@
 export default {
   pages: [
+    // 首页
     'pages/index/index',
+    // 曲库
     'pages/lib/index',
+    // 我的
     'pages/me/index',
+    // 播放详情页
     'pages/play-detail/index',
+    // 入驻申请
     'pages/settle-in/index',
+    // 入驻申请第二步
     'pages/settle-in/next',
+    // 机构页
     'pages/company/index',
+    // 机构 已购词曲
     'pages/company-bought/index',
+    // 专辑
+    'pages/album/index',
+    // 专辑详情
+    'pages/album-detail/index',
+    // 动态详情
+    'pages/news-detail/index',
+    // 热门歌曲榜
+    'pages/hot-board/index',
   ],
   tabBar: {
     custom: true,

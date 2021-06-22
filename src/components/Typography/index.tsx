@@ -12,6 +12,7 @@ type TypographyProps = {
 type TextProps = {
   type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
   size?: 'md' | 'sm' | 'xs' | 'lg' | 'xl' | 'xxl';
+  strong?: boolean;
   children?: React.ReactNode | string;
 } & TypographyProps;
 
@@ -21,6 +22,7 @@ const Text = ({
   ellipsis,
   className,
   children,
+  strong,
   ...props
 }: TextProps) => {
   const elli = ellipsis === true ? 1 : ellipsis;
@@ -33,6 +35,7 @@ const Text = ({
         className,
         {
           [`ellipsis--l${elli}`]: ellipsis,
+          'text-strong': strong,
         },
       )}
       {...props}

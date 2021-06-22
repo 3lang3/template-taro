@@ -1,0 +1,44 @@
+@import '../../style/var.less';
+
+page {
+  background: #fff;
+}
+
+@album-cover-height: 220px;
+
+.hot-board {
+  &-header {
+    box-sizing: border-box;
+    width: 100%;
+    height: 536px;
+    padding: 0 24px 100px 70px;
+    background: @gradient-primary;
+
+    &__title {
+      width: 276px;
+      height: 242px;
+    }
+  }
+
+  &-body {
+    position: relative;
+    top: -70px;
+    box-sizing: border-box;
+    padding-top: 76px;
+    background: #fff;
+    border-radius: 70px 0 0 0;
+
+    &__item {
+      &-index {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 95px;
+        color: @gray-6;
+        font-size: 36px;
+      }
+
+      margin-bottom: 40px;
+    }
+  }
+}
