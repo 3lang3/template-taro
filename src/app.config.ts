@@ -24,6 +24,8 @@ export default {
     'pages/news-detail/index',
     // 热门歌曲榜
     'pages/hot-board/index',
+    // 个人资料
+    'pages/profile/index',
   ],
   tabBar: {
     custom: true,
