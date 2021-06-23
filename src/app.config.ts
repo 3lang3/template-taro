@@ -26,6 +26,10 @@ export default {
     'pages/hot-board/index',
     // 个人资料
     'pages/profile/index',
+    // 更换手机号
+    'pages/profile/mobile',
+    // 更换邮箱
+    'pages/profile/email',
   ],
   tabBar: {
     custom: true,

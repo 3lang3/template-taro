@@ -10,5 +10,7 @@ $border-radius-sm: 2px * $hd !default;
 $border-radius-md: 5px * $hd !default;
 $border-radius-lg: 10px * $hd !default;
 
+$at-modal-width: 620px !default;
+
 /* 引入 Taro UI 默认样式 */
 @import "taro-ui/dist/style/index.scss";
