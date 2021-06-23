@@ -1,0 +1,80 @@
+@import '../../style/var.less';
+
+page {
+  background-color: @gray-2;
+}
+
+.sell-steps {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 38px 120px 30px;
+  &::after {
+    position: absolute;
+    top: 56px;
+    left: 182px;
+    width: 392px;
+    height: 8px;
+    background: #b3b3b3;
+    border-radius: 4px;
+    content: ' ';
+  }
+  &__item {
+    position: relative;
+    z-index: 1;
+    &-index {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 10px;
+      color: #fff;
+      font-size: 26px;
+      background-color: #b3b3b3;
+      border-radius: 50%;
+    }
+    &-text {
+      color: @gray-7;
+      font-size: 24px;
+    }
+    &--active {
+      .sell-steps__item-index {
+        background-color: @primary;
+      }
+      .sell-steps__item-text {
+        color: @primary;
+      }
+    }
+  }
+}
+
+.board {
+  padding: 0 24px;
+
+  .at-textarea {
+    padding: 16px;
+    font-size: 28px;
+    background: none;
+    border: 2px solid #ccc !important;
+    border-radius: 8px;
+
+    &__textarea {
+      height: 110px;
+      font-size: 28px;
+    }
+  }
+  .at-input {
+    flex: 1 0 auto;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    padding: 16px !important;
+    background: none;
+
+    &__input {
+      font-size: 28px;
+      text-align: left;
+    }
+
+    &::after {
+      display: none;
+    }
+  }
+}

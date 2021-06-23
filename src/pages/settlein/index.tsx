@@ -1,4 +1,4 @@
-import AreaPicker from '@/components/AreaPicker';
+import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import CaptchaBtn from '@/components/CaptchaBtn';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';

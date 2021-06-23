@@ -31,8 +31,8 @@
           "scene": null
         },
         {
-          "name": "pages/settle-in/index",
-          "pathName": "pages/settle-in/index",
+          "name": "pages/settlein/index",
+          "pathName": "pages/settlein/index",
           "query": "",
           "scene": null
         },
@@ -81,6 +81,12 @@
         {
           "name": "pages/profile/index",
           "pathName": "pages/profile/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/sell/index",
+          "pathName": "pages/sell/index",
           "query": "",
           "scene": null
         }

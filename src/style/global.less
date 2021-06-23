@@ -1,4 +1,5 @@
 @import 'var.less';
+@import 'font.css';
 
 /* ellipsis */
 .multi-ellipsis(@lines) {
@@ -85,19 +86,22 @@
 .text-strong {font-weight: 400;}
 
 .text-secondary {
-  color: @gray-6;
+  color: @gray-6 !important;
 }
 .text-primary {
-  color: @primary;
+  color: @primary !important;
 }
 .text-danger {
-  color: @red;
+  color: @red !important;
 }
 .text-blue {
-  color: @blue;
+  color: @blue !important;
 }
 .text-success {
-  color: @green;
+  color: @green !important;
+}
+.bg-white {
+  background-color: @white !important;
 }
 
 .px24 {
@@ -105,7 +109,7 @@
   padding-left: 24px;
 }
 .py20 {
-  padding-top: 20px; padding-bottom: 20;
+  padding-top: 20px; padding-bottom: 20px;
 }
 .p-default {
   box-sizing: border-box;
@@ -142,6 +146,10 @@
         font-size: 28px;
       }
     }
+
+    .item-extra__icon-arrow {
+      font-size: 32px;
+    }
   }
 
   &::after {
@@ -171,7 +179,7 @@
 
 /* custom taro ui form item style */
 .custom-form {
-  background-color: transparent !important;
+  background-color: transparent;
   &::after {
     content: none !important;
   }
@@ -179,6 +187,13 @@
     margin-bottom: 0 !important;
     margin-left: 0 !important;
     padding-left: 24px;
+    &::after {
+      top: auto;
+      right: 0;
+      bottom: 0;
+      left: 24px;
+      transform: scaleY(0.5);
+    }
     &__title {
       width: 220px;
       color: @gray-7;
@@ -189,6 +204,7 @@
     &__input {
       height: 40px;
       min-height: 40px;
+      padding-right: 24px;
       color: @gray-8;
       font-size: 28px;
       line-height: 40px;
@@ -202,15 +218,20 @@
     background-color: #fff;
     .item-content__info-title {
       color: @gray-7 !important;
+      line-height: 40px;
     }
 
     &-extra {
       max-width: 350px !important;
       .item-extra__info {
+        display: block;
         padding-right: 0 !important;
         color: @gray-8 !important;
         font-size: 28px !important;
       }
+    }
+    .item-extra__icon-arrow {
+      font-size: 32px;
     }
   }
 
@@ -223,4 +244,22 @@
 /* custom captcha input form item style */
 .captcha-input {
   padding: 15px 0 15px 24px !important;
+}
+
+/* custom taro ui modal style */
+.at-modal__container {
+  .at-modal__content {
+    padding: 20px 40px 40px;
+  }
+  .at-modal__header {
+    padding: 40px 24px;
+    font-weight: bolder;
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.at-icon-chevron-right::before {
+  content: "\e6a3";
 }

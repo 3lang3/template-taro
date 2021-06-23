@@ -9,9 +9,9 @@ export default {
     // 播放详情页
     'pages/play-detail/index',
     // 入驻申请
-    'pages/settle-in/index',
+    'pages/settlein/index',
     // 入驻申请第二步
-    'pages/settle-in/next',
+    'pages/settlein/next',
     // 机构页
     'pages/company/index',
     // 机构 已购词曲
@@ -30,6 +30,8 @@ export default {
     'pages/profile/mobile',
     // 更换邮箱
     'pages/profile/email',
+    // 出售词曲
+    'pages/sell/index',
   ],
   tabBar: {
     custom: true,

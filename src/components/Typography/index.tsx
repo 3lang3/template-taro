@@ -3,6 +3,7 @@ import { View } from '@tarojs/components';
 import './index.less';
 
 type TypographyProps = {
+  center?: boolean;
   className?: string;
   style?: React.CSSProperties;
   onClick?: () => void;
@@ -19,6 +20,7 @@ type TextProps = {
 const Text = ({
   type = 'default',
   size = 'md',
+  center,
   ellipsis,
   className,
   children,
@@ -36,6 +38,7 @@ const Text = ({
         {
           [`ellipsis--l${elli}`]: ellipsis,
           'text-strong': strong,
+          'text-center': center,
         },
       )}
       {...props}
@@ -49,7 +52,6 @@ type TitleProps = {
   /**
    *
    */
-  center?: boolean;
   level?: 1 | 2 | 3 | 4;
   children: React.ReactNode | string;
   type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
@@ -87,12 +89,13 @@ type LinkProps = {
   size?: 'md' | 'sm' | 'xs' | 'lg' | 'xl' | 'xxl';
   children: React.ReactNode | string;
 } & TypographyProps;
-const Link = ({ className, size = 'md', ellipsis, children, ...props }: LinkProps) => {
+const Link = ({ className, center, size = 'md', ellipsis, children, ...props }: LinkProps) => {
   const elli = ellipsis === true ? 1 : ellipsis;
   return (
     <View
       className={cls('typography__link', `typography__link--${size}`, className, {
         [`ellipsis--l${elli}`]: ellipsis,
+        'text-center': center,
       })}
       {...props}
     >
