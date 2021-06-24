@@ -1,4 +1,5 @@
 import { View, Image } from '@tarojs/components';
+import { navigateTo } from '@tarojs/taro';
 import { useSelector } from 'react-redux';
 import messageSrc from '@/assets/icon/index_message.svg';
 import './index.less';
@@ -57,7 +58,11 @@ export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) =
   return (
     <CustomNavigation title={title} titleColor="#fff">
       <View className="message-box">
-        <Image className="message-box__img" src={messageSrc} />
+        <Image
+          className="message-box__img"
+          onClick={() => navigateTo({ url: '/pages/message/index' })}
+          src={messageSrc}
+        />
         <View className="message-box__dot" />
       </View>
     </CustomNavigation>

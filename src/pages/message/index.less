@@ -1,0 +1,33 @@
+@import '../../style/var.less';
+
+page {
+  background-color: @gray-2;
+}
+
+.message {
+  &-item {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 40px 46px;
+    background-color: @white;
+    border-radius: 12px;
+
+    &--dot {
+      &::before {
+        position: absolute;
+        top: 53px;
+        left: 20px;
+        width: 16px;
+        height: 16px;
+        background-color: @red;
+        border-radius: 50%;
+        content: ' ';
+      }
+    }
+  }
+  &-container {
+    padding: 0 24px;
+  }
+}
