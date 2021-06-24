@@ -1,17 +1,27 @@
-import cls from 'classnames';
-import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { useState } from 'react';
-import { AtInput, AtForm, AtListItem, AtTextarea, AtModal, AtModalContent } from 'taro-ui';
+import {
+  AtInput,
+  AtForm,
+  AtListItem,
+  AtTextarea,
+  AtModal,
+  AtModalContent,
+  AtModalHeader,
+} from 'taro-ui';
 import { validateFields } from '@/utils/form';
 import { View } from '@tarojs/components';
 import { setClipboardData } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import './index.less';
+import { SellSteps } from './components';
 
-const simpleText =
-  '创作目的：提高自己知名度，售卖版权取得收益 创作完成时间：2016年5月20日 创作完成地点：北京市 作品独创性：使用了民风和电子结合的曲风 创作灵感：讲述男女分手后，单方面思念以前一起做过的任何事情，当听到他们喜欢的歌曲的时候，身边却只有自己了，虽然分开那么久却还是不能习惯';
+const simpleText = `创作目的：提高自己知名度，售卖版权取得收益
+创作完成时间：2016年5月20日
+创作完成地点：北京市
+作品独创性：使用了民风和电子结合的曲风
+创作灵感：讲述男女分手后，单方面思念以前一起做过的任何事情，当听到他们喜欢的歌曲的时候，身边却只有自己了，虽然分开那么久却还是不能习惯`;
 
 const typeData = [
   { name: '流行', id: 2 },
@@ -22,30 +32,6 @@ const langData = [
   { name: '粤语', id: 6 },
   { name: '英语', id: 9 },
 ];
-
-const sellStepData = [{ text: '作品信息' }, { text: '词曲材料' }];
-
-const SellSteps = ({ current = 0 }) => {
-  return (
-    <Flex className="sell-steps" justify="between">
-      {sellStepData.map((step, i) => (
-        <Flex
-          key={i}
-          justify="center"
-          direction="column"
-          className={cls('sell-steps__item', {
-            'sell-steps__item--active': current === i,
-          })}
-        >
-          <Flex justify="center" className="sell-steps__item-index">
-            1
-          </Flex>
-          <View className="sell-steps__item-text">{step.text}</View>
-        </Flex>
-      ))}
-    </Flex>
-  );
-};
 
 const fields = {
   name: {
@@ -135,8 +121,9 @@ export default () => {
           onChange={(value) => set((v: any) => ({ ...v, label: value }))}
         />
         <AtListItem title={`${fields.intro.label}(选填)`} />
-        <View className="board bg-white">
+        <View className="board bg-white px24">
           <AtTextarea
+            className="border--bolder"
             count={false}
             placeholder={fields.intro.label}
             value={payload.intro}
@@ -144,8 +131,9 @@ export default () => {
           />
         </View>
         <AtListItem title={`${fields.desc.label}(选填)`} />
-        <View className="board bg-white">
+        <View className="board bg-white px24">
           <AtTextarea
+            className="border--bolder"
             count={false}
             placeholder={fields.desc.label}
             value={payload.desc}
@@ -156,18 +144,23 @@ export default () => {
           <Typography.Link>样例参考</Typography.Link>
         </View>
         <View className="p-default">
-          <Button className="mt50" onClick={onSubmit} circle type="primary" size="lg">
+          <Button className="mt50 mb50" onClick={onSubmit} circle type="primary" size="lg">
             下一步
           </Button>
         </View>
       </AtForm>
-      <AtModal isOpened={visible} onClose={closeModal} className="bought-modal">
+      <AtModal isOpened={visible} onClose={closeModal}>
+        <AtModalHeader>样例参考</AtModalHeader>
         <AtModalContent>
-          <Typography.Title center level={3}>
-            样例参考
-          </Typography.Title>
           <View className="board bg-white">
-            <AtTextarea value={simpleText} count={false} onChange={() => false} />
+            <AtTextarea
+              disabled
+              className="border--bolder"
+              height="268"
+              value={simpleText}
+              count={false}
+              onChange={() => false}
+            />
           </View>
           <Button onClick={onModalConfirm} className="mt30" type="primary" circle>
             复制到输入框

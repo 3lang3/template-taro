@@ -32,6 +32,8 @@ export default {
     'pages/profile/email',
     // 出售词曲
     'pages/sell/index',
+    // 出售词曲第二步
+    'pages/sell/next',
   ],
   tabBar: {
     custom: true,

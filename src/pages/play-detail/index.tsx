@@ -6,7 +6,7 @@ import Tag from '@/components/Tag';
 import Typography from '@/components/Typography';
 import { View, Text, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
 import Flex from '@/components/Flex';
-import { AtModal, AtModalContent } from 'taro-ui';
+import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useCustomAudio } from './helper';
 
 import './index.less';
@@ -148,8 +148,8 @@ function ScoreContent() {
     <>
       <Tag onClick={() => set(true)}>曲谱</Tag>
       <AtModal isOpened={visible} onClose={() => set(false)} className="modal-score">
+        <AtModalHeader>曲谱</AtModalHeader>
         <AtModalContent>
-          <Typography.Title level={3}>曲谱</Typography.Title>
           <Image className="modal-score__img" src="" />
           <Typography.Text type="secondary" size="sm">
             长按保存图片

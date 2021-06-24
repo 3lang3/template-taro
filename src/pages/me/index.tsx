@@ -1,4 +1,5 @@
 import Button from '@/components/Button';
+import { CircleIndexList } from '@/components/Chore';
 import CustomTabBar from '@/components/CustomTabBar';
 import Flex from '@/components/Flex';
 import Tag from '@/components/Tag';
@@ -154,17 +155,7 @@ export default () => {
       <AtModal isOpened={visible} onClose={() => closeModal()}>
         <AtModalHeader>出售词曲流程</AtModalHeader>
         <AtModalContent>
-          {sellStepData.map((step, i) => (
-            <Flex className="mb50" key={i}>
-              <Flex className="circle-index--primary" justify="center">
-                {i + 1}
-              </Flex>
-              <Flex direction="column" justify="between" align="start">
-                <Typography.Title>{step.title}</Typography.Title>
-                <Typography.Text size="sm">{step.desc}</Typography.Text>
-              </Flex>
-            </Flex>
-          ))}
+          <CircleIndexList data={sellStepData} />
 
           <View className="px24">
             <Button onClick={goToSellPage} className="mb20" circle type="primary">

@@ -1,9 +1,12 @@
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { chooseMessageFile, showToast } from '@tarojs/taro';
-import { Image, Text, View } from '@tarojs/components';
+import { showToast } from '@tarojs/taro';
+import { Image, View } from '@tarojs/components';
 import { useState } from 'react';
-import { AtInput, AtForm, AtButton, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import Button from '@/components/Button';
+import Icon from '@/components/Icon';
+import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import SongUploader from '@/components/SongUploader';
 import { validateFields } from '@/utils/form';
 import './index.less';
 
@@ -65,6 +68,8 @@ export default () => {
     setVisible(false);
   };
   const onSubmit = () => {
+    setVisible(true);
+    return;
     const { checked, ...params } = payload;
     const hasInvalidField = validateFields(params, fields);
     if (hasInvalidField) return;
@@ -77,11 +82,7 @@ export default () => {
     console.log(params);
   };
 
-  const onUploadClick = async () => {
-    // @todo upload file pipe
-    const { errMsg, tempFiles } = await chooseMessageFile({ count: 1 });
-    if (errMsg !== 'chooseMessageFile:ok') throw Error(errMsg);
-    const [file] = tempFiles;
+  const onSongUpload = async (file) => {
     console.log(file);
   };
 
@@ -108,7 +109,7 @@ export default () => {
             </Typography.Text>
           </Flex>
           <View className="settlein-list__wrapper">
-            <Flex className="settlein-list__input settlein-box-border">
+            <Flex className="input--border">
               <AtInput
                 name="name"
                 type="text"
@@ -120,51 +121,14 @@ export default () => {
           </View>
         </View>
         <Typography.Text className="settlein-title">二、上传歌曲</Typography.Text>
-        <View className="settlein-list">
-          <Flex className="settlein-list__item border">
-            <Typography.Text className="settlein-list__item-title">
-              1、将歌曲上传到任一微信聊天中
-            </Typography.Text>
-          </Flex>
-          <Flex className="settlein-list__item">
-            <Typography.Text className="settlein-list__item-title">
-              2、小程序-添加歌曲，选择微信聊天中的歌曲，确认上传。由于微信限制上传文件不能超过100M，
-              <Text className="text-danger">超过100M的歌曲，请通过PC端上传。</Text>
-            </Typography.Text>
-          </Flex>
-          <View className="settlein-list__wrapper">
-            <Flex className="settlein-list__input settlein-box-border">
-              <Typography.Text>PC端链接：</Typography.Text>
-              <AtInput
-                name="name"
-                type="text"
-                placeholder="https://www.tapd.cn/"
-                value={payload.name}
-                onChange={(value) => set((v: any) => ({ ...v, name: value }))}
-              />
-              <Typography.Link>复制</Typography.Link>
-            </Flex>
-          </View>
-          <View onClick={onUploadClick} className="settlein-uploader settlein-box-border">
-            <Flex justify="center">
-              <Typography.Text type="secondary">添加歌曲</Typography.Text>
-              <Image
-                className="settlein-uploader__icon"
-                src={require('@/assets/icon/play_thin_outline.svg')}
-              />
-            </Flex>
-            <Typography.Text type="secondary" size="sm">
-              选择一个上传音频的聊天对话窗口
-            </Typography.Text>
-          </View>
-          <View className="settlein-list__wrapper mt20">
-            <Typography.Text type="secondary" size="sm">
-              1、歌曲需是本人原创/翻唱作品，且不可借用他人歌曲元素，如经发现平台将追究相关责任。
-            </Typography.Text>
-            <Typography.Text type="secondary" size="sm">
-              2、歌曲必须为mp3、wav、音质{'>'}320KBps,大小{'<'}100M
-            </Typography.Text>
-          </View>
+        <SongUploader webActionUrl="https://www.tapd.cn/" onChange={onSongUpload} />
+        <View className="p-default bg-white">
+          <Typography.Text type="secondary" size="sm">
+            1、歌曲需是本人原创/翻唱作品，且不可借用他人歌曲元素，如经发现平台将追究相关责任。
+          </Typography.Text>
+          <Typography.Text type="secondary" size="sm">
+            2、歌曲必须为mp3、wav、音质{'>'}320KBps,大小{'<'}100M
+          </Typography.Text>
         </View>
         <View className="custom-checkbox">
           <AtCheckbox
@@ -186,29 +150,32 @@ export default () => {
           />
         </View>
 
-        <AtButton className="settlein-form__submit" onClick={onSubmit} circle type="primary">
+        <Button
+          size="lg"
+          className="settlein-form__submit"
+          onClick={onSubmit}
+          circle
+          type="primary"
+        >
           提交
-        </AtButton>
+        </Button>
       </AtForm>
-      <AtModal isOpened={visible} onClose={closeModal} className="settlein-form__modal">
+      <AtModal isOpened={visible} onClose={closeModal}>
         <AtModalContent>
-          <Image
-            className="settlein-form__modal-icon"
-            src={require('@/assets/icon/success_primary.svg')}
-          />
-          <Typography.Title level={2}>提交成功，请耐心等待审核结果</Typography.Title>
-          <Typography.Text>
+          <View className="mt60 mb50 text-center">
+            <Icon icon="icon-popup_icon_chenggong" size={64} color="#6236ff" />
+          </View>
+          <Typography.Title center level={2}>
+            提交成功，请耐心等待审核结果
+          </Typography.Title>
+          <Typography.Text center>
             审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
           </Typography.Text>
-          <AtButton
-            onClick={closeModal}
-            circle
-            className="settlein-form__modal-btn"
-            type="primary"
-            size="small"
-          >
-            知道了
-          </AtButton>
+          <View className="text-center">
+            <Button onClick={closeModal} circle className="mt40" type="primary" inline>
+              知道了
+            </Button>
+          </View>
         </AtModalContent>
       </AtModal>
     </>

@@ -11,32 +11,35 @@
   /* autoprefixer: ignore next */
   -webkit-box-orient: vertical;
 }
-
 .ellipsis() {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
 .ellipsis {
   .ellipsis();
 }
-
 .ellipsis--l1 {
   .ellipsis();
 }
-
 .ellipsis--l2 {
   .multi-ellipsis(2);
 }
-
 .ellipsis--l3 {
   .multi-ellipsis(3);
 }
-
 .ellipsis--l4 {
   .multi-ellipsis(4);
 }
+
+.border--bolder {
+  overflow: hidden;
+  border: 2px solid #ccc !important;
+  border-radius: 8px;
+}
+
+.h24 { height: 24px;}
+
 
 /* atom css */
 .mt5 { margin-top: 5px; }
@@ -48,6 +51,7 @@
 .mt35 { margin-top: 35px; }
 .mt40 { margin-top: 40px; }
 .mt50 { margin-top: 50px; }
+.mt60 { margin-top: 60px; }
 
 .mr5 { margin-right: 5px; }
 .mr10 { margin-right: 10px; }
@@ -68,6 +72,7 @@
 .mb35 { margin-bottom: 35px; }
 .mb40 { margin-bottom: 40px; }
 .mb50 { margin-bottom: 50px; }
+.mb60 { margin-bottom: 60px; }
 
 .ml5 { margin-left: 5px; }
 .ml10 { margin-left: 10px; }
@@ -78,7 +83,6 @@
 .ml35 { margin-left: 35px; }
 .ml40 { margin-left: 40px; }
 .ml50 { margin-left: 50px; }
-
 
 .text-left {text-align: left;}
 .text-center {text-align: center;}
@@ -103,6 +107,9 @@
 .bg-white {
   background-color: @white !important;
 }
+.bg-light {
+  background-color: #f2f2f2 !important;
+}
 
 .px24 {
   padding-right: 24px;
@@ -116,6 +123,11 @@
   width: 100%;
   .px24; .py20;
 }
+.pb20 { padding-bottom: 20px;}
+.pt20 { padding-top: 20px;}
+.pl24 { padding-left: 24px;}
+.pr24 { padding-right: 24px;}
+
 
 /* custom taro ui list style */
 .custom-list {
@@ -210,6 +222,10 @@
       line-height: 40px;
       text-align: right;
     }
+
+    &__children {
+      font-size: 28px;
+    }
   }
   .custom-checkbox;
   .at-list__item {
@@ -241,6 +257,33 @@
   }
 }
 
+.input--border {
+  .border--bolder;
+
+  padding: 0 24px;
+  .at-input {
+    flex: 1 0 auto;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+    padding: 20px 0 !important;
+
+    &__input {
+      height: 40px;
+      min-height: 40px;
+      font-size: 28px;
+      line-height: 40px;
+      text-align: left;
+    }
+  }
+}
+
+.cell-item {
+  box-sizing: border-box;
+  width: 100%;
+  height: 88px;
+  padding: 0 24px;
+}
+
 /* custom captcha input form item style */
 .captcha-input {
   padding: 15px 0 15px 24px !important;
@@ -249,17 +292,22 @@
 /* custom taro ui modal style */
 .at-modal__container {
   .at-modal__content {
-    padding: 20px 40px 40px;
+    padding: 0 40px 30px;
   }
   .at-modal__header {
-    padding: 40px 24px;
+    padding: 35px 24px;
     font-weight: bolder;
+    font-size: 34px;
     &::after {
       display: none;
     }
   }
+  .at-modal__footer {
+    &::before { display: none; }
+  }
 }
 
+/* custom taro ui right icon */
 .at-icon-chevron-right::before {
   content: "\e6a3";
 }

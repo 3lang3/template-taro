@@ -37,8 +37,8 @@
           "scene": null
         },
         {
-          "name": "pages/settle-in/next",
-          "pathName": "pages/settle-in/next",
+          "name": "pages/settlein/next",
+          "pathName": "pages/settlein/next",
           "query": "",
           "scene": null
         },
@@ -87,6 +87,12 @@
         {
           "name": "pages/sell/index",
           "pathName": "pages/sell/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/sell/next",
+          "pathName": "pages/sell/next",
           "query": "",
           "scene": null
         }

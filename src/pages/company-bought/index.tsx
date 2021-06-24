@@ -2,7 +2,7 @@ import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { View } from '@tarojs/components';
-import { AtInput, AtModal, AtModalContent } from 'taro-ui';
+import { AtInput, AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useState } from 'react';
 import './index.less';
 
@@ -52,12 +52,10 @@ export default () => {
         </View>
         <Typography.Text type="primary">林俊杰</Typography.Text>
       </Flex>
-      <AtModal isOpened={visible} onClose={closeModal} className="bought-modal">
+      <AtModal isOpened={visible} onClose={closeModal}>
+        <AtModalHeader>指定歌手</AtModalHeader>
         <AtModalContent>
-          <Typography.Title center level={3}>
-            指定歌手
-          </Typography.Title>
-          <Flex className="bought-modal__input">
+          <Flex className="input--border">
             <AtInput
               placeholder="请选择歌手"
               value={singer}
@@ -66,11 +64,11 @@ export default () => {
             />
             <Typography.Text>林俊杰</Typography.Text>
           </Flex>
-          <Flex justify="between">
-            <Button onClick={closeModal} className="bought-modal__btn" outline circle>
+          <Flex className="mt50" justify="between">
+            <Button onClick={closeModal} outline circle>
               取消
             </Button>
-            <Button onClick={onModalConfirm} className="bought-modal__btn" type="primary" circle>
+            <Button onClick={onModalConfirm} type="primary" circle>
               确认
             </Button>
           </Flex>
