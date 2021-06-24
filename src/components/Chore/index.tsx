@@ -1,4 +1,6 @@
 import { View } from '@tarojs/components';
+import { memo } from 'react';
+import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Tag from '../Tag';
 import Typography from '../Typography';
@@ -34,7 +36,7 @@ type LibSongItemProps = {
   actionRender?: () => React.ReactNode | string;
   onClick?: () => void;
 };
-// 曲库歌曲
+// 曲库歌曲子项
 export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItemProps) => {
   return (
     <Flex justify="between" className="lib-song-item" {...props}>
@@ -54,3 +56,68 @@ export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItem
     </Flex>
   );
 };
+
+type ManageSongItemProps = {
+  title: string;
+  price1: string | number;
+  price2: string | number;
+  actionRender?: () => React.ReactNode | string;
+  onClick?: () => void;
+};
+// 词曲管理子项
+export const ManageSongItem = ({
+  title,
+  price1,
+  price2,
+  actionRender,
+  ...props
+}: ManageSongItemProps) => {
+  return (
+    <Flex justify="between" className="manage-song-item" {...props}>
+      <View className="manage-song-item__content">
+        <Typography.Text className="mb20" size="lg">
+          {title}
+        </Typography.Text>
+        <Flex>
+          <Typography.Text className="mr20" type="secondary">
+            曲{price1}元
+          </Typography.Text>
+          <Typography.Text type="secondary">词{price2}元</Typography.Text>
+        </Flex>
+      </View>
+      {actionRender ? actionRender() : null}
+    </Flex>
+  );
+};
+
+type CounterOfferInputProps = {
+  /** 曲或者词 */
+  title: string;
+  /** input name */
+  name: string;
+  value: string;
+  /** 价格值 */
+  price: string | number;
+  onChange: (value: string, event) => void;
+};
+// 还价输入框
+export const CounterOfferInput = memo<CounterOfferInputProps>(
+  ({ title, name, value, onChange, price }) => {
+    return (
+      <Flex className="offer-modal-item" justify="between">
+        <Typography.Text size="lg">{title}</Typography.Text>
+        <Typography.Text size="lg" type="secondary" className="mr20">
+          当前: {price}元
+        </Typography.Text>
+        <Flex className="input--border">
+          <AtInput name={name} value={value} onChange={onChange} />
+        </Flex>
+      </Flex>
+    );
+  },
+  counterOfferInputeQualfn,
+);
+function counterOfferInputeQualfn(prev, next) {
+  if (prev.value === next.value) return true;
+  return false;
+}

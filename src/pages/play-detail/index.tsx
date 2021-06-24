@@ -5,10 +5,11 @@ import Image from '@/components/Image';
 import Tag from '@/components/Tag';
 import Typography from '@/components/Typography';
 import { View, Text, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
+import { CounterOfferInput } from '@/components/Chore';
 import Icon from '@/components/Icon';
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
-import { AtInput, AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
+import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useCustomAudio } from './helper';
 
 import './index.less';
@@ -219,24 +220,8 @@ function CounterOfferButton() {
       <AtModal isOpened={visible} onClose={() => set(false)}>
         <AtModalHeader>还价</AtModalHeader>
         <AtModalContent>
-          <Flex className="offer-modal-item" justify="between">
-            <Typography.Text size="lg">曲</Typography.Text>
-            <Typography.Text size="lg" type="secondary" className="mr20">
-              当前: 2000元
-            </Typography.Text>
-            <Flex className="input--border">
-              <AtInput name="n1" value="" onChange={() => null} />
-            </Flex>
-          </Flex>
-          <Flex className="offer-modal-item" justify="between">
-            <Typography.Text size="lg">词</Typography.Text>
-            <Typography.Text size="lg" type="secondary" className="mr20">
-              当前: 3000元
-            </Typography.Text>
-            <Flex className="input--border">
-              <AtInput name="n2" value="" onChange={() => null} />
-            </Flex>
-          </Flex>
+          <CounterOfferInput title="曲" price={2000} name="n1" value="" onChange={() => null} />
+          <CounterOfferInput title="词" price={3000} name="n1" value="" onChange={() => null} />
         </AtModalContent>
         <AtModalAction>
           <Flex justify="between" className="p-default pb40">

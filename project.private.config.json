@@ -107,6 +107,12 @@
           "pathName": "pages/song-make/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/song-manage/index",
+          "pathName": "pages/song-manage/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

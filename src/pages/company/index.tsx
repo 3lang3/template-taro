@@ -1,8 +1,17 @@
 import Button from '@/components/Button';
+import { ManageSongItem } from '@/components/Chore';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { Image, View } from '@tarojs/components';
+import { navigateTo } from '@tarojs/taro';
 import './index.less';
+
+const songsData = [
+  { title: '告白气球', price1: 2000, price2: 3000 },
+  { title: '手心里的蔷薇', price1: 2000, price2: 3000 },
+  { title: '原来如此', price1: 2000, price2: 3000 },
+  { title: '我们都一样', price1: 2000, price2: 3000 },
+];
 
 export default () => {
   return (
@@ -20,38 +29,18 @@ export default () => {
         </Button>
       </Flex>
       <View className="company-body">
-        <Flex className="company-body__item">
-          <View className="company-body__item-content">
-            <Typography.Text className="mb20" size="lg">
-              告白气球
-            </Typography.Text>
-            <Flex>
-              <Typography.Text className="mr20" type="secondary">
-                曲2000元
-              </Typography.Text>
-              <Typography.Text type="secondary">词3000元</Typography.Text>
-            </Flex>
-          </View>
-          <Button circle size="xs" type="primary" outline>
-            查看
-          </Button>
-        </Flex>
-        <Flex className="company-body__item">
-          <View className="company-body__item-content">
-            <Typography.Text className="mb20" size="lg">
-              手心里的蔷薇
-            </Typography.Text>
-            <Flex>
-              <Typography.Text className="mr20" type="secondary">
-                曲2000元
-              </Typography.Text>
-              <Typography.Text type="secondary">词3000元</Typography.Text>
-            </Flex>
-          </View>
-          <Button circle size="xs" type="primary">
-            查看
-          </Button>
-        </Flex>
+        {songsData.map((song, i) => (
+          <ManageSongItem
+            key={i}
+            {...song}
+            onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+            actionRender={() => (
+              <Button circle size="xs" type="primary">
+                查看
+              </Button>
+            )}
+          />
+        ))}
       </View>
     </View>
   );

@@ -38,8 +38,12 @@ export default {
     'pages/message/index',
     // 消息通知详情
     'pages/message/detail',
+    // 词曲制作
     'pages/song-make/index',
+    // 词曲制作详情
     'pages/song-make/detail',
+    // 词曲管理
+    'pages/song-manage/index',
   ],
   tabBar: {
     custom: true,
