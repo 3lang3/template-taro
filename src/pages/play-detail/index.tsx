@@ -5,8 +5,10 @@ import Image from '@/components/Image';
 import Tag from '@/components/Tag';
 import Typography from '@/components/Typography';
 import { View, Text, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
+import Icon from '@/components/Icon';
+import Button from '@/components/Button';
 import Flex from '@/components/Flex';
-import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
+import { AtInput, AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useCustomAudio } from './helper';
 
 import './index.less';
@@ -37,6 +39,9 @@ export default () => {
       <TabNavigationBar title="白月光与朱砂痣" />
 
       <View className="play-detail">
+        <Flex className="p-default bg-white" justify="center">
+          <Typography.Text>曲2000元 | 词3000元</Typography.Text>
+        </Flex>
         <View className="play-detail__header">
           <Typography.Text type="light" className="play-detail__author">
             张杰
@@ -111,8 +116,10 @@ export default () => {
       </View>
       <View className="play-detail-desc">
         <Flex justify="between" className="play-detail-desc__title">
-          <Typography.Title style={{ marginBottom: 0 }}>词曲说明</Typography.Title>
-          <ScoreContent />
+          <Typography.Title level={3} style={{ marginBottom: 0 }}>
+            词曲说明
+          </Typography.Title>
+          <ScoreButton />
         </Flex>
         <View className="play-detail-desc__content">
           <View className="play-detail-desc__content-item">
@@ -132,21 +139,23 @@ export default () => {
         </View>
       </View>
       <Flex justify="center" className="play-detail-action">
-        <Flex justify="center" className="play-detail-action__btn">
-          我要唱
-        </Flex>
+        <GiveUpButton />
+        <CounterOfferButton />
       </Flex>
       <View className="play-detail-action--placeholder" />
     </>
   );
 };
 
-// 词曲tag modal
-function ScoreContent() {
+// 曲谱按钮 modal
+function ScoreButton() {
   const [visible, set] = useState(false);
   return (
     <>
-      <Tag onClick={() => set(true)}>曲谱</Tag>
+      <Button marginAuto={false} circle outline type="primary" size="xs" onClick={() => set(true)}>
+        <Icon icon="icon-quku_qupu" />
+        曲谱
+      </Button>
       <AtModal isOpened={visible} onClose={() => set(false)} className="modal-score">
         <AtModalHeader>曲谱</AtModalHeader>
         <AtModalContent>
@@ -155,6 +164,90 @@ function ScoreContent() {
             长按保存图片
           </Typography.Text>
         </AtModalContent>
+      </AtModal>
+    </>
+  );
+}
+
+// 放弃按钮 modal
+function GiveUpButton() {
+  const [visible, set] = useState(false);
+  return (
+    <>
+      <Button
+        onClick={() => set(true)}
+        className="play-detail-action__btn"
+        full
+        type="secondary"
+        size="lg"
+        circle
+      >
+        放弃收购
+      </Button>
+      <AtModal isOpened={visible} onClose={() => set(false)}>
+        <AtModalHeader>确定放弃收购该词曲嘛?</AtModalHeader>
+        <AtModalAction>
+          <Flex justify="between" className="p-default pb40">
+            <Button outline circle>
+              取消
+            </Button>
+            <Button type="primary" circle>
+              确定
+            </Button>
+          </Flex>
+        </AtModalAction>
+      </AtModal>
+    </>
+  );
+}
+
+// 还价按钮 modal
+function CounterOfferButton() {
+  const [visible, set] = useState(false);
+  return (
+    <>
+      <Button
+        onClick={() => set(true)}
+        className="play-detail-action__btn"
+        full
+        type="primary"
+        size="lg"
+        circle
+      >
+        还价
+      </Button>
+      <AtModal isOpened={visible} onClose={() => set(false)}>
+        <AtModalHeader>还价</AtModalHeader>
+        <AtModalContent>
+          <Flex className="offer-modal-item" justify="between">
+            <Typography.Text size="lg">曲</Typography.Text>
+            <Typography.Text size="lg" type="secondary" className="mr20">
+              当前: 2000元
+            </Typography.Text>
+            <Flex className="input--border">
+              <AtInput name="n1" value="" onChange={() => null} />
+            </Flex>
+          </Flex>
+          <Flex className="offer-modal-item" justify="between">
+            <Typography.Text size="lg">词</Typography.Text>
+            <Typography.Text size="lg" type="secondary" className="mr20">
+              当前: 3000元
+            </Typography.Text>
+            <Flex className="input--border">
+              <AtInput name="n2" value="" onChange={() => null} />
+            </Flex>
+          </Flex>
+        </AtModalContent>
+        <AtModalAction>
+          <Flex justify="between" className="p-default pb40">
+            <Button outline circle>
+              取消
+            </Button>
+            <Button type="primary" circle>
+              确定
+            </Button>
+          </Flex>
+        </AtModalAction>
       </AtModal>
     </>
   );

@@ -38,6 +38,8 @@ export default {
     'pages/message/index',
     // 消息通知详情
     'pages/message/detail',
+    'pages/song-make/index',
+    'pages/song-make/detail',
   ],
   tabBar: {
     custom: true,

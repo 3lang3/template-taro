@@ -3,9 +3,11 @@ import { Image, Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
+import Flex from '@/components/Flex';
+import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
-import Tag from '@/components/Tag';
+import { LibSongItem } from '@/components/Chore';
 import './index.less';
 
 const tabsData = [
@@ -126,40 +128,6 @@ const songsData = [
   { title: '最好的都给你', tags: ['摇滚', '国语'], lyric: 1 },
   { title: '下辈子不一定还能遇见不下辈子不一定还能遇见不', tags: ['摇滚', '国语'], lyric: 0 },
 ];
-// 歌曲项
-const SongItem = (props) => {
-  return (
-    <View className="lib-song-item">
-      <View className="lib-song-item__content">
-        <Typography.Title className="lib-song-item__title" level={3} ellipsis>
-          {props.title}
-        </Typography.Title>
-        {Array.isArray(props.tags) && (
-          <View className="lib-song-item__tag">
-            {props.tags.map((el, i) => (
-              <Tag key={i}>{el}</Tag>
-            ))}
-          </View>
-        )}
-      </View>
-      <View className="lib-song-item__icon">
-        {+props.lyric ? (
-          <Image
-            mode="aspectFit"
-            className="lib-song-item__icon-item"
-            src={require('@/assets/icon/playlist_outline.svg')}
-          />
-        ) : null}
-        <Image
-          onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-          mode="aspectFit"
-          className="lib-song-item__icon-item"
-          src={require('@/assets/icon/play_outline.svg')}
-        />
-      </View>
-    </View>
-  );
-};
 
 export default () => {
   return (
@@ -167,7 +135,25 @@ export default () => {
       <TabNavigationBar />
       <LibTabs />
       {songsData.map((song, i) => (
-        <SongItem key={i} {...song} />
+        <LibSongItem
+          key={i}
+          title={song.title}
+          tags={song.tags}
+          actionRender={() => {
+            return (
+              <Flex justify="end">
+                {+song.lyric ? (
+                  <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                ) : null}
+                <Icon
+                  onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                  icon="icon-quku_bofang"
+                  className="lib-song-action__item"
+                />
+              </Flex>
+            );
+          }}
+        />
       ))}
       <CustomTabBar />
     </>

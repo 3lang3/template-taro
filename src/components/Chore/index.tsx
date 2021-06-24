@@ -1,5 +1,6 @@
 import { View } from '@tarojs/components';
 import Flex from '../Flex';
+import Tag from '../Tag';
 import Typography from '../Typography';
 import './index.less';
 
@@ -8,6 +9,7 @@ type CircleIndexListProps = {
   data: { title: string; desc: string }[];
 };
 
+// 圆形步骤列表
 export const CircleIndexList = ({ className, data }: CircleIndexListProps) => {
   return (
     <View className={className}>
@@ -23,5 +25,32 @@ export const CircleIndexList = ({ className, data }: CircleIndexListProps) => {
         </Flex>
       ))}
     </View>
+  );
+};
+
+type LibSongItemProps = {
+  title: string;
+  tags?: string[];
+  actionRender?: () => React.ReactNode | string;
+  onClick?: () => void;
+};
+// 曲库歌曲
+export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItemProps) => {
+  return (
+    <Flex justify="between" className="lib-song-item" {...props}>
+      <View className="lib-song-item__content">
+        <Typography.Title className="lib-song-item__title" level={3} ellipsis>
+          {title}
+        </Typography.Title>
+        {Array.isArray(tags) && (
+          <Flex>
+            {tags.map((el, i) => (
+              <Tag key={i}>{el}</Tag>
+            ))}
+          </Flex>
+        )}
+      </View>
+      {actionRender ? actionRender() : null}
+    </Flex>
   );
 };

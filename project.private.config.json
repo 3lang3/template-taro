@@ -101,6 +101,12 @@
           "pathName": "pages/message/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/song-make/index",
+          "pathName": "pages/song-make/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

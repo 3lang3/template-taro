@@ -83,6 +83,7 @@
 .ml35 { margin-left: 35px; }
 .ml40 { margin-left: 40px; }
 .ml50 { margin-left: 50px; }
+.m0 {  margin: 0; }
 
 .text-left {text-align: left;}
 .text-center {text-align: center;}
@@ -123,7 +124,13 @@
   width: 100%;
   .px24; .py20;
 }
+.py30 {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
 .pb20 { padding-bottom: 20px;}
+.pb30 { padding-bottom: 30px;}
+.pb40 { padding-bottom: 40px;}
 .pt20 { padding-top: 20px;}
 .pl24 { padding-left: 24px;}
 .pr24 { padding-right: 24px;}
@@ -260,6 +267,7 @@
 .input--border {
   .border--bolder;
 
+  box-sizing: border-box;
   padding: 0 24px;
   .at-input {
     flex: 1 0 auto;
@@ -287,6 +295,11 @@
 /* custom captcha input form item style */
 .captcha-input {
   padding: 15px 0 15px 24px !important;
+}
+
+/* custom taro ui button style */
+.at-button--full {
+  border-radius: 46px;
 }
 
 /* custom taro ui modal style */
