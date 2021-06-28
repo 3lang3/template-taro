@@ -1,3 +1,9 @@
+/**
+ * 杂项ui
+ *
+ * 放置部分页面可复用的ui组件
+ */
+
 import { View } from '@tarojs/components';
 import { memo } from 'react';
 import { AtInput } from 'taro-ui';
