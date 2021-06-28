@@ -12,11 +12,12 @@ export async function silentLogin() {
     let code = getStorageSync('code') as string;
     if (code) {
       // 检查缓存code是否过期
-      const { errMsg } = await checkSession();
-      // 缓存code过期
-      // 重新调用login获取新code
-      // 缓存token失效
-      if (errMsg !== 'checkSession:ok') {
+      try {
+        await checkSession();
+      } catch (error) {
+        // 缓存code过期
+        // 重新调用login获取新code
+        // 缓存token失效
         token = undefined;
         code = await getCode();
       }
@@ -30,22 +31,22 @@ export async function silentLogin() {
     if (!token) throw new Error('需用调用getUserProfile获取用户的个人信息');
     store.dispatch(getUser());
   } catch (error) {
-    console.warn('静默登录失败:', error.message);
+    console.warn('静默登录失败:', error);
   }
 }
 
 // 主动登录(用户授权)
 export async function userLogin(opts: getUserProfile.Option) {
   try {
-    const { userInfo, ...res } = await getUserProfile(opts);
-    console.log(res);
+    const { userInfo, ...getUserProfileRes } = await getUserProfile(opts);
+    console.log(getUserProfileRes);
     store.dispatch(getProfile(userInfo));
   } catch (error) {
     console.log(error);
   }
 }
 
-// 获取微信用户code
+// wx.login 获取微信用户code
 async function getCode(): Promise<string> {
   const res = await login();
   const { code, errMsg } = res;

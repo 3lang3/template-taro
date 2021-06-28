@@ -3,7 +3,20 @@ import config from '@/config';
 import store from '@/state/config/store';
 import { logout } from '@/state/user';
 
-type ResponseType = { data: any; type: number; msg: string; server_time: number };
+type ResponseType = {
+  /** 返回的数据主体 */
+  data: any;
+  /**
+   * 请求状态值
+   * - 1 非正常状态
+   * - 0 正常状态
+   */
+  type: 0 | 1;
+  /** 响应消息 */
+  msg: string;
+  /** 服务器时间戳 */
+  server_time: number
+};
 
 /**
  * @link https://taro-docs.jd.com/taro/docs/next/apis/network/request/request
@@ -22,6 +35,7 @@ const generateRequest = (prefix: string) => {
         url: `${prefix}${url}`,
         header,
         success: ({ data, statusCode }: { data: ResponseType; statusCode: number }) => {
+          // @todo logout logic
           if (statusCode === 401 || statusCode === 403) {
             store.dispatch(logout())
             reject(new Error(data.msg))

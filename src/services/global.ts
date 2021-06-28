@@ -6,8 +6,14 @@ export function getCurrentUser() {
   });
 }
 
-export function getAuthorization(data) {
-  return request('/getAuthorization', {
+export type wxMiniProgramLoginPayload = {
+  code: string | number;
+  userInfo: any;
+  mobile?: string | number;
+}
+
+export function wxMiniProgramLogin(data: wxMiniProgramLoginPayload) {
+  return request('/login/wxMiniProgramLogin', {
     method: 'POST',
     data
   });

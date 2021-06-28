@@ -2,10 +2,10 @@ import Button from '@/components/Button';
 import { CircleIndexList } from '@/components/Chore';
 import CustomTabBar from '@/components/CustomTabBar';
 import Flex from '@/components/Flex';
-import Tag from '@/components/Tag';
 import Typography from '@/components/Typography';
+import { wxMiniProgramLogin } from '@/services/global';
 import { Image, View } from '@tarojs/components';
-import { getStorageSync, navigateTo, setStorageSync } from '@tarojs/taro';
+import { getStorageSync, getUserProfile, navigateTo, setStorageSync } from '@tarojs/taro';
 import { useState } from 'react';
 import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 
@@ -20,6 +20,18 @@ const sellStepData = [
 
 export default () => {
   const [visible, setVisible] = useState(false);
+
+  const onLoginClick = async () => {
+    try {
+      const { userInfo } = await getUserProfile({ desc: '获取用户信息' });
+      const code = getStorageSync('code')
+      const { type, msg, data } = await wxMiniProgramLogin({ userInfo, code })
+      if (type === 1) throw Error(msg)
+      console.log(userInfo, code, data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const onSellClick = () => {
     const neverShowModal = getStorageSync('sellStepModal');
@@ -38,6 +50,7 @@ export default () => {
       setStorageSync('sellStepModal', true);
     }
   };
+
   return (
     <>
       <View className="page-me">
@@ -47,7 +60,7 @@ export default () => {
             <Typography.Text className="mb10" type="light" size="xl">
               未登录
             </Typography.Text>
-            <Tag type="light">立即登录</Tag>
+            <Button onClick={onLoginClick} circle outline type="light" size="xs">立即登录</Button>
           </Flex>
         </Flex>
         <Typography.Text className="mb30" type="light">
