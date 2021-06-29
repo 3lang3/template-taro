@@ -1,3 +1,5 @@
+/* 用户数据持久化 */
+
 import config from '@/config';
 import { getCurrentUser } from '@/services/global';
 import { removeStorageSync } from '@tarojs/taro';
@@ -36,7 +38,16 @@ export function getUser(): any {
 }
 
 // reducers
-const INITIAL_STATE = {
+export type UserStateType = {
+  user: {
+    loading: boolean;
+    error: boolean;
+    done: boolean;
+    userInfo: boolean;
+    data: any;
+  };
+};
+const INITIAL_STATE: UserStateType['user'] = {
   loading: false,
   error: false,
   done: false,

@@ -3,9 +3,9 @@ import config from '@/config';
 import store from '@/state/config/store';
 import { logout } from '@/state/user';
 
-type ResponseType = {
+export type PromiseResponseType<T> = {
   /** 返回的数据主体 */
-  data: any;
+  data: T;
   /**
    * 请求状态值
    * - 1 非正常状态
@@ -27,14 +27,14 @@ const generateRequest = (prefix: string) => {
   if (tk) {
     header.authorization = tk;
   }
-  return (url: string, opts: Omit<request.Option, 'url' | 'success' | 'fail'>) => {
+  return (url: string, opts?: Omit<request.Option, 'url' | 'success' | 'fail'>) => {
     opts = opts || {};
     opts.header = { ...header, ...opts.header };
-    return new Promise<ResponseType>((resolve, reject) => {
+    return new Promise<PromiseResponseType<any>>((resolve, reject) => {
       request({
         url: `${prefix}${url}`,
         header,
-        success: ({ data, statusCode }: { data: ResponseType; statusCode: number }) => {
+        success: ({ data, statusCode }: { data: PromiseResponseType<any>; statusCode: number }) => {
           // @todo logout logic
           if (statusCode === 401 || statusCode === 403) {
             store.dispatch(logout())

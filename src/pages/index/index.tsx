@@ -2,49 +2,41 @@ import { View, Image as TaroImage } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
-import { navigateTo } from '@tarojs/taro';
+import { navigateTo, usePullDownRefresh } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
-import './index.less';
+import { useRequest } from 'ahooks';
+import { getHomeData } from '@/services/home';
+import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { useDispatch, useSelector } from 'react-redux';
+import { HomeStateType, set } from '@/state/home';
+import { BaseState } from '@/state/types';
 
-const rcAlbumData = [
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-  { title: '拜托了世界好拜托了世界好', author: '蔡徐坤' },
-];
+import './index.less';
 
 const RcAlbumItem = (props) => {
   return (
     <View className="rc-album-item" onClick={() => navigateTo({ url: '/pages/album/index' })}>
-      <Image className="rc-album-item__img" src="" />
+      <Image className="rc-album-item__img" src={props.album_image} />
       <Typography.Text className="rc-album-item__title" ellipsis>
-        {props.title}
+        {props.album_name}
       </Typography.Text>
       <Typography.Text className="rc-album-item__author" size="sm" type="secondary" ellipsis>
-        {props.author}
+        {props.singer_name}
       </Typography.Text>
     </View>
   );
 };
 
-const RcAlbum = () => {
+const RcAlbum = ({ data = [] }: { data: any[] }) => {
   return (
     <View className="rc-album">
-      {rcAlbumData.map((item, i) => (
+      {data.map((item, i) => (
         <RcAlbumItem key={i} {...item} />
       ))}
     </View>
   );
 };
-
-const hotSongData = Array.from({ length: 10 }, (_, i) => ({
-  rank: i + 1,
-  title: '拜托了世界好拜托了世界好',
-  author: '蔡徐坤',
-}));
 
 const HotSongItem = (props) => {
   const rankRender = (rank) => {
@@ -72,31 +64,15 @@ const HotSongItem = (props) => {
   );
 };
 
-const HotSong = () => {
+const HotSong = ({ data = [] }: { data: any[] }) => {
   return (
     <View className="hot-song">
-      {hotSongData.map((item, i) => (
+      {data.map((item, i) => (
         <HotSongItem key={i} {...item} />
       ))}
     </View>
   );
 };
-
-const latestNewsData = [
-  {
-    title: '有台时光机,开往快乐星球,请尽快入座,一起追忆那些儿时让我们痴迷的音乐吧~',
-    view: '6665',
-    timestamp: '2020.05.20 16:00',
-    img: '',
-  },
-  {
-    sole: 1,
-    title: '有台时光机,开往快乐星球,请尽快入座,一起追忆那些儿时让我们痴迷的音乐吧~',
-    view: '6665',
-    timestamp: '2020.05.20 16:00',
-    img: '',
-  },
-];
 
 const LatestNewsItem = (props) => {
   return (
@@ -104,7 +80,7 @@ const LatestNewsItem = (props) => {
       className="latest-news-item"
       onClick={() => navigateTo({ url: '/pages/news-detail/index' })}
     >
-      <Image className="latest-news-item__img" src={props.img} />
+      <Image className="latest-news-item__img" src={props.image} />
       <Typography.Text className="latest-news-item__title" ellipsis={2}>
         {props.title}
       </Typography.Text>
@@ -126,7 +102,7 @@ const LatestNewsItem = (props) => {
             src={require('@/assets/icon/eye_outline.svg')}
           />
           <Typography.Text size="sm" type="secondary">
-            {props.view}
+            {props.read_number}
           </Typography.Text>
         </View>
       </View>
@@ -134,10 +110,10 @@ const LatestNewsItem = (props) => {
   );
 };
 
-const LatestNews = () => {
+const LatestNews = ({ data = [] }: { data: any[] }) => {
   return (
     <View className="latest-news">
-      {latestNewsData.map((item, i) => (
+      {data.map((item, i) => (
         <LatestNewsItem key={i} {...item} />
       ))}
     </View>
@@ -145,6 +121,20 @@ const LatestNews = () => {
 };
 
 export default () => {
+  const dispatch = useDispatch();
+  const { data } = useSelector<BaseState, HomeStateType['home']>((state) => state.home);
+  const { loading, error, refresh } = useRequest(getHomeData, {
+    manual: !!data.album,
+    onSuccess: ({ data: res, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      dispatch(set(res));
+    },
+  });
+  // 下拉页面刷新
+  usePullDownRefresh(refresh);
+
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <>
       <TabNavigationBar />
@@ -155,13 +145,17 @@ export default () => {
           <CustomSwiper
             className="index-swiper__wrapper"
             swiperClassName="index-swiper__main"
-            data={[1, 2, 3]}
-            itemRender={(item) => <View>{item}</View>}
+            data={data.banner}
+            itemRender={(item) => (
+              <View>
+                <Image src={item.url} />
+              </View>
+            )}
           />
         </View>
         <View className="index-rc-album">
           <Typography.Title level={2}>推荐专辑</Typography.Title>
-          <RcAlbum />
+          <RcAlbum data={data.album} />
         </View>
         <View className="index-hot-song">
           <View className="index-hot-song__title">
@@ -176,11 +170,11 @@ export default () => {
               更多
             </Typography.Text>
           </View>
-          <HotSong />
+          <HotSong data={data.hotSongList} />
         </View>
         <View className="index-latest-news">
           <Typography.Title level={2}>最新动态</Typography.Title>
-          <LatestNews />
+          <LatestNews data={data.trends} />
         </View>
       </View>
       <CustomTabBar />
