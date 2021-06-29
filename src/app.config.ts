@@ -1,5 +1,7 @@
 export default {
   pages: [
+    // 消息通知
+    'pages/message/index',
     // 首页
     'pages/index/index',
     // 曲库
@@ -34,8 +36,6 @@ export default {
     'pages/sell/index',
     // 出售词曲第二步
     'pages/sell/next',
-    // 消息通知
-    'pages/message/index',
     // 消息通知详情
     'pages/message/detail',
     // 词曲制作

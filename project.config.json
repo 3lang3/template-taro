@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "ydj-h5-client",
   "description": "this is ydj miniprogram client",
-  "appid": "wxf4dc21b64a826aeb",
+  "appid": "wxdde13837f29dfceb",
   "setting": {
     "urlCheck": false,
     "es6": false,
@@ -21,9 +21,10 @@
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
     "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
     "useMultiFrameRuntime": true,
     "useApiHook": true,
-    "useApiHostProcess": false,
+    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -31,12 +32,11 @@
     },
     "enableEngineNative": false,
     "useIsolateContext": true,
-    "useCompilerModule": true,
-    "userConfirmedUseCompilerModuleSwitch": false,
     "userConfirmedBundleSwitch": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
-    "minifyWXSS": false
+    "minifyWXSS": false,
+    "showES6CompileOption": false
   },
   "compileType": "miniprogram",
   "condition": {}

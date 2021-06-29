@@ -1,28 +1,52 @@
+import { useEffect } from 'react';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { View } from '@tarojs/components';
 import { navigateTo } from '@tarojs/taro';
-import './index.less'
+import { connect } from 'react-redux';
+import { setListAsync } from '@/state/message';
+import './index.less';
 
-export default () => {
+function Index({ setListAsync, list }) {
+  useEffect(() => {
+    setListAsync();
+  }, []);
   return (
     <>
       <View className="p-default text-right">
         <Typography.Text type="secondary">全部已读</Typography.Text>
       </View>
       <View className="message-container">
-        <View onClick={() => navigateTo({ url: '/pages/message/detail' })} className="message-item message-item--dot">
-          <Flex justify="between" className="mb20">
-            <Typography.Title level={3} style={{ margin: 0 }}>词曲审核:未通过</Typography.Title>
-            <Typography.Text size="sm" type="secondary">
-              5-14
+        {list.map(({ content: { title, message }, created_at }) => (
+          <View
+            onClick={() => navigateTo({ url: '/pages/message/detail' })}
+            className="message-item message-item--dot"
+          >
+            <Flex justify="between" className="mb20">
+              <Typography.Title level={3} style={{ margin: 0 }}>
+                {title}
+              </Typography.Title>
+              <Typography.Text size="sm" type="secondary">
+                {created_at}
+              </Typography.Text>
+            </Flex>
+            <Typography.Text type="secondary" ellipsis>
+              {message}
             </Typography.Text>
-          </Flex>
-          <Typography.Text type="secondary" ellipsis>
-            您的词曲信息不符合,请仔细阅读查看未您的词曲信息不符合,请仔细阅读查
-          </Typography.Text>
-        </View>
+          </View>
+        ))}
       </View>
     </>
   );
-};
+}
+
+export default connect(
+  ({ message }: { message: any }) => {
+    return message;
+  },
+  (dispatch) => ({
+    setListAsync() {
+      dispatch(setListAsync() as any);
+    },
+  }),
+)(Index);
