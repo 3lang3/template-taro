@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux'
-import counter from './counter'
 import user from './user'
 import navigation from './navigation'
+import home from './home'
 
 export default combineReducers({
-  counter,
   user,
-  navigation
+  navigation,
+  home
 })

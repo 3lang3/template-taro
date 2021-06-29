@@ -6,8 +6,11 @@
 
 import { View } from '@tarojs/components';
 import { memo } from 'react';
-import { AtInput } from 'taro-ui';
+import { AtInput, AtActivityIndicator } from 'taro-ui';
+import Button from '../Button';
+
 import Flex from '../Flex';
+import Icon from '../Icon';
 import Tag from '../Tag';
 import Typography from '../Typography';
 import './index.less';
@@ -127,3 +130,37 @@ function counterOfferInputeQualfn(prev, next) {
   if (prev.value === next.value) return true;
   return false;
 }
+
+/**
+ * 页面loading时UI
+ */
+type FullPageLoaderProps = {
+  content?: string;
+};
+export const FullPageLoader = ({ content }: FullPageLoaderProps) => {
+  return (
+    <Flex justify="center" className="full-page--loader">
+      <AtActivityIndicator size={38} mode={content ? 'center' : 'normal'} content={content} />
+    </Flex>
+  );
+};
+
+type FullPageErrorProps = {
+  refresh?: () => void;
+};
+/**
+ * 页面加载出错UI
+ */
+export const FullPageError = ({ refresh }: FullPageErrorProps) => {
+  return (
+    <Flex direction="column" justify="center" className="full-page--error">
+      <Icon className="full-page--error__icon" icon="icon-space" />
+      <Typography.Title>Sorry...页面请求失败</Typography.Title>
+      {refresh ? (
+        <Button type="primary" onClick={refresh}>
+          刷新试试
+        </Button>
+      ) : null}
+    </Flex>
+  );
+};

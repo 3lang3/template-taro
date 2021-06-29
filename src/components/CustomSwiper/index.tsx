@@ -8,7 +8,7 @@ type CustomSwiperProps = {
   /**
    * swiper的数据
    */
-  data: any[];
+  data?: any[];
   onChange?: (current: number) => void;
   dotRender?: (dots: any[], current: number) => React.ReactNode;
   itemRender: (item: any, idx: number) => React.ReactNode;
