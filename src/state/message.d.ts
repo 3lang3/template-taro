@@ -1,14 +1,7 @@
-export interface Page {
-  _page: {
-    page: number
-    pageSize: number
-    totalCount: number
-    totalPage: number
-  }
-}
+import type { MessageListResType } from '@/services/message'
 
 export interface MessageState {
   message: {
-    list: any[]
+    list: MessageListResType['_list']
   }
 }
