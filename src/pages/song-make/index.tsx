@@ -15,7 +15,7 @@ export default () => {
     <View className="mt20">
       {songsData.map((song, i) => (
         <LibSongItem
-          onClick={() => navigateTo({ url: '/pages/song-make/detail' })}
+          onClick={() => navigateTo({ url: '/pages/song-detail/index' })}
           key={i}
           title={song.title}
           tags={song.tags}

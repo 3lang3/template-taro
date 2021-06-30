@@ -41,7 +41,7 @@ export default {
     // 词曲制作
     'pages/song-make/index',
     // 词曲制作详情
-    'pages/song-make/detail',
+    'pages/song-detail/index',
     // 词曲管理
     'pages/song-manage/index',
   ],
@@ -78,4 +78,4 @@ export default {
     navigationBarTitleText: 'WeChat',
     navigationBarTextStyle: 'black',
   },
-}
+};
