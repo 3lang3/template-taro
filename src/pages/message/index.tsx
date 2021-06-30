@@ -1,54 +1,70 @@
-import Flex from '@/components/Flex'
-import Typography from '@/components/Typography'
-import { FullPageLoader, FullPageError } from '@/components/Chore'
-import { View } from '@tarojs/components'
-import { navigateTo } from '@tarojs/taro'
-import { useDispatch, useSelector } from 'react-redux'
-import { useRequest, useUpdate } from 'ahooks'
-import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message'
-import { setList } from '@/state/message'
-import './index.less'
+import Flex from '@/components/Flex';
+import Typography from '@/components/Typography';
+import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { View } from '@tarojs/components';
+import Taro, { navigateTo, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRequest, useUpdate } from 'ahooks';
+import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message';
+import { setList, msgRefresh, setTotalPage } from '@/state/message';
+import './index.less';
 
 export default function Index() {
-  const dispatch = useDispatch()
-  const update = useUpdate()
-  const { list } = useSelector((state) => state.message)
-  const { loading, error, refresh } = useRequest(getMessageList, {
-    onSuccess: ({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg)
-      dispatch(setList(res._list))
+  const dispatch = useDispatch();
+  const update = useUpdate();
+  const { list, page, pageSize, totalPage } = useSelector((state) => state.message);
+  const { loading, error, refresh, run } = useRequest(getMessageList, {
+    defaultParams: [{ page, pageSize }],
+    onSuccess: ({ data: { _list, _page }, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      dispatch(setTotalPage(_page.totalPage));
+      if (_list.length) {
+        dispatch(setList([...list, ..._list]));
+      }
     },
-  })
+  });
+  usePullDownRefresh(() => {
+    run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      dispatch(msgRefresh(res._list));
+      Taro.stopPullDownRefresh();
+    });
+  });
+  useReachBottom(() => {
+    if (list.length < totalPage) {
+      run({ page, pageSize });
+    }
+  });
   const onReadAll = () => {
     clearMessageRemind().then(({ type, msg }) => {
-      if (type === 1) throw Error(msg)
+      if (type === 1) throw Error(msg);
       list.forEach((item) => {
         if (!item.is_read) {
-          item.is_read = 1
+          item.is_read = 1;
         }
-      })
-      update()
-    })
-  }
+      });
+      update();
+    });
+  };
   const onRead = (id: number, isRead: number) => {
-    navigateTo({ url: '/pages/message/detail' })
+    navigateTo({ url: '/pages/message/detail' });
     if (!isRead) {
       // 未读
       readMessageRemind({ id }).then(({ type, msg }) => {
-        if (type === 1) throw Error(msg)
+        if (type === 1) throw Error(msg);
         list.find((item) => {
           if (item.id === id) {
-            item.is_read = 1
-            return true
+            item.is_read = 1;
+            return true;
           }
-          return false
-        })
-        update()
-      })
+          return false;
+        });
+        update();
+      });
     }
-  }
-  if (loading) return <FullPageLoader />
-  if (error) return <FullPageError refresh={refresh} />
+  };
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <>
       <View className="p-default text-right">
@@ -78,5 +94,5 @@ export default function Index() {
         ))}
       </View>
     </>
-  )
+  );
 }
