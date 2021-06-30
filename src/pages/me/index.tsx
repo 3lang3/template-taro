@@ -1,55 +1,55 @@
-import Button from '@/components/Button';
-import { CircleIndexList } from '@/components/Chore';
-import CustomTabBar from '@/components/CustomTabBar';
-import Flex from '@/components/Flex';
-import Typography from '@/components/Typography';
-import { wxMiniProgramLogin } from '@/services/global';
-import { Image, View } from '@tarojs/components';
-import { getStorageSync, getUserProfile, navigateTo, setStorageSync } from '@tarojs/taro';
-import { useState } from 'react';
-import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
+import Button from '@/components/Button'
+import { CircleIndexList } from '@/components/Chore'
+import CustomTabBar from '@/components/CustomTabBar'
+import Flex from '@/components/Flex'
+import Typography from '@/components/Typography'
+import { wxMiniProgramLogin } from '@/services/common'
+import { Image, View } from '@tarojs/components'
+import { getStorageSync, getUserProfile, navigateTo, setStorageSync } from '@tarojs/taro'
+import { useState } from 'react'
+import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui'
 
-import './index.less';
+import './index.less'
 
 const sellStepData = [
   { title: '上传词曲', desc: '上传词曲并给词曲定价' },
   { title: '词曲审核', desc: '平台审核通过后为您匹配合作机会' },
   { title: '签署协议', desc: '词曲作者签署协议' },
   { title: '词曲交易', desc: '合作机构对于词曲收购付款' },
-];
+]
 
 export default () => {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   const onLoginClick = async () => {
     try {
-      const { userInfo } = await getUserProfile({ desc: '获取用户信息' });
+      const { userInfo } = await getUserProfile({ desc: '获取用户信息' })
       const code = getStorageSync('code')
       const { type, msg, data } = await wxMiniProgramLogin({ userInfo, code })
       if (type === 1) throw Error(msg)
       console.log(userInfo, code, data)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
   const onSellClick = () => {
-    const neverShowModal = getStorageSync('sellStepModal');
+    const neverShowModal = getStorageSync('sellStepModal')
     if (neverShowModal) {
-      goToSellPage();
-      return;
+      goToSellPage()
+      return
     }
-    setVisible(true);
-  };
+    setVisible(true)
+  }
   const goToSellPage = () => {
-    navigateTo({ url: '/pages/sell/index' });
-  };
+    navigateTo({ url: '/pages/sell/index' })
+  }
   const closeModal = (localTarget?: boolean) => {
-    setVisible(false);
+    setVisible(false)
     if (localTarget) {
-      setStorageSync('sellStepModal', true);
+      setStorageSync('sellStepModal', true)
     }
-  };
+  }
 
   return (
     <>
@@ -60,7 +60,9 @@ export default () => {
             <Typography.Text className="mb10" type="light" size="xl">
               未登录
             </Typography.Text>
-            <Button onClick={onLoginClick} circle outline type="light" size="xs">立即登录</Button>
+            <Button onClick={onLoginClick} circle outline type="light" size="xs">
+              立即登录
+            </Button>
           </Flex>
         </Flex>
         <Typography.Text className="mb30" type="light">
@@ -182,5 +184,5 @@ export default () => {
       </AtModal>
       <CustomTabBar />
     </>
-  );
-};
+  )
+}

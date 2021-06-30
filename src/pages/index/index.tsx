@@ -10,7 +10,7 @@ import { getHomeData } from '@/services/home'
 import { FullPageLoader, FullPageError } from '@/components/Chore'
 import { useDispatch, useSelector } from 'react-redux'
 import { HomeStateType, set } from '@/state/home'
-import { BaseState } from '@/state/types'
+import { BaseState } from '@/state/home.d'
 
 import './index.less'
 

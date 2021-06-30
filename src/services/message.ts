@@ -16,8 +16,16 @@ export type MessageListResType = {
   }[]
 }
 
+// 消息列表
 export function getMessageList(): Promise<PromiseResponseType<MessageListResType>> {
   return request('/message/getMessageList', {
+    method: 'GET',
+  })
+}
+
+// 清空所有消息
+export function clearMessageRemind(): Promise<PromiseResponseType<MessageListResType>> {
+  return request('/message/clearMessageRemind', {
     method: 'GET',
   })
 }
