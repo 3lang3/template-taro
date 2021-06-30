@@ -54,6 +54,7 @@
     "@tarojs/taro": "3.2.11",
     "ahooks": "^2.10.6",
     "classnames": "^2.3.1",
+    "querystring": "^0.2.1",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-redux": "^7.2.0",

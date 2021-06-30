@@ -1,10 +1,13 @@
-import Flex from '@/components/Flex';
-import Typography from '@/components/Typography';
-import { TabNavigationBar } from '@/components/CustomNavigation';
-import Image from '@/components/Image';
-import { navigateTo } from '@tarojs/taro';
-import { View, Image as TaroImage } from '@tarojs/components';
-import './index.less';
+import Flex from '@/components/Flex'
+import Typography from '@/components/Typography'
+import { TabNavigationBar } from '@/components/CustomNavigation'
+import Image from '@/components/Image'
+import { navigateTo, useRouter } from '@tarojs/taro'
+import { View, Image as TaroImage } from '@tarojs/components'
+import { getMusicAlbumDetail } from '@/services/album'
+import { FullPageError, FullPageLoader } from '@/components/Chore'
+import { useRequest } from 'ahooks'
+import './index.less'
 
 const demoData = [
   { author: '易烊千玺', title: '39km' },
@@ -14,9 +17,18 @@ const demoData = [
   { author: '亲密爱人', title: '39km' },
   { author: 'PingFangSC', title: '39km' },
   { author: '易烊千玺', title: '39km' },
-];
+]
 
 export default () => {
+  const { params } = useRouter()
+  const { loading, error, refresh } = useRequest(getMusicAlbumDetail, {
+    defaultParams: [{ album_ids: params.ids }],
+    onSuccess: ({ type, msg }) => {
+      if (type === 1) throw Error(msg)
+    },
+  })
+  if (loading) return <FullPageLoader />
+  if (error) return <FullPageError refresh={refresh} />
   return (
     <>
       <TabNavigationBar title="专辑" />
@@ -65,5 +77,5 @@ export default () => {
         ))}
       </View>
     </>
-  );
-};
+  )
+}

@@ -1,22 +1,25 @@
-import { View, Image as TaroImage } from '@tarojs/components';
-import CustomTabBar from '@/components/CustomTabBar';
-import { TabNavigationBar } from '@/components/CustomNavigation';
-import CustomSwiper from '@/components/CustomSwiper';
-import { navigateTo } from '@tarojs/taro';
-import Typography from '@/components/Typography';
-import Image from '@/components/Image';
-import { useRequest } from 'ahooks';
-import { getHomeData } from '@/services/home';
-import { FullPageLoader, FullPageError } from '@/components/Chore';
-import { useDispatch, useSelector } from 'react-redux';
-import { HomeStateType, set } from '@/state/home';
-import { BaseState } from '@/state/types';
+import { View, Image as TaroImage } from '@tarojs/components'
+import CustomTabBar from '@/components/CustomTabBar'
+import { TabNavigationBar } from '@/components/CustomNavigation'
+import CustomSwiper from '@/components/CustomSwiper'
+import { navigateTo } from '@tarojs/taro'
+import Typography from '@/components/Typography'
+import Image from '@/components/Image'
+import { useRequest } from 'ahooks'
+import { getHomeData } from '@/services/home'
+import { FullPageLoader, FullPageError } from '@/components/Chore'
+import { useDispatch, useSelector } from 'react-redux'
+import { HomeStateType, set } from '@/state/home'
+import { BaseState } from '@/state/types'
 
-import './index.less';
+import './index.less'
 
 const RcAlbumItem = (props) => {
   return (
-    <View className="rc-album-item" onClick={() => navigateTo({ url: '/pages/album/index' })}>
+    <View
+      className="rc-album-item"
+      onClick={() => navigateTo({ url: `/pages/album/index?ids=${props.ids}` })}
+    >
       <Image className="rc-album-item__img" src={props.album_image} />
       <Typography.Text className="rc-album-item__title" ellipsis>
         {props.album_name}
@@ -25,8 +28,8 @@ const RcAlbumItem = (props) => {
         {props.singer_name}
       </Typography.Text>
     </View>
-  );
-};
+  )
+}
 
 const RcAlbum = ({ data = [] }: { data: any[] }) => {
   return (
@@ -35,20 +38,20 @@ const RcAlbum = ({ data = [] }: { data: any[] }) => {
         <RcAlbumItem key={i} {...item} />
       ))}
     </View>
-  );
-};
+  )
+}
 
 const HotSongItem = (props) => {
   const rankRender = (rank) => {
-    if (+rank > 3) return <Typography.Text type="secondary">{rank}</Typography.Text>;
+    if (+rank > 3) return <Typography.Text type="secondary">{rank}</Typography.Text>
     return (
       <TaroImage
         mode="aspectFit"
         className="hot-song-item__img"
         src={require(`@/assets/home/rank_${rank}.png`)}
       />
-    );
-  };
+    )
+  }
   return (
     <View className="hot-song-item">
       <View className="hot-song-item__rank">{rankRender(props.rank)}</View>
@@ -61,8 +64,8 @@ const HotSongItem = (props) => {
         </Typography.Text>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const HotSong = ({ data = [] }: { data: any[] }) => {
   return (
@@ -71,8 +74,8 @@ const HotSong = ({ data = [] }: { data: any[] }) => {
         <HotSongItem key={i} {...item} />
       ))}
     </View>
-  );
-};
+  )
+}
 
 const LatestNewsItem = (props) => {
   return (
@@ -107,8 +110,8 @@ const LatestNewsItem = (props) => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const LatestNews = ({ data = [] }: { data: any[] }) => {
   return (
@@ -117,22 +120,22 @@ const LatestNews = ({ data = [] }: { data: any[] }) => {
         <LatestNewsItem key={i} {...item} />
       ))}
     </View>
-  );
-};
+  )
+}
 
 const IndexPageContent = () => {
-  const dispatch = useDispatch();
-  const { data } = useSelector<BaseState, HomeStateType['home']>((state) => state.home);
+  const dispatch = useDispatch()
+  const { data } = useSelector<BaseState, HomeStateType['home']>((state) => state.home)
   const { loading, error, refresh } = useRequest(getHomeData, {
     manual: !!data.album,
     onSuccess: ({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      dispatch(set(res));
+      if (type === 1) throw Error(msg)
+      dispatch(set(res))
     },
-  });
+  })
 
-  if (loading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
+  if (loading) return <FullPageLoader />
+  if (error) return <FullPageError refresh={refresh} />
   return (
     <>
       <TabNavigationBar />
@@ -176,8 +179,8 @@ const IndexPageContent = () => {
         </View>
       </View>
     </>
-  );
-};
+  )
+}
 
 export default () => {
   return (
@@ -185,5 +188,5 @@ export default () => {
       <IndexPageContent />
       <CustomTabBar />
     </>
-  );
-};
+  )
+}
