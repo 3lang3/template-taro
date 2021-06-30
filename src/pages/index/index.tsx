@@ -2,7 +2,7 @@ import { View, Image as TaroImage } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
-import { navigateTo, usePullDownRefresh } from '@tarojs/taro';
+import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import { useRequest } from 'ahooks';
@@ -120,7 +120,7 @@ const LatestNews = ({ data = [] }: { data: any[] }) => {
   );
 };
 
-export default () => {
+const IndexPageContent = () => {
   const dispatch = useDispatch();
   const { data } = useSelector<BaseState, HomeStateType['home']>((state) => state.home);
   const { loading, error, refresh } = useRequest(getHomeData, {
@@ -130,8 +130,6 @@ export default () => {
       dispatch(set(res));
     },
   });
-  // 下拉页面刷新
-  usePullDownRefresh(refresh);
 
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
@@ -177,6 +175,14 @@ export default () => {
           <LatestNews data={data.trends} />
         </View>
       </View>
+    </>
+  );
+};
+
+export default () => {
+  return (
+    <>
+      <IndexPageContent />
       <CustomTabBar />
     </>
   );
