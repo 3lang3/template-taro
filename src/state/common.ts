@@ -39,15 +39,13 @@ export function getUser(): any {
 
 // reducers
 export type UserStateType = {
-  user: {
-    loading: boolean
-    error: boolean
-    done: boolean
-    userInfo: boolean
-    data: any
-  }
+  loading: boolean
+  error: boolean
+  done: boolean
+  userInfo: boolean
+  data: any
 }
-const INITIAL_STATE: UserStateType['user'] = {
+const INITIAL_STATE: UserStateType = {
   loading: false,
   error: false,
   done: false,

@@ -9,8 +9,7 @@ import { useRequest } from 'ahooks'
 import { getHomeData } from '@/services/home'
 import { FullPageLoader, FullPageError } from '@/components/Chore'
 import { useDispatch, useSelector } from 'react-redux'
-import { HomeStateType, set } from '@/state/home'
-import { BaseState } from '@/state/home.d'
+import { set } from '@/state/home'
 
 import './index.less'
 
@@ -125,7 +124,7 @@ const LatestNews = ({ data = [] }: { data: any[] }) => {
 
 const IndexPageContent = () => {
   const dispatch = useDispatch()
-  const { data } = useSelector<BaseState, HomeStateType['home']>((state) => state.home)
+  const { data } = useSelector((state) => state.home)
   const { loading, error, refresh } = useRequest(getHomeData, {
     manual: !!data.album,
     onSuccess: ({ data: res, type, msg }) => {
