@@ -1,5 +1,5 @@
 import type { MessageListResType } from '@/services/message'
-import type { MessageState } from '@/state/message.d'
+import type { MessageStateType } from '@/state/message.d'
 
 // const
 const SETMESSAGELIST = 'SETMESSAGELIST'
@@ -13,7 +13,7 @@ export const setList = (payload: MessageListResType['_list']) => {
 }
 
 // reducers
-const INITIAL_STATE: MessageState['message'] = {
+const INITIAL_STATE: MessageStateType = {
   list: [],
 }
 

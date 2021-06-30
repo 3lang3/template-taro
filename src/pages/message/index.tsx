@@ -7,13 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRequest, useUpdate } from 'ahooks'
 import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message'
 import { setList } from '@/state/message'
-import type { MessageState } from '@/state/message.d'
 import './index.less'
 
 export default function Index() {
   const dispatch = useDispatch()
   const update = useUpdate()
-  const { list } = useSelector<MessageState, MessageState['message']>((state) => state.message)
+  const { list } = useSelector((state) => state.message)
   const { loading, error, refresh } = useRequest(getMessageList, {
     onSuccess: ({ data: res, type, msg }) => {
       if (type === 1) throw Error(msg)
