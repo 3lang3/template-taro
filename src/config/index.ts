@@ -1,5 +1,5 @@
-import development from "./env/development";
-import production from "./env/production";
+import development from './env/development';
+import production from './env/production';
 
 export type ConfigType = {
   api: {
@@ -12,12 +12,12 @@ export type ConfigType = {
   tokenKey: string;
 };
 
-const config: ConfigType = {
+const config = {
   development,
   production,
-}[process.env.NODE_ENV];
+}[process.env.NODE_ENV as string] as ConfigType;
 
 export default {
   ...config,
-  tokenKey: 'authorization'
+  tokenKey: 'authorization',
 };
