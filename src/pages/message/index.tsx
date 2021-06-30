@@ -1,16 +1,27 @@
-import { useEffect } from 'react';
-import Flex from '@/components/Flex';
-import Typography from '@/components/Typography';
-import { View } from '@tarojs/components';
-import { navigateTo } from '@tarojs/taro';
-import { connect } from 'react-redux';
-import { setListAsync } from '@/state/message';
-import './index.less';
+import Flex from '@/components/Flex'
+import Typography from '@/components/Typography'
+import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { View } from '@tarojs/components'
+import { navigateTo } from '@tarojs/taro'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRequest } from 'ahooks';
+import { getMessageList } from '@/services/message'
+import { setList } from '@/state/message'
+import type { MessageState } from '@/state/message.d'
+import './index.less'
 
-function Index({ setListAsync, list }) {
-  useEffect(() => {
-    setListAsync();
-  }, []);
+export default function Index() {
+  const dispatch = useDispatch()
+  const { list } = useSelector<MessageState, MessageState['message']>((state) => state.message)
+  const { loading, error, refresh } = useRequest(getMessageList, {
+    // manual: list.length !== 0,
+    onSuccess: ({ data: res, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      dispatch(setList(res._list));
+    },
+  });
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <>
       <View className="p-default text-right">
@@ -37,16 +48,5 @@ function Index({ setListAsync, list }) {
         ))}
       </View>
     </>
-  );
+  )
 }
-
-export default connect(
-  ({ message }: { message: any }) => {
-    return message;
-  },
-  (dispatch) => ({
-    setListAsync() {
-      dispatch(setListAsync() as any);
-    },
-  }),
-)(Index);
