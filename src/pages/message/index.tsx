@@ -1,10 +1,10 @@
 import Flex from '@/components/Flex'
 import Typography from '@/components/Typography'
-import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { FullPageLoader, FullPageError } from '@/components/Chore'
 import { View } from '@tarojs/components'
 import { navigateTo } from '@tarojs/taro'
 import { useDispatch, useSelector } from 'react-redux'
-import { useRequest } from 'ahooks';
+import { useRequest } from 'ahooks'
 import { getMessageList } from '@/services/message'
 import { setList } from '@/state/message'
 import type { MessageState } from '@/state/message.d'
@@ -16,20 +16,21 @@ export default function Index() {
   const { loading, error, refresh } = useRequest(getMessageList, {
     // manual: list.length !== 0,
     onSuccess: ({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      dispatch(setList(res._list));
+      if (type === 1) throw Error(msg)
+      dispatch(setList(res._list))
     },
-  });
-  if (loading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
+  })
+  if (loading) return <FullPageLoader />
+  if (error) return <FullPageError refresh={refresh} />
   return (
     <>
       <View className="p-default text-right">
         <Typography.Text type="secondary">全部已读</Typography.Text>
       </View>
       <View className="message-container">
-        {list.map(({ content: { title, message }, created_at }) => (
+        {list.map(({ content: { title, message }, created_at }, i) => (
           <View
+            key={i}
             onClick={() => navigateTo({ url: '/pages/message/detail' })}
             className="message-item message-item--dot"
           >
