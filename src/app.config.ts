@@ -1,9 +1,9 @@
 export default {
   pages: [
-    // 消息通知
-    'pages/message/index',
     // 首页
     'pages/index/index',
+    // 消息通知
+    'pages/message/index',
     // 曲库
     'pages/lib/index',
     // 我的

@@ -20,12 +20,15 @@ export default function Index() {
       dispatch(setList(res._list))
     },
   })
+  const onReadAll = () => {}
   if (loading) return <FullPageLoader />
   if (error) return <FullPageError refresh={refresh} />
   return (
     <>
       <View className="p-default text-right">
-        <Typography.Text type="secondary">全部已读</Typography.Text>
+        <Typography.Text onClick={onReadAll} type="secondary">
+          全部已读
+        </Typography.Text>
       </View>
       <View className="message-container">
         {list.map(({ content: { title, message }, created_at }, i) => (

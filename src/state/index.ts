@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import user from './user'
+import user from './common'
 import navigation from './navigation'
 import message from './message'
 import home from './home'
