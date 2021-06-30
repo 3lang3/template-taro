@@ -33,7 +33,7 @@
   "lint-staged": {
     "**/*.less": "stylelint --syntax less",
     "*.ts?(x)": [
-      "eslint --ext"
+      "eslint --cache --format=pretty"
     ],
     "*.{ts,tsx,js,jsx,less,md,json}": [
       "prettier --write"
