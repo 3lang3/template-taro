@@ -23,9 +23,23 @@ export function getMessageList(): Promise<PromiseResponseType<MessageListResType
   })
 }
 
-// 清空所有消息
+// 清除所有消息红点提醒
 export function clearMessageRemind(): Promise<PromiseResponseType<MessageListResType>> {
   return request('/message/clearMessageRemind', {
-    method: 'GET',
+    method: 'POST',
   })
+}
+
+// 已读消息
+export function readMessageRemind(data: {
+  id: number
+}): Promise<PromiseResponseType<MessageListResType>> {
+  return request(
+    '/message/readMessageRemind',
+    {
+      method: 'POST',
+      data,
+    },
+    false,
+  )
 }
