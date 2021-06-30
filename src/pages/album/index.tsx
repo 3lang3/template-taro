@@ -1,40 +1,42 @@
-import Flex from '@/components/Flex'
-import Typography from '@/components/Typography'
-import { TabNavigationBar } from '@/components/CustomNavigation'
-import Image from '@/components/Image'
-import { navigateTo, useRouter } from '@tarojs/taro'
-import { View, Image as TaroImage } from '@tarojs/components'
-import { getMusicAlbumDetail } from '@/services/album'
-import { FullPageError, FullPageLoader } from '@/components/Chore'
-import { useRequest } from 'ahooks'
-import './index.less'
-
-const demoData = [
-  { author: '易烊千玺', title: '39km' },
-  { author: '野花', title: '39km' },
-  { author: '38.7km', title: '39km' },
-  { author: '爱情鸟', title: '39km' },
-  { author: '亲密爱人', title: '39km' },
-  { author: 'PingFangSC', title: '39km' },
-  { author: '易烊千玺', title: '39km' },
-]
+import { useEffect } from 'react';
+import Flex from '@/components/Flex';
+import Typography from '@/components/Typography';
+import { TabNavigationBar } from '@/components/CustomNavigation';
+import Image from '@/components/Image';
+import { navigateTo, useRouter } from '@tarojs/taro';
+import { View, Image as TaroImage } from '@tarojs/components';
+import { FullPageError, FullPageLoader } from '@/components/Chore';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAlbumDetail } from '@/state/album';
+import './index.less';
 
 export default () => {
-  const { params } = useRouter()
-  const { loading, error, refresh } = useRequest(getMusicAlbumDetail, {
-    defaultParams: [{ album_ids: params.ids }],
-    onSuccess: ({ type, msg }) => {
-      if (type === 1) throw Error(msg)
-    },
-  })
-  if (loading) return <FullPageLoader />
-  if (error) return <FullPageError refresh={refresh} />
+  const { params } = useRouter();
+
+  const dispatch = useDispatch();
+  const { albumEunm } = useSelector((state) => state.album);
+  const { data, loading = true, error, done } = albumEunm[params.ids as string] || {};
+
+  useEffect(() => {
+    if (!data || !done) {
+      dispatch(getAlbumDetail({ album_ids: params.ids as string }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading) return <FullPageLoader />;
+  if (error)
+    return (
+      <FullPageError
+        refresh={() => dispatch(getAlbumDetail({ album_ids: params.ids as string }))}
+      />
+    );
   return (
     <>
       <TabNavigationBar title="专辑" />
 
       <Flex className="album-header" align="start">
-        <Image className="album-header__cover" src="" />
+        <Image className="album-header__cover" src={data.album_image} />
         <Flex direction="column" align="start" justify="between" className="album-header__content">
           <TaroImage
             src={require('@/assets/icon/album_share.svg')}
@@ -42,21 +44,21 @@ export default () => {
           />
           <View>
             <Typography.Text className="mb15" strong size="lg" type="light">
-              后座剧场
+              {data.album_name}
             </Typography.Text>
-            <Typography.Text type="light">易烊千玺</Typography.Text>
+            <Typography.Text type="light">{data.singer_name}</Typography.Text>
           </View>
           <View style={{ width: '100%', overflow: 'hidden' }}>
             <Typography.Text className="mb15" size="sm" type="light">
-              发行时间:2021.05.20
+              发行时间:{data.issue_date}
             </Typography.Text>
             <Flex
-              onClick={() => navigateTo({ url: '/pages/album-detail/index' })}
+              onClick={() => navigateTo({ url: `/pages/album-detail/index?ids=${params.ids}` })}
               style={{ width: '100%', overflow: 'hidden' }}
               justify="between"
             >
               <Typography.Text size="sm" type="light" ellipsis>
-                人们难辩过去何时成为过去,却能牢记过去的样子——从北二环到昌平近40公里,10年后的他,将这个印象深刻的儿时交付,又从斑斓浩瀚的音乐光谱中,精选与自我共振频率最高的6首经单作品~
+                {data.desc}
               </Typography.Text>
               <View className="album-header__right at-icon at-icon-chevron-right" />
             </Flex>
@@ -64,18 +66,22 @@ export default () => {
         </Flex>
       </Flex>
       <View className="album-body">
-        {demoData.map((item, i) => (
-          <Flex key={i} className="album-body__item">
+        {data.song.map((item, i) => (
+          <Flex
+            key={i}
+            className="album-body__item"
+            onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${item.ids}` })}
+          >
             <View className="album-body__item-index">{i + 1}</View>
             <View className="album-body__item-content">
-              <Typography.Title level={3}>{item.title}</Typography.Title>
+              <Typography.Title level={3}>{item.song_name}</Typography.Title>
               <Typography.Text size="sm" type="secondary">
-                {item.author}
+                {item.singer}
               </Typography.Text>
             </View>
           </Flex>
         ))}
       </View>
     </>
-  )
-}
+  );
+};

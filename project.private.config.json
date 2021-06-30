@@ -63,7 +63,7 @@
         {
           "name": "pages/album-detail/index",
           "pathName": "pages/album-detail/index",
-          "query": "",
+          "query": "ids=123",
           "scene": null
         },
         {
