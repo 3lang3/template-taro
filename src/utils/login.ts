@@ -28,8 +28,7 @@ export async function userLogin(opts: getUserProfile.Option) {
   const { userInfo } = await getUserProfile(opts);
   setStorageSync(config.storage.userInfo, userInfo);
   const code = getStorageSync(config.storage.code);
-  const { type, msg, data } = await wxMiniProgramLogin({ userInfo, code, mobile: '123' });
-  if (type === 1) throw Error(msg);
+  const { data } = await wxMiniProgramLogin({ userInfo, code, mobile: '123' });
   // token写入本地
   setStorageSync(config.storage.tokenKey, data.token);
   store.dispatch(getProfile(userInfo));

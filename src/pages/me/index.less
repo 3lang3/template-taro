@@ -42,6 +42,8 @@ page {
         width: 30px;
         height: 30px;
         margin-right: 4px;
+        color: @primary;
+        font-size: 32px;
       }
     }
   }
@@ -51,13 +53,26 @@ page {
   &-item {
     box-sizing: border-box;
     width: 100%;
+    height: auto;
     margin-bottom: 24px;
     padding: 36px 24px;
     background: @white;
+    border: none;
     border-radius: 12px;
+
+    .at-button {
+      &__text {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+      }
+    }
 
     &__content {
       flex: 1;
+      color: @gray-8;
     }
 
     &__title {
@@ -68,10 +83,14 @@ page {
       width: 84px;
       height: 84px;
       margin-right: 20px;
+      color: #ed513b;
+      font-size: 80px;
     }
     &__action {
       width: 36px;
       height: 36px;
+      color: @gray-8;
+      font-size: 32px;
     }
   }
 }
@@ -99,6 +118,7 @@ page {
       width: 60px;
       height: 60px;
       margin-bottom: 8px;
+      font-size: 58px;
     }
   }
   &__item--fake {

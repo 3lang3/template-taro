@@ -62,6 +62,7 @@ const generateRequest = (prefix: string) => {
             myToast(data.msg, isToast);
             reject(new Error(`request error: ${statusCode}`));
           }
+          // 对于type=1的请求统一处理
           if (data.type === 1) {
             myToast(data.msg, isToast);
             reject(new Error(data.msg));

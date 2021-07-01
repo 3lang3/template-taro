@@ -10,6 +10,7 @@ import { getHomeData } from '@/services/home';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
 import { useDispatch, useSelector } from 'react-redux';
 import { set } from '@/state/home';
+import Icon from '@/components/Icon';
 
 import './index.less';
 
@@ -88,21 +89,13 @@ const LatestNewsItem = (props) => {
       </Typography.Text>
       <View className="latest-news-item__footer">
         <View className="latest-news-item__footer-item">
-          <TaroImage
-            mode="aspectFit"
-            className="latest-news-item__icon"
-            src={require('@/assets/icon/clock_outline.svg')}
-          />
+          <Icon icon="icon-shouye_shijian" className="latest-news-item__icon" />
           <Typography.Text size="sm" type="secondary">
             {props.publish_time}
           </Typography.Text>
         </View>
         <View className="latest-news-item__footer-item">
-          <TaroImage
-            mode="aspectFit"
-            className="latest-news-item__icon"
-            src={require('@/assets/icon/eye_outline.svg')}
-          />
+          <Icon icon="icon-shouye_chakan" className="latest-news-item__icon" />
           <Typography.Text size="sm" type="secondary">
             {props.read_number}
           </Typography.Text>
@@ -168,6 +161,7 @@ const IndexPageContent = () => {
               size="sm"
             >
               更多
+              <Icon icon="icon-icon_jinru" size="24" />
             </Typography.Text>
           </View>
           <HotSong data={data.hotSongList} />

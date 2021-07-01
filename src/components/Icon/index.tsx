@@ -19,8 +19,8 @@ type CustomIconProps = {
 export default ({ icon, color, size, className, ...props }: CustomIconProps) => {
   return (
     <Text
-      className={cls(className, 'iconfont', icon)}
-      style={{ color, fontSize: size }}
+      className={cls(className, 'iconfont', 'icon--center', icon)}
+      style={{ color, fontSize: `${size}rpx` }}
       {...props}
     />
   );
