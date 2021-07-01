@@ -7,3 +7,4 @@ node_modules/
 .eslintcache
 .env
 .env.local
+/src/config/env/development.ts
