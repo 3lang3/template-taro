@@ -9,7 +9,7 @@ export type ConfigType = {
   };
   cdn: string;
   plugin: string;
-  tokenKey: string;
+  storage: Record<string, string>;
 };
 
 const config = {
@@ -19,5 +19,12 @@ const config = {
 
 export default {
   ...config,
-  tokenKey: 'authorization',
+  storage: {
+    // token
+    tokenKey: 'authorization',
+    // getUserProfile local storage key
+    userInfo: 'userInfo',
+    // wx.login return code value local storage key
+    code: 'code',
+  },
 };

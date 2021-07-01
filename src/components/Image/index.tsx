@@ -5,7 +5,7 @@ import type { ImageProps } from '@tarojs/components/types/Image';
 export default ({ src, mode = 'aspectFill', ...props }: ImageProps) => {
   let finallySrc = src;
 
-  if (!/\^https?:\/\//.test(src)) {
+  if (!/^https?:\/\//.test(src)) {
     finallySrc = `${config.cdn}/${src}`;
   }
 

@@ -37,7 +37,7 @@ function myToast(title: string = '系统异常，请稍后重试', visible: bool
  */
 const generateRequest = (prefix: string) => {
   let header = {} as any;
-  const tk = getStorageSync(config.tokenKey);
+  const tk = getStorageSync(config.storage.tokenKey);
   if (tk) {
     header.authorization = tk;
   }
