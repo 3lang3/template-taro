@@ -20,8 +20,8 @@ export async function silentLogin() {
     // 检查wx.login登录态
     const available = await checkCodeSession();
     if (!available) throw new Error('wx.login登录态过期, 需重新登录');
-    const userInfo = getStorageSync(config.storage.userInfo);
-    store.dispatch(getUser(userInfo));
+    const localUserInfo = getStorageSync(config.storage.userInfo);
+    store.dispatch(getUser(localUserInfo));
   } catch (error) {
     console.warn('静默登录失败:', error);
   }

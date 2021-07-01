@@ -26,11 +26,12 @@ export const getProfile = (payload) => {
   };
 };
 
-export function getUser(userInfo?): any {
+export function getUser(localUserInfo?): any {
   return async (dispatch) => {
     try {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
+      const userInfo = localUserInfo || { avatarUrl: data.avatar, nickName: data.nickname };
       dispatch({ type: DONE, payload: { data, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
