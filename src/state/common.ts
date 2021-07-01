@@ -2,6 +2,7 @@
 
 import config from '@/config';
 import { getCurrentUser } from '@/services/common';
+import type { UserInfo } from '@tarojs/taro';
 import { removeStorageSync } from '@tarojs/taro';
 
 // const
@@ -42,7 +43,7 @@ export type CommonStateType = {
   loading: boolean;
   error: boolean;
   done: boolean;
-  userInfo: Record<string, any>;
+  userInfo: UserInfo;
   data: any;
 };
 const INITIAL_STATE: CommonStateType = {
@@ -50,7 +51,7 @@ const INITIAL_STATE: CommonStateType = {
   error: false,
   done: false,
   // wx.getUserProfile获取到的用户数据
-  userInfo: {},
+  userInfo: {} as UserInfo,
   // 服务端返回的用户数据
   data: {},
 };

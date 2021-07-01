@@ -1,4 +1,5 @@
 import cls from 'classnames';
+import { useSelector } from 'react-redux';
 import { CoverImage, CoverView, View } from '@tarojs/components';
 import { getCurrentInstance, useRouter, switchTab } from '@tarojs/taro';
 import './index.less';
@@ -29,19 +30,27 @@ const {
 } = getCurrentInstance() as unknown as { app: AppInstance };
 
 export default () => {
+  // 未登录状态无法查看曲库页面
+  const { done } = useSelector((state) => state.common);
+
   const router = useRouter();
 
   const handleClick = (item: TabbarListItem) => {
     switchTab({ url: '/' + item.pagePath });
   };
   const idx = getInitialTabIdx(router.path);
+
   return (
     <>
-      <CoverView className="custom-tabbar">
+      <CoverView
+        className={cls('custom-tabbar', {
+          'custom-tabbar--nologin': !done,
+        })}
+      >
         {tabBar.list.map((item, i) => (
           <CoverView
             key={item.pagePath}
-            className={cls('custom-tabbar--item', {
+            className={cls('custom-tabbar__item', {
               'custom-tabbar__item-ac': idx === i,
             })}
             onClick={() => handleClick(item)}
