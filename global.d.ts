@@ -1,5 +1,3 @@
-import type { ApplicationState } from './src/state/index.d';
-
 declare module '*.png';
 declare module '*.gif';
 declare module '*.jpg';
@@ -19,7 +17,6 @@ declare const process: {
   };
 };
 
-// @hack 覆盖全局DefaultRootState 避免useSelector时state类型丢失
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState {}
+interface Window {
+  __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any;
 }

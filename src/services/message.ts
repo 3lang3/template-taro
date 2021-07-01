@@ -1,21 +1,13 @@
 import request, { PromiseResponseType } from '@/utils/request';
-import type { listParams } from './common.d';
+import type { listParams, ListResType } from './common.d';
 
-export type MessageListResType = {
-  _page: {
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    totalPage: number;
-  };
-  _list: {
-    content: any;
-    show_created_at: string;
-    is_read: number;
-    id: number;
-    created_at: string;
-  }[];
-};
+export type MessageListResType = ListResType<{
+  content: any;
+  show_created_at: string;
+  is_read: number;
+  id: number;
+  created_at: string;
+}>;
 
 // 消息列表
 export function getMessageList(data: listParams): Promise<PromiseResponseType<MessageListResType>> {

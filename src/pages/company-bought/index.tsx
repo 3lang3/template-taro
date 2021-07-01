@@ -1,9 +1,11 @@
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { ManageSongItem } from '@/components/Chore';
 import { AtInput, AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useState } from 'react';
+import { useRequest } from 'ahooks';
+import { getBuySongList } from '@/services/company-bought';
+import { FullPageLoader, FullPageError, ManageSongItem } from '@/components/Chore';
 import './index.less';
 
 const songsData = [
@@ -14,7 +16,13 @@ const songsData = [
 ];
 
 export default () => {
-  const [singer, setSinger] = useState<any>('');
+  const { loading, error, refresh } = useRequest(getBuySongList, {
+    defaultParams: [{ page: 1, pageSize: 10 }],
+    onSuccess: (res) => {
+      console.log(res);
+    },
+  });
+  const [singer, setSinger] = useState<string | number>('');
   const [visible, setVisible] = useState(false);
   const onSingerClick = () => {
     setVisible(true);
@@ -27,6 +35,8 @@ export default () => {
     console.log(singer);
     closeModal();
   };
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <>
       {songsData.map((song, i) => (
@@ -50,7 +60,7 @@ export default () => {
           <Flex className="input--border">
             <AtInput
               placeholder="请选择歌手"
-              value={singer}
+              value={singer as any}
               name="singer"
               onChange={(v) => setSinger(v)}
             />
