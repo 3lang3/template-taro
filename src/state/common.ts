@@ -26,12 +26,12 @@ export const getProfile = (payload) => {
   };
 };
 
-export function getUser(): any {
+export function getUser(userInfo?): any {
   return async (dispatch) => {
     try {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
-      dispatch({ type: DONE, payload: data });
+      dispatch({ type: DONE, payload: { data, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
     }
@@ -73,7 +73,8 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         loading: false,
         error: false,
         done: true,
-        data: payload,
+        data: payload.data,
+        userInfo: payload?.userInfo,
       };
     case ERROR:
       return {

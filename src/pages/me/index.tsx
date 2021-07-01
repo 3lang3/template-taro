@@ -7,9 +7,9 @@ import Typography from '@/components/Typography';
 import { getHomePageDetail, MePageResType } from '@/services/me';
 import { userLogin } from '@/utils/login';
 import { Image, View } from '@tarojs/components';
-import { getStorageSync, hideToast, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
+import { getStorageSync, navigateTo, reLaunch, setStorageSync, showToast } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 
@@ -26,32 +26,12 @@ export default () => {
   const { done: isLogin, userInfo } = useSelector((state) => state.common);
   const [visible, setVisible] = useState(false);
   // 请求页面展示信息
-  const { data: { data: page } = { data: {} as MePageResType }, ...detailReq } = useRequest(
-    getHomePageDetail,
-    {
-      manual: true,
-    },
-  );
-
-  useEffect(() => {
-    const getDetail = async () => {
-      try {
-        showToast({ icon: 'loading', title: '加载中' });
-        const { data } = await detailReq.run();
-        hideToast();
-        console.log(data);
-      } catch (error) {
-        hideToast();
-      }
-    };
-    if (isLogin) {
-      getDetail();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin]);
+  const { data: { data: page } = { data: {} as MePageResType } } = useRequest(getHomePageDetail, {
+    manual: !isLogin,
+  });
 
   // 用户登录
-  const onLoginClick = async () => {
+  const onUserProfile = async () => {
     // 已登录 跳转修改资料页面
     if (isLogin) {
       navigateTo({ url: '/pages/profile/index' });
@@ -59,8 +39,10 @@ export default () => {
     }
     try {
       await userLogin({ desc: '获取用户信息' });
+      // 登录完成 重启页面
+      reLaunch({ url: '/pages/me/index' });
     } catch (error) {
-      console.log(error);
+      showToast({ icon: 'none', title: error.message });
     }
   };
   // 申请点击
@@ -72,6 +54,7 @@ export default () => {
     }
     // 未绑定手机号
     if (!page.mobile) return;
+    // 根据identity分发路由
     let url = `/pages/settlein/index?identity=${identity}`;
     if (page?.audit_info?.identity === identity) url += '&status=audit';
     navigateTo({ url });
@@ -111,14 +94,15 @@ export default () => {
             className="me-header__avatar"
             src={isLogin ? userInfo.avatarUrl : require('@/assets/icon/avatar_default.svg')}
           />
-          <Flex align="start" direction="column">
-            <Typography.Text className="mb10" type="light" size="xl">
+          <View style={{ flex: 1 }}>
+            <Typography.Text className={isLogin ? 'mb10' : undefined} type="light" size="xl">
               {isLogin ? userInfo.nickName : '未登录'}
             </Typography.Text>
-            <Button onClick={onLoginClick} circle outline type="light" size="xs">
-              {isLogin ? '编辑资料' : '立即登录'}
-            </Button>
-          </Flex>
+            {isLogin && <Typography.Text type="light">ID: {page.ids}</Typography.Text>}
+          </View>
+          <Button onClick={onUserProfile} circle outline type="light" size="xs">
+            立即登录
+          </Button>
         </Flex>
         {/* 需要对应身份 */}
         {isLogin && (
@@ -231,7 +215,10 @@ export default () => {
             </View>
             <Icon icon="icon-icon_jinru" className="me-card-item__action" />
           </Button>
-          <Flex className="me-card-item">
+          <Flex
+            className="me-card-item"
+            onClick={() => showToast({ icon: 'none', title: '暂未开放,敬请期待' })}
+          >
             <Icon icon="icon-wode_icon_jigou" className="me-card-item__icon" />
             <View className="me-card-item__content">
               <Typography.Title level={3} className="me-card-item__title">

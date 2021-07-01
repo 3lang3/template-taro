@@ -3,6 +3,10 @@ import type { PromiseResponseType } from '@/utils/request';
 
 export type MePageResType = {
   /**
+   * 会员id
+   */
+  ids: number;
+  /**
    * 用户身份
    * - 0 普通用户
    * - 1 词曲作者
