@@ -59,8 +59,8 @@ const INITIAL_STATE: CommonStateType = {
 export default function common(state = INITIAL_STATE, { type, payload }) {
   switch (type) {
     case LOGOUT:
-      removeStorageSync(config.storage.tokenKey);
-      removeStorageSync(config.storage.userInfo);
+      // rm storage values
+      Object.values(config.storage).forEach((key) => removeStorageSync(key));
       return INITIAL_STATE;
     case LOADING:
       return {
