@@ -8,17 +8,25 @@ type ButtonProps = {
   outline?: boolean;
   inline?: boolean;
   size?: 'xs' | 'sm' | 'md' | 'lg';
-  type?: 'default' | 'danger' | 'primary' | 'secondary' | 'light';
+  type?: 'default' | 'danger' | 'primary' | 'secondary' | 'light' | 'disabled';
   children?: React.ReactNode;
 } & Omit<AtButtonProps, 'size' | 'type'>;
 
-export default ({ className, inline, outline, size = 'md', type = 'default', marginAuto = true, ...props }: ButtonProps) => {
+export default ({
+  className,
+  inline,
+  outline,
+  size = 'md',
+  type = 'default',
+  marginAuto = true,
+  ...props
+}: ButtonProps) => {
   return (
     <AtButton
       className={cls(className, 'custom-button', `button-size--${size}`, `button-type--${type}`, {
         'button--outline': outline,
         'button--inline': inline,
-        'm0': !marginAuto
+        m0: !marginAuto,
       })}
       {...props}
     ></AtButton>

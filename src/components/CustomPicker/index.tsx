@@ -40,6 +40,7 @@ type CustomPickerProps = {
    * 是否联级模式
    */
   cascade?: boolean;
+  disabled?: boolean;
 };
 
 export default function CustomPicker({
@@ -52,6 +53,7 @@ export default function CustomPicker({
   mode = 'multiSelector',
   arrow,
   cascade,
+  disabled,
   ...props
 }: CustomPickerProps) {
   const [range, setRange] = useState(() =>
@@ -85,6 +87,7 @@ export default function CustomPicker({
   }, [value]);
 
   const _change = ({ detail }) => {
+    if (disabled) return;
     innerEffect.current = true;
     setInnerState(detail.value);
     if (onChange) {
@@ -93,6 +96,7 @@ export default function CustomPicker({
     }
   };
   const _columnChange = ({ detail }) => {
+    if (disabled) return;
     if (mode !== 'multiSelector' || !cascade) return;
     if (detail.column === range.length - 1) return;
     let newValue = JSON.parse(JSON.stringify(pickerValue)) as any[];
@@ -111,6 +115,7 @@ export default function CustomPicker({
 
   return (
     <Picker
+      disabled={disabled}
       value={pickerValue}
       mode={mode as any}
       range={range}

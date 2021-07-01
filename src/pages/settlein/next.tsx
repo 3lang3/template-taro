@@ -1,61 +1,53 @@
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { showToast } from '@tarojs/taro';
-import { Image, View } from '@tarojs/components';
-import { useState } from 'react';
+import { eventCenter, hideToast, showToast, useRouter } from '@tarojs/taro';
+import { View } from '@tarojs/components';
+import { useEffect, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
 import SongUploader from '@/components/SongUploader';
+import CustomPicker from '@/components/CustomPicker';
 import { validateFields } from '@/utils/form';
+import { singerApply } from '@/services/settlein';
 import './index.less';
 
+const siteData = [
+  { name: 'QQ音乐', id: 1 },
+  { name: '酷狗音乐', id: 2 },
+  { name: '网易云音乐', id: 3 },
+  { name: '5sing', id: 4 },
+  { name: 'B站', id: 5 },
+  { name: '微博', id: 6 },
+  { name: '其他', id: 7 },
+];
+
 const fields = {
-  name: {
+  website_type: {
+    label: '站外信息',
+    rules: [{ required: true }],
+  },
+  song_url: {
     label: '真实姓名',
     rules: [{ required: true }],
   },
-  idcard: {
-    label: '身份证号码',
-    rules: [{ required: true }],
-  },
-  email: {
-    label: '邮箱',
-    rules: [
-      { required: true },
-      {
-        pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/,
-        message: '请输入正确的邮箱格式',
-      },
-    ],
-  },
-  area: {
-    label: '请选择所在地区',
-    rules: [
-      {
-        validator: (value: any) => {
-          if (!Array.isArray(value)) return false;
-          if (value.length < 2) return false;
-          return true;
-        },
-        message: '请选择所在地区',
-      },
-    ],
-  },
-  mobile: {
-    label: '手机号',
-    rules: [{ required: true }, { pattern: /^\d{11}$/, message: '手机号码格式不正确' }],
-  },
-  code: {
-    label: '验证码',
-    rules: [{ required: true }, { pattern: /^\d{5}$/, message: '验证码只接受5位数字' }],
-  },
+};
+
+type SettleNextPageParams = {
+  status: 'audit';
 };
 
 export default () => {
+  const router: { params: SettleNextPageParams } = useRouter();
+  const { params } = router;
+  console.log(router);
+  // 审核状态
+  const isAudit = params.status === 'audit';
+
   const [visible, setVisible] = useState(false);
   const [payload, set] = useState({
-    name: '',
+    song_url: '',
+    website_type: undefined,
     idcard: '',
     email: '',
     area: undefined,
@@ -64,22 +56,32 @@ export default () => {
     checked: [],
   });
 
+  useEffect(() => {
+    // @hack
+    if (isAudit) {
+      eventCenter.once('page:message:settle-next', (response) => console.log(response));
+      eventCenter.trigger('page:init:settle');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const closeModal = () => {
     setVisible(false);
   };
-  const onSubmit = () => {
-    setVisible(true);
-    return;
-    const { checked, ...params } = payload;
-    const hasInvalidField = validateFields(params, fields);
+  const onSubmit = async () => {
+    const { checked, ...values } = payload;
+    const hasInvalidField = validateFields(values, fields);
     if (hasInvalidField) return;
     // 协议勾选
     if (!checked.length) {
       showToast({ title: '请勾选平台协议', icon: 'none' });
       return true;
     }
+
+    showToast({ icon: 'loading', title: '请求中...' });
+    await singerApply({ ...values, identity: 2 });
+    hideToast();
     setVisible(true);
-    console.log(params);
   };
 
   const onSongUpload = async (file) => {
@@ -91,18 +93,17 @@ export default () => {
       <Flex className="settlein-reason" align="start">
         <Typography.Text type="primary">您可选择其中一种方式，以便于我们审核！</Typography.Text>
       </Flex>
-      <AtForm className="settlein-form">
+      <AtForm className="settlein-form custom-form">
         <Typography.Text className="settlein-title">一、填写站外信息</Typography.Text>
         <View className="settlein-list">
-          <Flex className="settlein-list__item border" justify="between">
-            <Typography.Text className="settlein-list__item-title" type="secondary">
-              填写站外信息
-            </Typography.Text>
-            <Image
-              className="settlein-list__item-icon"
-              src={require('@/assets/icon/right_thin.svg')}
-            />
-          </Flex>
+          <CustomPicker
+            title="填写站外信息"
+            arrow
+            data={siteData}
+            mode="selector"
+            value={payload.website_type}
+            onChange={(value) => set((v: any) => ({ ...v, website_type: value }))}
+          />
           <Flex className="settlein-list__item">
             <Typography.Text className="settlein-list__item-title" type="secondary">
               请输入平台个人链接
@@ -111,11 +112,11 @@ export default () => {
           <View className="settlein-list__wrapper">
             <Flex className="input--border">
               <AtInput
-                name="name"
+                name="song_url"
                 type="text"
                 placeholder="https://www.tapd.cn/38927421/prong/stories11"
-                value={payload.name}
-                onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+                value={payload.song_url}
+                onChange={(value) => set((v: any) => ({ ...v, song_url: value }))}
               />
             </Flex>
           </View>

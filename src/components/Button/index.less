@@ -46,14 +46,22 @@
 }
 
 .button-type {
-
-
   &--light {
     color: @gray-8;
     background-color: @white;
     border-color: @white;
     &.button--outline {
       color: @white;
+    }
+  }
+
+  &--disabled {
+    color: @white;
+    background-color: @gray-6;
+    border-color: @gray-6;
+    opacity: 1 !important;
+    &.button--outline {
+      color: @gray-6;
     }
   }
 
