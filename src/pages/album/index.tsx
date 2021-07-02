@@ -4,8 +4,9 @@ import Typography from '@/components/Typography';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import Image from '@/components/Image';
 import { navigateTo, useRouter } from '@tarojs/taro';
-import { View, Image as TaroImage } from '@tarojs/components';
-import { FullPageError, FullPageLoader } from '@/components/Chore';
+import { View } from '@tarojs/components';
+import Icon from '@/components/Icon';
+import { Empty, FullPageError, FullPageLoader } from '@/components/Chore';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAlbumDetail } from '@/state/album';
 import './index.less';
@@ -35,52 +36,60 @@ export default () => {
     <>
       <TabNavigationBar title="专辑" />
 
-      <Flex className="album-header" align="start">
-        <Image className="album-header__cover" src={data.album_image} />
-        <Flex direction="column" align="start" justify="between" className="album-header__content">
-          <TaroImage
-            src={require('@/assets/icon/album_share.svg')}
-            className="album-header__share"
-          />
-          <View>
-            <Typography.Text className="mb15" strong size="lg" type="light">
-              {data.album_name}
-            </Typography.Text>
-            <Typography.Text type="light">{data.singer_name}</Typography.Text>
-          </View>
-          <View style={{ width: '100%', overflow: 'hidden' }}>
-            <Typography.Text className="mb15" size="sm" type="light">
-              发行时间:{data.issue_date}
-            </Typography.Text>
-            <Flex
-              onClick={() => navigateTo({ url: `/pages/album-detail/index?ids=${params.ids}` })}
-              style={{ width: '100%', overflow: 'hidden' }}
-              justify="between"
-            >
-              <Typography.Text size="sm" type="light" ellipsis>
-                {data.desc}
-              </Typography.Text>
-              <View className="album-header__right at-icon at-icon-chevron-right" />
-            </Flex>
-          </View>
-        </Flex>
-      </Flex>
-      <View className="album-body">
-        {data.song.map((item, i) => (
+      <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-header__bg">
+        <Flex className="album-header" align="start">
+          <Image className="album-header__cover" src={data.album_image} />
           <Flex
-            key={i}
-            className="album-body__item"
-            onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${item.ids}` })}
+            direction="column"
+            align="start"
+            justify="between"
+            className="album-header__content"
           >
-            <View className="album-body__item-index">{i + 1}</View>
-            <View className="album-body__item-content">
-              <Typography.Title level={3}>{item.song_name}</Typography.Title>
-              <Typography.Text size="sm" type="secondary">
-                {item.singer}
+            <Icon icon="icon-shouye_zhaunji_fenxiang" className="album-header__share" />
+            <View>
+              <Typography.Text className="mb15" strong size="lg" type="light">
+                {data.album_name}
               </Typography.Text>
+              <Typography.Text type="light">{data.singer_name}</Typography.Text>
+            </View>
+            <View style={{ width: '100%', overflow: 'hidden' }}>
+              <Typography.Text className="mb15" size="sm" type="light">
+                发行时间:{data.issue_date}
+              </Typography.Text>
+              <Flex
+                onClick={() => navigateTo({ url: `/pages/album-detail/index?ids=${params.ids}` })}
+                style={{ width: '100%', overflow: 'hidden' }}
+                justify="between"
+              >
+                <Typography.Text size="sm" type="light" ellipsis>
+                  {data.desc}
+                </Typography.Text>
+                <Icon icon="icon-icon_jinru" className="album-header__right" />
+              </Flex>
             </View>
           </Flex>
-        ))}
+        </Flex>
+      </View>
+      <View className="album-body">
+        {Array.isArray(data.song) && data.song.length ? (
+          data.song.map((item, i) => (
+            <Flex
+              key={i}
+              className="album-body__item"
+              onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${item.ids}` })}
+            >
+              <View className="album-body__item-index">{i + 1}</View>
+              <View className="album-body__item-content">
+                <Typography.Title level={3}>{item.song_name}</Typography.Title>
+                <Typography.Text size="sm" type="secondary">
+                  {item.singer}
+                </Typography.Text>
+              </View>
+            </Flex>
+          ))
+        ) : (
+          <Empty />
+        )}
       </View>
     </>
   );

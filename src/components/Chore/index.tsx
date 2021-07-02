@@ -164,3 +164,12 @@ export const FullPageError = ({ refresh }: FullPageErrorProps) => {
     </Flex>
   );
 };
+
+export const Empty = ({ message = '暂无相关数据' }) => {
+  return (
+    <Flex className="emptybox" direction="column" justify="center">
+      <Icon className="emptybox__icon" icon="icon-icon_qupu" />
+      <Typography.Text className="emptybox__text">{message}</Typography.Text>
+    </Flex>
+  );
+};

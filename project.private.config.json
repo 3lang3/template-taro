@@ -33,7 +33,7 @@
         {
           "name": "pages/settlein/index",
           "pathName": "pages/settlein/index",
-          "query": "identity=2",
+          "query": "identity=1&status=audit",
           "scene": null
         },
         {
@@ -57,7 +57,7 @@
         {
           "name": "pages/album/index",
           "pathName": "pages/album/index",
-          "query": "ids=123",
+          "query": "ids=514767083",
           "scene": null
         },
         {

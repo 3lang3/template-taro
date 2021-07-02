@@ -34,13 +34,11 @@ const fields = {
 };
 
 type SettleNextPageParams = {
-  status: 'audit';
+  status?: 'audit';
 };
 
 export default () => {
-  const router: { params: SettleNextPageParams } = useRouter();
-  const { params } = router;
-  console.log(router);
+  const { params } = useRouter<SettleNextPageParams>();
   // 审核状态
   const isAudit = params.status === 'audit';
 
@@ -57,7 +55,7 @@ export default () => {
   });
 
   useEffect(() => {
-    // @hack
+    // @hack 获取上一个页面传递的数据
     if (isAudit) {
       eventCenter.once('page:message:settle-next', (response) => console.log(response));
       eventCenter.trigger('page:init:settle');
@@ -69,6 +67,7 @@ export default () => {
     setVisible(false);
   };
   const onSubmit = async () => {
+    if (isAudit) return;
     const { checked, ...values } = payload;
     const hasInvalidField = validateFields(values, fields);
     if (hasInvalidField) return;
@@ -101,6 +100,7 @@ export default () => {
             arrow
             data={siteData}
             mode="selector"
+            disabled={isAudit}
             value={payload.website_type}
             onChange={(value) => set((v: any) => ({ ...v, website_type: value }))}
           />
@@ -112,6 +112,7 @@ export default () => {
           <View className="settlein-list__wrapper">
             <Flex className="input--border">
               <AtInput
+                disabled={isAudit}
                 name="song_url"
                 type="text"
                 placeholder="https://www.tapd.cn/38927421/prong/stories11"
@@ -131,34 +132,37 @@ export default () => {
             2、歌曲必须为mp3、wav、音质{'>'}320KBps,大小{'<'}100M
           </Typography.Text>
         </View>
-        <View className="custom-checkbox">
-          <AtCheckbox
-            onChange={(value) => set((v: any) => ({ ...v, checked: value }))}
-            selectedList={payload.checked}
-            options={[
-              {
-                value: 'checked',
-                label: (
-                  <Flex>
-                    <Typography.Text size="sm" type="secondary">
-                      我已阅读
-                    </Typography.Text>
-                    <Typography.Link size="sm">《平台协议》</Typography.Link>
-                  </Flex>
-                ) as unknown as string,
-              },
-            ]}
-          />
-        </View>
+        {!isAudit && (
+          <View className="custom-checkbox">
+            <AtCheckbox
+              onChange={(value) => set((v: any) => ({ ...v, checked: value }))}
+              selectedList={payload.checked}
+              options={[
+                {
+                  value: 'checked',
+                  label: (
+                    <Flex>
+                      <Typography.Text size="sm" type="secondary">
+                        我已阅读
+                      </Typography.Text>
+                      <Typography.Link size="sm">《平台协议》</Typography.Link>
+                    </Flex>
+                  ) as unknown as string,
+                },
+              ]}
+            />
+          </View>
+        )}
 
         <Button
           size="lg"
           className="settlein-form__submit"
           onClick={onSubmit}
           circle
-          type="primary"
+          disabled={isAudit}
+          type={isAudit ? 'disabled' : 'primary'}
         >
-          提交
+          {isAudit ? '审核中' : '提交'}
         </Button>
       </AtForm>
       <AtModal isOpened={visible} onClose={closeModal}>

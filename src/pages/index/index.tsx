@@ -16,7 +16,7 @@ const RcAlbumItem = (props) => {
   return (
     <View
       className="rc-album-item"
-      onClick={() => navigateTo({ url: `/pages/album/index?ids=${props.ids}` })}
+      onClick={() => navigateTo({ url: `/pages/album/index?ids=${props.album_ids}` })}
     >
       <Image className="rc-album-item__img" src={props.album_image} />
       <Typography.Text className="rc-album-item__title" ellipsis>
@@ -51,14 +51,17 @@ const HotSongItem = (props) => {
     );
   };
   return (
-    <View className="hot-song-item">
-      <View className="hot-song-item__rank">{rankRender(props.rank)}</View>
+    <View
+      className="hot-song-item"
+      onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${props.song_ids}` })}
+    >
+      <View className="hot-song-item__rank">{rankRender(props.sort)}</View>
       <View className="hot-song-item__content">
         <Typography.Text className="hot-song-item__title" ellipsis>
-          {props.title}
+          {props.song_name}
         </Typography.Text>
         <Typography.Text className="hot-song-item__author" size="sm" type="secondary" ellipsis>
-          {props.author}
+          {props.singer}
         </Typography.Text>
       </View>
     </View>

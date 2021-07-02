@@ -20,7 +20,7 @@ type CustomPickerProps = {
    * 如果是二维数组根据数组长度生成column列数
    */
   data: any[];
-  onChange: (value: any) => void;
+  onChange: (value: any, valueStr: string[]) => void;
   value: any;
   /**
    * 展示字段key
@@ -62,8 +62,10 @@ export default function CustomPicker({
   const [range, setRange] = useState(() =>
     getPickerData(data, value, { mode, nameKey, childrenKey, valueKey, cascade }),
   );
-  const [pickerValue, setPickerValue] = useState(() => getInitialValue(mode, cascade) as any);
-  const [titleStr, setTitleStr] = useState('');
+  const [pickerValue, setPickerValue] = useState(
+    () => value || (getInitialValue(mode, cascade) as any),
+  );
+  const [titleArr, setTitleArr] = useState<string[]>([]);
   const innerEffect = useRef(false);
 
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function CustomPicker({
     if (!value) {
       // 重置组件内部状态
       setPickerValue(getInitialValue(mode, cascade));
-      if (titleStr) setTitleStr('');
+      setTitleArr([]);
       return;
     }
     const pickerValueFromOuter = getPickerValueFromRes(data, value, {
@@ -102,7 +104,7 @@ export default function CustomPicker({
         valueKey,
         cascade,
       });
-      if (onChange) onChange(payload);
+      if (onChange) onChange(payload, titleArr);
     }
   };
   const _columnChange = ({ detail }) => {
@@ -125,14 +127,14 @@ export default function CustomPicker({
 
   const setInnerState = (pv) => {
     setPickerValue(pv);
-    const titleArr = getTitleFromPicker(data, pv, {
+    const newTitleArr = getTitleFromPicker(data, pv, {
       mode,
       nameKey,
       childrenKey,
       valueKey,
       cascade,
     });
-    setTitleStr(Array.isArray(titleArr) ? titleArr.join(' ') : titleArr);
+    setTitleArr(newTitleArr);
   };
 
   return (
@@ -147,7 +149,7 @@ export default function CustomPicker({
     >
       <AtListItem
         title={title}
-        extraText={titleStr}
+        extraText={Array.isArray(titleArr) ? titleArr.join(' ') : undefined}
         arrow={arrow && !value ? 'right' : undefined}
       />
     </Picker>
@@ -181,12 +183,16 @@ function getPickerData(
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;
     if (cascade) {
-      column = i === 0 ? data : a[pValue[i - 1]][childrenKey];
+      if (i > 0) {
+        const currentParent = a.find((el) => +el.id === pValue[i - 1]);
+        column = currentParent[childrenKey];
+      } else {
+        column = data;
+      }
     }
     rs.push(!column ? [] : column.map((el) => el[nameKey]));
     return column;
   }, []);
-
   return rs;
 }
 
@@ -244,14 +250,13 @@ function getPickerValueFromRes(
   serverValue: number | number[],
   opts?: Record<string, any>,
 ): number | number[] {
-  const { mode, childrenKey = 'children', valueKey = 'id', cascade } = opts || {};
+  const { mode, childrenKey, valueKey = 'id', cascade } = opts || {};
   if (mode !== 'multiSelector') {
     const singleColumnValue = data.findIndex((el) => +el[valueKey] === +serverValue);
     return singleColumnValue < 0 ? 0 : singleColumnValue;
   }
 
   const rs = [] as any[];
-
   (serverValue as []).reduce((a: any, v, i) => {
     let column = data[i] as any;
     if (cascade) {

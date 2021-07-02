@@ -68,22 +68,25 @@ type SettleInPageParams = {
 
 export default () => {
   const { params } = useRouter<SettleInPageParams>();
+
   console.log(params);
   // 是否已实名
   const hasCert = useRef(false);
+  // 区域文本值
+  const areaRef = useRef<string[]>([]);
   // 审核状态
   const isAudit = params.status === 'audit';
   // 歌手认证
   const isSinger = params.identity === '2';
 
   const [payload, set] = useState({
-    real_name: '12312',
-    idcard: '33313131',
-    email: '123112@qq.com',
-    area: undefined,
-    mobile: '13333333333',
+    real_name: '张煌',
+    idcard: '430302199006190010',
+    email: 'zhanghuang11211@qq.com',
+    area: [110000, 110100, 110114],
+    mobile: '13071856973',
     code: '12333',
-    checked: [true],
+    checked: [],
   });
 
   // 认证信息详情
@@ -94,6 +97,7 @@ export default () => {
   useEffect(() => {
     const getCertifica = async () => {
       const { data } = await certificaReq.run();
+      console.log(data);
       hasCert.current = true;
       set(data);
     };
@@ -112,6 +116,7 @@ export default () => {
   }, []);
 
   const onSubmit = async () => {
+    if (isAudit && !isSinger) return;
     const { checked, code, ...values } = payload;
     // 已实名 则不校验验证码
     const hasInvalidField = validateFields(hasCert.current ? values : { code, ...values }, fields);
@@ -136,7 +141,20 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请求中...' });
-    const { msg } = await singerApply({ ...values, identity: params.identity });
+    const { area, ...restValues } = values;
+    const [province, city, district] = area;
+    const postValues = {
+      province,
+      city,
+      district,
+      province_name: areaRef.current[0],
+      city_name: areaRef.current[1],
+      district_name: areaRef.current[2],
+      code,
+      identity: params.identity,
+      ...restValues,
+    };
+    const { msg } = await singerApply(postValues);
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
     navigateBack();
@@ -179,7 +197,11 @@ export default () => {
         <AreaPicker
           value={payload.area}
           disabled={isAudit}
-          onChange={(value) => set((v: any) => ({ ...v, area: value }))}
+          onChange={(value, titleStr) => {
+            set((v: any) => ({ ...v, area: value }));
+            console.log(titleStr);
+            areaRef.current = titleStr;
+          }}
         />
         <AtInput
           name="mobile"
