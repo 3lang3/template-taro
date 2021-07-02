@@ -148,6 +148,7 @@ export default function CustomPicker({
       {...props}
     >
       <AtListItem
+        disabled={disabled}
         title={title}
         extraText={Array.isArray(titleArr) ? titleArr.join(' ') : undefined}
         arrow={arrow && !value ? 'right' : undefined}
