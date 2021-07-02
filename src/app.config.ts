@@ -2,6 +2,8 @@ export default {
   pages: [
     // 首页
     'pages/index/index',
+    // 我要唱
+    'pages/my-song/index',
     // 消息通知
     'pages/message/index',
     // 曲库
