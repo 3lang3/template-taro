@@ -1,3 +1,5 @@
+@import '../../style/var.less';
+
 .page-index {
   flex-direction: column;
   width: 100%;
@@ -13,7 +15,7 @@
     left: 0;
     z-index: 0;
     height: 504px;
-    background: #aaa;
+    background: @gradient-primary;
   }
   &__wrapper {
     padding: 0 24px;
@@ -146,7 +148,9 @@
     &__icon {
       width: 32px;
       height: 32px;
-      margin-right: 14px;
+      margin-right: 10px;
+      color: #888;
+      font-size: 28px;
     }
   }
 }

@@ -32,14 +32,16 @@ type CustomPickerProps = {
    * @default 'id'
    */
   valueKey?: string;
+  childrenKey?: string;
   /**
    * 是否展示右侧箭头
    */
   arrow?: boolean;
   /**
    * 是否联级模式
+   * 数值代表联级层数
    */
-  cascade?: boolean;
+  cascade?: number;
   disabled?: boolean;
 };
 
@@ -50,6 +52,7 @@ export default function CustomPicker({
   value,
   nameKey = 'name',
   valueKey = 'id',
+  childrenKey = 'child',
   mode = 'multiSelector',
   arrow,
   cascade,
@@ -57,9 +60,9 @@ export default function CustomPicker({
   ...props
 }: CustomPickerProps) {
   const [range, setRange] = useState(() =>
-    getPickerData(data, value, { mode, nameKey, valueKey, cascade }),
+    getPickerData(data, value, { mode, nameKey, childrenKey, valueKey, cascade }),
   );
-  const [pickerValue, setPickerValue] = useState(() => getInitialValue(data, mode) as any);
+  const [pickerValue, setPickerValue] = useState(() => getInitialValue(mode, cascade) as any);
   const [titleStr, setTitleStr] = useState('');
   const innerEffect = useRef(false);
 
@@ -72,14 +75,15 @@ export default function CustomPicker({
     }
     if (!value) {
       // 重置组件内部状态
-      setPickerValue(getInitialValue(data, mode));
-      setTitleStr('');
+      setPickerValue(getInitialValue(mode, cascade));
+      if (titleStr) setTitleStr('');
       return;
     }
     const pickerValueFromOuter = getPickerValueFromRes(data, value, {
       mode,
       nameKey,
       valueKey,
+      childrenKey,
       cascade,
     });
     setInnerState(pickerValueFromOuter);
@@ -91,7 +95,13 @@ export default function CustomPicker({
     innerEffect.current = true;
     setInnerState(detail.value);
     if (onChange) {
-      const payload = getValueFromPicker(data, detail.value, { mode, nameKey, valueKey, cascade });
+      const payload = getValueFromPicker(data, detail.value, {
+        mode,
+        nameKey,
+        childrenKey,
+        valueKey,
+        cascade,
+      });
       if (onChange) onChange(payload);
     }
   };
@@ -102,14 +112,26 @@ export default function CustomPicker({
     let newValue = JSON.parse(JSON.stringify(pickerValue)) as any[];
     newValue[detail.column] = detail.value;
     newValue.fill(0, detail.column + 1);
-    const newRange = getPickerData(data, newValue, { mode, nameKey, valueKey, cascade });
+    const newRange = getPickerData(data, newValue, {
+      mode,
+      nameKey,
+      childrenKey,
+      valueKey,
+      cascade,
+    });
     setRange(newRange);
     setPickerValue(newValue);
   };
 
   const setInnerState = (pv) => {
     setPickerValue(pv);
-    const titleArr = getTitleFromPicker(data, pv, { mode, nameKey, valueKey, cascade });
+    const titleArr = getTitleFromPicker(data, pv, {
+      mode,
+      nameKey,
+      childrenKey,
+      valueKey,
+      cascade,
+    });
     setTitleStr(Array.isArray(titleArr) ? titleArr.join(' ') : titleArr);
   };
 
@@ -133,8 +155,8 @@ export default function CustomPicker({
 }
 
 // 获取初始值
-function getInitialValue(data: any[], mode?) {
-  return mode === 'multiSelector' ? Array.from({ length: data.length }, () => 0) : 0;
+function getInitialValue(mode, cascade?) {
+  return mode === 'multiSelector' ? Array.from({ length: cascade }, () => 0) : 0;
 }
 
 // 区域数据项
@@ -154,7 +176,7 @@ function getPickerData(
   const rs = [] as any[];
   let pValue = pickerValue;
   if (!pValue.length) {
-    pValue = Array.from({ length: data.length }, () => 0);
+    pValue = Array.from({ length: cascade }, () => 0);
   }
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;
@@ -164,6 +186,7 @@ function getPickerData(
     rs.push(!column ? [] : column.map((el) => el[nameKey]));
     return column;
   }, []);
+
   return rs;
 }
 

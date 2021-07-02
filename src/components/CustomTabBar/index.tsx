@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import cls from 'classnames';
 import { useSelector } from 'react-redux';
 import { CoverImage, CoverView, View } from '@tarojs/components';
@@ -30,8 +31,11 @@ const {
 } = getCurrentInstance() as unknown as { app: AppInstance };
 
 export default () => {
-  // 未登录状态无法查看曲库页面
-  const { done } = useSelector((state) => state.common);
+  // 登录状态切身份为歌手的才有查看曲库页面的权限
+  const { done, data } = useSelector((state) => state.common);
+  // 为方便开发 暂时隐藏此逻辑
+  // @ts-ignore;
+  const showLib = done && data.identity === 2;
 
   const router = useRouter();
 

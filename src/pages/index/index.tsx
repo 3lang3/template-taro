@@ -8,8 +8,6 @@ import Image from '@/components/Image';
 import { useRequest } from 'ahooks';
 import { getHomeData } from '@/services/home';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
-import { useDispatch, useSelector } from 'react-redux';
-import { set } from '@/state/home';
 import Icon from '@/components/Icon';
 
 import './index.less';
@@ -116,18 +114,10 @@ const LatestNews = ({ data = [] }: { data: any[] }) => {
 };
 
 const IndexPageContent = () => {
-  const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.home);
-  const { loading, error, refresh } = useRequest(getHomeData, {
-    manual: !!data.album,
-    onSuccess: ({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      dispatch(set(res));
-    },
-  });
-
+  const { data: res, loading, error, refresh } = useRequest(getHomeData);
   if (loading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
+  if (error || !res?.data) return <FullPageError refresh={refresh} />;
+  const data = res.data;
   return (
     <>
       <TabNavigationBar />
@@ -138,7 +128,7 @@ const IndexPageContent = () => {
           <CustomSwiper
             className="index-swiper__wrapper"
             swiperClassName="index-swiper__main"
-            data={data.banner}
+            data={data?.banner}
             itemRender={(item) => (
               <View className="index-swiper__main-item">
                 <Image className="index-swiper__main-img" src={item.url} />
