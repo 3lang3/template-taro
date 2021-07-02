@@ -181,17 +181,18 @@ function getPickerData(
   if (!pValue.length) {
     pValue = Array.from({ length: cascade }, () => 0);
   }
+
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;
     if (cascade) {
       if (i > 0) {
-        const currentParent = a.find((el) => +el.id === pValue[i - 1]);
-        column = currentParent[childrenKey];
+        const currentParent = a.find((el) => +el.id === +pValue[i - 1]);
+        column = currentParent ? currentParent[childrenKey] : [];
       } else {
         column = data;
       }
     }
-    rs.push(!column ? [] : column.map((el) => el[nameKey]));
+    rs.push(column.map((el) => el[nameKey]));
     return column;
   }, []);
   return rs;
