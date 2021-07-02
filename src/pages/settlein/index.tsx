@@ -74,38 +74,43 @@ export default () => {
   const hasCert = useRef(false);
   // 区域文本值
   const areaRef = useRef<string[]>([]);
+  // 
   // 审核状态
   const isAudit = params.status === 'audit';
   // 歌手认证
   const isSinger = params.identity === '2';
 
   const [payload, set] = useState({
-    real_name: '张煌',
-    idcard: '430302199006190010',
-    email: 'zhanghuang11211@qq.com',
-    area: [110000, 110100, 110114],
-    mobile: '13071856973',
-    code: '12333',
+    real_name: '',
+    idcard: '',
+    email: '',
+    area: undefined,
+    mobile: '',
+    code: '',
     checked: [],
   });
 
   // 认证信息详情
-  const detailReq = useRequest(applyDetail, { manual: true });
+  const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(applyDetail, {
+    manual: true,
+  });
   // 实名信息
   const certificaReq = useRequest(getCertificationInfo, { manual: true });
 
   useEffect(() => {
     const getCertifica = async () => {
       const { data } = await certificaReq.run();
-      console.log(data);
       hasCert.current = true;
-      set(data);
+      console.log(data);
     };
     const getDetail = async () => {
       showToast({ icon: 'loading', title: '数据获取中...' });
       const { data } = await detailReq.run();
       hasCert.current = true;
-      set(data);
+      const { province, city, district, idcard, real_name, email, mobile } = data;
+      hasCert.current = true;
+      console.log([province, city, district]);
+      set({ area: [province, city, district], mobile, idcard, real_name, email } as any);
     };
     if (isAudit) {
       getDetail();
@@ -134,7 +139,7 @@ export default () => {
           // 通过eventCenter向被打开页面传送数据
           // @hack
           eventCenter.once('page:init:settle', () => {
-            eventCenter.trigger('page:message:settle-next', { data: 'test' });
+            eventCenter.trigger('page:message:settle-next', detail);
           });
         },
       });
@@ -142,7 +147,7 @@ export default () => {
     }
     showToast({ icon: 'loading', title: '请求中...' });
     const { area, ...restValues } = values;
-    const [province, city, district] = area;
+    const [province, city, district] = area as unknown as any[];
     const postValues = {
       province,
       city,
@@ -163,10 +168,12 @@ export default () => {
 
   return (
     <>
-      <Flex className="settlein-reason" align="start">
-        <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
-        <Typography.Text type="danger">该身份已被占用，如有疑问请联系客服解决！</Typography.Text>
-      </Flex>
+      {detail.reason && (
+        <Flex className="settlein-reason" align="start">
+          <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
+          <Typography.Text type="danger">{detail.reason}</Typography.Text>
+        </Flex>
+      )}
 
       <Typography.Text className="settlein-title">申请入驻词曲作者</Typography.Text>
       <AtForm className="custom-form settlein-form">
@@ -199,7 +206,6 @@ export default () => {
           disabled={isAudit}
           onChange={(value, titleStr) => {
             set((v: any) => ({ ...v, area: value }));
-            console.log(titleStr);
             areaRef.current = titleStr;
           }}
         />

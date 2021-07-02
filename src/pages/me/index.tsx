@@ -66,6 +66,12 @@ export default () => {
       console.warn('未绑定手机号');
       return;
     }
+    // 同时只可选择一种身份（词曲作者跟歌手）入驻
+    // 审核中则不可申请其他类似入驻申请（展示“审核中”标识）
+    if (page.audit_info && +page.audit_info.identity !== +identity) {
+      showToast({ title: '当前正在审核中，请审核通过后再申请', icon: 'none' });
+      return;
+    }
     // 根据identity分发路由
     let url = `/pages/settlein/index?identity=${identity}`;
     if (page?.audit_info?.identity === identity) url += '&status=audit';
@@ -228,7 +234,9 @@ export default () => {
           </Button>
           <Flex
             className="me-card-item"
-            onClick={() => showToast({ icon: 'none', title: '暂未开放,敬请期待' })}
+            onClick={() =>
+              showToast({ icon: 'none', title: '当前暂不支持机构入驻申请，后续有开放请及时关注' })
+            }
           >
             <Icon icon="icon-wode_icon_jigou" className="me-card-item__icon" />
             <View className="me-card-item__content">
