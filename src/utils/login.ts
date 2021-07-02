@@ -50,6 +50,7 @@ export async function userLogin(opts: getUserProfile.Option) {
   const { data } = await wxMiniProgramLogin({ ...payload, mobile: '123' });
   // token写入本地缓存
   setStorageSync(config.storage.tokenKey, data.token);
+  store.dispatch(getUser(payload.userInfo));
 }
 
 // 检查用户登录状态

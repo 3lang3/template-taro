@@ -29,7 +29,5 @@ export type MePageResType = {
   };
 };
 export function getHomePageDetail(): Promise<PromiseResponseType<MePageResType>> {
-  return request('/member/getHomePageDetail', {
-    method: 'POST',
-  });
+  return request('/member/getHomePageDetail');
 }

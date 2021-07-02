@@ -67,7 +67,8 @@ type SettleInPageParams = {
 };
 
 export default () => {
-  const { params }: { params: SettleInPageParams } = useRouter();
+  const { params } = useRouter<SettleInPageParams>();
+  console.log(params);
   // 是否已实名
   const hasCert = useRef(false);
   // 审核状态

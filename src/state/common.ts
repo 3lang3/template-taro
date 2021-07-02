@@ -2,6 +2,7 @@
 
 import config from '@/config';
 import { getCurrentUser } from '@/services/common';
+import type { CurrentUserType } from '@/services/common';
 import type { UserInfo } from '@tarojs/taro';
 import { removeStorageSync } from '@tarojs/taro';
 
@@ -31,7 +32,7 @@ export function getUser(localUserInfo?): any {
     try {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
-      const userInfo = localUserInfo || { avatarUrl: data.avatar, nickName: data.nickname };
+      const userInfo = { ...localUserInfo, avatarUrl: data.avatar, nickName: data.nickname };
       dispatch({ type: DONE, payload: { data, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
@@ -45,8 +46,9 @@ export type CommonStateType = {
   error: boolean;
   done: boolean;
   userInfo: UserInfo;
-  data: any;
+  data: CurrentUserType;
 };
+
 const INITIAL_STATE: CommonStateType = {
   loading: false,
   error: false,
@@ -54,7 +56,7 @@ const INITIAL_STATE: CommonStateType = {
   // wx.getUserProfile获取到的用户数据
   userInfo: {} as UserInfo,
   // 服务端返回的用户数据
-  data: {},
+  data: {} as CurrentUserType,
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {

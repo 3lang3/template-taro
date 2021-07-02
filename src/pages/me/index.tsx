@@ -7,9 +7,9 @@ import Typography from '@/components/Typography';
 import { getHomePageDetail, MePageResType } from '@/services/me';
 import { userLogin } from '@/utils/login';
 import { Image, View } from '@tarojs/components';
-import { getStorageSync, navigateTo, reLaunch, setStorageSync, showToast } from '@tarojs/taro';
+import { getStorageSync, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 
@@ -26,9 +26,20 @@ export default () => {
   const { done: isLogin, userInfo } = useSelector((state) => state.common);
   const [visible, setVisible] = useState(false);
   // 请求页面展示信息
-  const { data: { data: page } = { data: {} as MePageResType } } = useRequest(getHomePageDetail, {
-    manual: !isLogin,
-  });
+  const { data: { data: page } = { data: {} as MePageResType }, ...detailReq } = useRequest(
+    getHomePageDetail,
+    { manual: true },
+  );
+
+  useEffect(() => {
+    const getDetail = async () => {
+      await detailReq.run();
+    };
+    if (isLogin && !page.ids) {
+      getDetail();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLogin]);
 
   // 用户登录
   const onUserProfile = async () => {
@@ -39,8 +50,6 @@ export default () => {
     }
     try {
       await userLogin({ desc: '获取用户信息' });
-      // 登录完成 重启页面
-      reLaunch({ url: '/pages/me/index' });
     } catch (error) {
       showToast({ icon: 'none', title: error.message });
     }
@@ -53,7 +62,10 @@ export default () => {
       return;
     }
     // 未绑定手机号
-    if (!page.mobile) return;
+    if (!page.mobile) {
+      console.warn('未绑定手机号');
+      return;
+    }
     // 根据identity分发路由
     let url = `/pages/settlein/index?identity=${identity}`;
     if (page?.audit_info?.identity === identity) url += '&status=audit';
@@ -101,25 +113,23 @@ export default () => {
             {isLogin && <Typography.Text type="light">ID: {page.ids}</Typography.Text>}
           </View>
           <Button onClick={onUserProfile} circle outline type="light" size="xs">
-            立即登录
+            {isLogin ? '编辑资料' : '立即登录'}
           </Button>
         </Flex>
-        {/* 需要对应身份 */}
-        {isLogin && (
+
+        {/* 需要对应身份 歌手或者词曲作者 */}
+        {isLogin && +page.identity > 0 && (
           <>
-            {/* 歌手或者词曲作者 */}
-            {+page.identity > 0 && (
-              <Flex className="me-header__action mb40" justify="evenly">
-                <Button onClick={onSellClick} className="me-header__action-btn" type="light" circle>
-                  <Icon icon="icon-wode_icon_chushou" className="me-header__action-btn__icon" />
-                  出售词曲
-                </Button>
-                <Button className="me-header__action-btn" type="light" circle>
-                  <Icon icon="icon-wode_icon_guanli" className="me-header__action-btn__icon" />
-                  词曲管理
-                </Button>
-              </Flex>
-            )}
+            <Flex className="me-header__action mb40" justify="evenly">
+              <Button onClick={onSellClick} className="me-header__action-btn" type="light" circle>
+                <Icon icon="icon-wode_icon_chushou" className="me-header__action-btn__icon" />
+                出售词曲
+              </Button>
+              <Button className="me-header__action-btn" type="light" circle>
+                <Icon icon="icon-wode_icon_guanli" className="me-header__action-btn__icon" />
+                词曲管理
+              </Button>
+            </Flex>
             <View className="me-service">
               <Flex className="me-service__header">我的服务</Flex>
               <Flex justify="around" wrap="wrap" className="me-service__body">
@@ -167,12 +177,13 @@ export default () => {
             </View>
           </>
         )}
+
         <Typography.Text className="mb30" type="light">
           请选择以下身份进行入驻
         </Typography.Text>
         <View className="me-card">
           <Button
-            openType={isLogin && page.mobile ? 'getPhoneNumber' : undefined}
+            openType={isLogin && !page.mobile ? 'getPhoneNumber' : undefined}
             onGetPhoneNumber={(e) => onGetPhoneNumber(e, 1)}
             onClick={() => onApply(1)}
             className="me-card-item"
@@ -194,7 +205,7 @@ export default () => {
             <Icon icon="icon-icon_jinru" className="me-card-item__action" />
           </Button>
           <Button
-            openType={isLogin && page.mobile ? 'getPhoneNumber' : undefined}
+            openType={isLogin && !page.mobile ? 'getPhoneNumber' : undefined}
             onGetPhoneNumber={(e) => onGetPhoneNumber(e, 2)}
             onClick={() => onApply(2)}
             className="me-card-item"

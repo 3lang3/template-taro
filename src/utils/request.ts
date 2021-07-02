@@ -37,15 +37,15 @@ function myToast(title: string = '系统异常，请稍后重试', visible: bool
  */
 const generateRequest = (prefix: string) => {
   let header = {} as any;
-  const tk = getStorageSync(config.storage.tokenKey);
-  if (tk) {
-    header.authorization = tk;
-  }
   return (
     url: string,
     opts?: Omit<request.Option, 'url' | 'success' | 'fail'>,
     isToast: boolean = true,
   ) => {
+    const tk = getStorageSync(config.storage.tokenKey);
+    if (tk) {
+      header.authorization = tk;
+    }
     opts = opts || {};
     opts.header = { ...header, ...opts.header };
     return new Promise<PromiseResponseType<any>>((resolve, reject) => {
