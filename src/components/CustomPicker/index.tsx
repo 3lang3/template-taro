@@ -187,7 +187,7 @@ function getPickerData(
     if (cascade) {
       if (i > 0) {
         const currentParent = a.find((el) => +el.id === +pValue[i - 1]);
-        column = currentParent ? currentParent[childrenKey] : [];
+        column = currentParent ? currentParent[childrenKey] : a[pValue[i - 1]][childrenKey];
       } else {
         column = data;
       }
