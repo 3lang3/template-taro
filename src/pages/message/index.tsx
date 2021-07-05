@@ -12,7 +12,9 @@ import './index.less';
 export default function Index() {
   const dispatch = useDispatch();
   const update = useUpdate();
-  const { list, page, pageSize, totalPage } = useSelector((state) => state.message);
+  const { list, page, pageSize, totalPage } = useSelector((state) => {
+    return state.message;
+  });
   const { loading, error, refresh, run } = useRequest(getMessageList, {
     defaultParams: [{ page, pageSize }],
     onSuccess: ({ data: { _list, _page }, type, msg }) => {

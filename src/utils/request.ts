@@ -80,3 +80,5 @@ const generateRequest = (prefix: string) => {
 };
 
 export default generateRequest(config.api.current);
+// 消息调用方法
+export const msgRequest = generateRequest(config.api.msg);
