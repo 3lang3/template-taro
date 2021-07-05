@@ -1,4 +1,5 @@
-import request, { PromiseResponseType } from '@/utils/request';
+import request from '@/utils/request';
+import type { PromiseResponseType } from '@/utils/request';
 import { stringify } from 'querystring';
 
 export type HomeResType = {

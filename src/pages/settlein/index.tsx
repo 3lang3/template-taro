@@ -68,8 +68,6 @@ type SettleInPageParams = {
 
 export default () => {
   const { params } = useRouter<SettleInPageParams>();
-
-  console.log(params);
   // 是否已实名
   const hasCert = useRef(false);
   // 区域文本值
@@ -109,7 +107,6 @@ export default () => {
       hasCert.current = true;
       const { province, city, district, idcard, real_name, email, mobile } = data;
       hasCert.current = true;
-      console.log([province, city, district]);
       set({ area: [province, city, district], mobile, idcard, real_name, email } as any);
     };
     if (isAudit) {
