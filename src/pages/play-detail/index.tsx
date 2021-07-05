@@ -1,151 +1,150 @@
-import { useState } from 'react';
 import cls from 'classnames';
-import { TabNavigationBar } from '@/components/CustomNavigation';
-import Image from '@/components/Image';
-import Tag from '@/components/Tag';
-import Typography from '@/components/Typography';
-import { View, Text, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
-import { CounterOfferInput } from '@/components/Chore';
-import Icon from '@/components/Icon';
-import Button from '@/components/Button';
+import { useSelector } from 'react-redux';
 import Flex from '@/components/Flex';
+import Button from '@/components/Button';
+import Image from '@/components/Image';
+import { useState } from 'react';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
-import { useCustomAudio } from './helper';
+import { TabNavigationBar } from '@/components/CustomNavigation';
+import Typography from '@/components/Typography';
+import { View, Text } from '@tarojs/components';
+import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
+import { useRouter } from '@tarojs/taro';
+import Icon from '@/components/Icon';
+import PlayCore from '@/components/PlayCore';
+import { useRequest } from 'ahooks';
+import { getSongDetail, getSaleSongDetail } from '@/services/song';
+import type { UserIdentityType } from '@/services/common';
+import Tag from '@/components/Tag';
 
 import './index.less';
 
 const AUDIO_DEMO_URL = 'http://music.163.com/song/media/outer/url?id=1847422867.mp3';
 
-const lyricData = [
-  { time: 0, text: '0' },
-  { time: 2, text: '2' },
-  { time: 4, text: '4' },
-  { time: 6, text: 'http://music.163.com/song/media/outer/url?id=1847422867.mp3' },
-  { time: 8, text: '8' },
-  { time: 10, text: '就算时光难逗留就算时光难逗留就算时光难逗留' },
-];
+type PageContentProps = {
+  detail: Record<string, any>;
+  routerParams: PlayDetailParams;
+  identity: UserIdentityType;
+};
 
-export default () => {
-  const { paused, state, movableViewProps, audioInstance } = useCustomAudio({
-    src: AUDIO_DEMO_URL,
-    movableAreaId: '#dot-movable-view',
-    lyric: {
-      data: lyricData,
-      class: '.play-detail__lyric-item',
-    },
-  });
-
+const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+  const isScorePage = routerParams.type === 'score';
+  const isCompanyIdentity = +identity === 3;
   return (
     <>
-      <TabNavigationBar title="白月光与朱砂痣" />
+      <TabNavigationBar title={detail.song_name} />
 
-      <View className="play-detail">
-        <Flex className="p-default bg-white" justify="center">
-          <Typography.Text>曲2000元 | 词3000元</Typography.Text>
-        </Flex>
-        <View className="play-detail__header">
-          <Typography.Text type="light" className="play-detail__author">
-            张杰
-          </Typography.Text>
-          <View className="play-detail__tags">
-            <Tag type="light">摇滚</Tag>
-            <Tag type="light">国语</Tag>
-            <Tag type="light">古风</Tag>
-            <Tag type="light">西域风</Tag>
-          </View>
-        </View>
-
+      <View
+        className={cls('play-detail', {
+          'play-detail--score': isScorePage,
+        })}
+      >
         <View
-          className={cls('play-detail__record', {
-            'play-detail__record--play': !paused,
+          className={cls('play-detail__header', {
+            'play-detail__header--music': isCompanyIdentity || !isScorePage,
+            'play-detail__header--score': isScorePage && !isCompanyIdentity,
           })}
         >
-          <Image mode="aspectFit" className="play-detail__record-cover" src="" />
-          <TaroImage
-            mode="aspectFit"
-            className="play-detail__record-play"
-            src={require('@/assets/icon/play_double.svg')}
-            onClick={() => audioInstance.play()}
-          />
-          <TaroImage
-            mode="aspectFit"
-            className="play-detail__record-pause"
-            src={require('@/assets/icon/pause_double.svg')}
-            onClick={() => audioInstance.pause()}
-          />
-        </View>
-
-        <View className="play-detail__lyric">
-          <View
-            id="lyric-wrapper"
-            className="play-detail__lyric-wrapper"
-            style={{
-              transform: `translateY(-${state.lyricTranslateY}px)`,
-            }}
-          >
-            {lyricData.map((el, i) => (
-              <View
-                key={el.time}
-                className={cls('play-detail__lyric-item', {
-                  'play-detail__lyric-item--active': state.lyricIndex === i,
-                })}
-              >
-                {el.text}
+          {isCompanyIdentity && isScorePage && (
+            <Flex className="p-default bg-white mb30" justify="center">
+              <Typography.Text>曲2000元 | 词3000元</Typography.Text>
+            </Flex>
+          )}
+          {isScorePage ? (
+            <>
+              <View className="play-detail__tags">
+                <Tag type="light">摇滚</Tag>
+                <Tag type="light">国语</Tag>
+                <Tag type="light">古风</Tag>
+                <Tag type="light">西域风</Tag>
               </View>
-            ))}
-          </View>
+            </>
+          ) : (
+            <>
+              <Typography.Text type="light" className="play-detail__author">
+                {detail.singer}
+              </Typography.Text>
+              <Icon icon="icon-shouye_zhaunji_fenxiang" className="play-detail__share" />
+            </>
+          )}
         </View>
-
-        <View className="play-detail__ctrl">
-          <View className="play-detail__ctrl-time">{state.currentFtm}</View>
-          <MovableArea id="dot-movable-view" className="play-detail__ctrl-bar">
-            <View className="play-detail__ctrl-bar__line">
-              <View
-                className="play-detail__ctrl-bar__progress"
-                style={{ width: `${state.progress * 100}%` }}
-              />
+        <PlayCore
+          src={AUDIO_DEMO_URL}
+          lyrics={detail.lrc_lyric}
+          lyricAutoScroll={routerParams.type === 'music'}
+        />
+      </View>
+      {isScorePage && (
+        <>
+          <View className="play-detail-desc">
+            <Flex justify="between" className="play-detail-desc__title">
+              <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                词曲说明
+              </Typography.Title>
+              <ScoreButton />
+            </Flex>
+            <View className="play-detail-desc__content">
+              <View className="play-detail-desc__content-item">
+                <Text className="play-detail-desc__content-title">作者简介:</Text>
+                <Text>民国和电子结合的曲风</Text>
+              </View>
+              <View className="play-detail-desc__content-item">
+                <Text className="play-detail-desc__content-title">创作目的:</Text>
+                <Text>提高自己知名度,售卖版权去的利益</Text>
+              </View>
+              <View className="play-detail-desc__content-item">
+                <Text className="play-detail-desc__content-title">作品灵感:</Text>
+                <Text>
+                  人们难辩过去何时成为过去,却能牢记过去的样子——从北二环到昌平近40公里,10年后的他,将这个印象深刻的儿时交付,又从斑斓浩瀚的音乐光谱中,精选与自我共振频率最高的6首经单作品~
+                </Text>
+              </View>
             </View>
-            <MovableView
-              animation={false}
-              direction="horizontal"
-              className="play-detail__ctrl-bar__dot"
-              {...movableViewProps}
-            />
-          </MovableArea>
-          <View className="play-detail__ctrl-time">{state.durationFtm}</View>
-        </View>
-      </View>
-      <View className="play-detail-desc">
-        <Flex justify="between" className="play-detail-desc__title">
-          <Typography.Title level={3} style={{ marginBottom: 0 }}>
-            词曲说明
-          </Typography.Title>
-          <ScoreButton />
-        </Flex>
-        <View className="play-detail-desc__content">
-          <View className="play-detail-desc__content-item">
-            <Text className="play-detail-desc__content-title">作者简介:</Text>
-            <Text>民国和电子结合的曲风</Text>
           </View>
-          <View className="play-detail-desc__content-item">
-            <Text className="play-detail-desc__content-title">创作目的:</Text>
-            <Text>提高自己知名度,售卖版权去的利益</Text>
-          </View>
-          <View className="play-detail-desc__content-item">
-            <Text className="play-detail-desc__content-title">作品灵感:</Text>
-            <Text>
-              人们难辩过去何时成为过去,却能牢记过去的样子——从北二环到昌平近40公里,10年后的他,将这个印象深刻的儿时交付,又从斑斓浩瀚的音乐光谱中,精选与自我共振频率最高的6首经单作品~
-            </Text>
-          </View>
-        </View>
-      </View>
-      <Flex justify="center" className="play-detail-action">
-        <GiveUpButton />
-        <CounterOfferButton />
-      </Flex>
-      <View className="play-detail-action--placeholder" />
+          <Flex justify="center" className="play-detail-action">
+            {isCompanyIdentity ? (
+              <>
+                <GiveUpButton />
+                <CounterOfferButton />
+              </>
+            ) : (
+              <Button circle full size="lg" type="primary">
+                申请唱歌
+              </Button>
+            )}
+          </Flex>
+          <View className="play-detail-action--placeholder" />
+        </>
+      )}
     </>
   );
+};
+
+type PlayDetailParams = {
+  /**
+   * 页面类型
+   * - music 已制作完成歌曲播放页面(自动滚动歌词)
+   * - score 词曲制作页面(根据身份展示不同视图)
+   */
+  type: 'music' | 'score';
+  ids: string;
+};
+
+export default () => {
+  const { params } = useRouter<PlayDetailParams>();
+  const { done, loading: commonLoading, data: commonData } = useSelector((state) => state.common);
+
+  const {
+    loading,
+    error,
+    refresh,
+    data: { data } = { data: {} },
+  } = useRequest(params.type === 'music' ? getSongDetail : getSaleSongDetail, {
+    defaultParams: [{ ids: 514767089 }],
+  });
+  if (loading || commonLoading) return <FullPageLoader />;
+  if (error || !done) return <FullPageError refresh={refresh} />;
+  const identity = commonData.identity;
+  return <PageContent detail={data} routerParams={params} identity={identity} />;
 };
 
 // 曲谱按钮 modal
@@ -154,7 +153,7 @@ function ScoreButton() {
   return (
     <>
       <Button marginAuto={false} circle outline type="primary" size="xs" onClick={() => set(true)}>
-        <Icon icon="icon-quku_qupu" />
+        <Icon icon="icon-icon_qupu" />
         曲谱
       </Button>
       <AtModal isOpened={visible} onClose={() => set(false)} className="modal-score">
@@ -225,7 +224,7 @@ function CounterOfferButton() {
         </AtModalContent>
         <AtModalAction>
           <Flex justify="between" className="p-default pb40">
-            <Button outline circle>
+            <Button onClick={() => set(false)} outline circle>
               取消
             </Button>
             <Button type="primary" circle>

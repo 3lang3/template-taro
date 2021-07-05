@@ -20,7 +20,7 @@ export default ({ icon, color, size, className, ...props }: CustomIconProps) => 
   return (
     <Text
       className={cls(className, 'iconfont', 'icon--center', icon)}
-      style={{ color, fontSize: `${size}rpx` }}
+      style={{ color, fontSize: size ? `${size}rpx` : undefined }}
       {...props}
     />
   );

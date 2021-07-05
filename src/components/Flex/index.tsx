@@ -10,6 +10,7 @@ type FlexProps = {
   wrap?: 'wrap' | 'nowrap';
   direction?: 'column' | 'row';
   children?: React.ReactNode;
+  flex?: Omit<React.CSSProperties, 'flex'>;
 } & ViewProps;
 
 export default ({
@@ -17,6 +18,7 @@ export default ({
   justify = 'start',
   wrap = 'nowrap',
   direction = 'row',
+  flex,
   children,
   className,
   ...props
