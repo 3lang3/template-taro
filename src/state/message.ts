@@ -32,7 +32,7 @@ export const setTotalPage = (payload: number) => {
 };
 
 const INITIAL_STATE: MessageStateType = {
-  list: [],
+  list: [] as any,
   page: 1,
   pageSize: 10,
   totalPage: 0,
