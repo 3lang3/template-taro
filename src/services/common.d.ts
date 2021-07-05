@@ -10,7 +10,13 @@ export type ListResType<T> = {
     totalCount: number;
     totalPage: number;
   };
-  _list: T[];
+  _list: T;
+  type: number;
+  msg: string;
+};
+
+export type SuccessResType = {
+  data: null;
   type: number;
   msg: string;
 };
