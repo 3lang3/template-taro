@@ -50,7 +50,7 @@ export type CommonStateType = {
 };
 
 const INITIAL_STATE: CommonStateType = {
-  loading: false,
+  loading: true,
   error: false,
   done: false,
   // wx.getUserProfile获取到的用户数据
