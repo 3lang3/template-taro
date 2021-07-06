@@ -9,13 +9,15 @@ import { TabNavigationBar } from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
-import { useRouter } from '@tarojs/taro';
+import { hideToast, showToast, useRouter } from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import PlayCore from '@/components/PlayCore';
 import { useRequest } from 'ahooks';
-import { getSongDetail, getSaleSongDetail } from '@/services/song';
+import { getSongDetail, getSaleSongDetail, operationMusicSongPrice } from '@/services/song';
+import CustomSwiper from '@/components/CustomSwiper';
 import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
+import { processLyricData } from '@/components/PlayCore/helper';
 
 import './index.less';
 
@@ -70,8 +72,8 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
         </View>
         <PlayCore
           src={AUDIO_DEMO_URL}
-          lyrics={detail.lrc_lyric}
-          lyricAutoScroll={routerParams.type === 'music'}
+          lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
+          lyricAutoScroll={routerParams.type !== 'score'}
         />
       </View>
       {isScorePage && (
@@ -81,16 +83,20 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
               <Typography.Title level={3} style={{ marginBottom: 0 }}>
                 词曲说明
               </Typography.Title>
-              <ScoreButton />
+              <ScoreButton detail={detail} />
             </Flex>
             <View className="play-detail-desc__content">
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">作者简介:</Text>
-                <Text>民国和电子结合的曲风</Text>
+                <Text>{detail.introduce}</Text>
               </View>
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">创作目的:</Text>
-                <Text>提高自己知名度,售卖版权去的利益</Text>
+                <Text>{detail.explain}</Text>
+              </View>
+              <View className="play-detail-desc__content-item">
+                <Text className="play-detail-desc__content-title">创作完成时间:</Text>
+                <Text>{detail.created_at}</Text>
               </View>
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">作品灵感:</Text>
@@ -104,12 +110,10 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
             {isCompanyIdentity ? (
               <>
                 <GiveUpButton />
-                <CounterOfferButton />
+                <CounterOfferButton routerParams={routerParams} />
               </>
             ) : (
-              <Button circle full size="lg" type="primary">
-                申请唱歌
-              </Button>
+              <ApplySingButton detail={detail} />
             )}
           </Flex>
           <View className="play-detail-action--placeholder" />
@@ -125,30 +129,30 @@ type PlayDetailParams = {
    * - music 已制作完成歌曲播放页面(自动滚动歌词)
    * - score 词曲制作页面(根据身份展示不同视图)
    */
-  type: 'music' | 'score';
+  type: 'score';
   ids: string;
 };
 
 export default () => {
   const { params } = useRouter<PlayDetailParams>();
-  const { done, loading: commonLoading, data: commonData } = useSelector((state) => state.common);
+  const { loading: commonLoading, data: commonData } = useSelector((state) => state.common);
 
   const {
     loading,
     error,
     refresh,
     data: { data } = { data: {} },
-  } = useRequest(params.type === 'music' ? getSongDetail : getSaleSongDetail, {
-    defaultParams: [{ ids: 514767089 }],
+  } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
+    defaultParams: [{ ids: 527875806 }],
   });
   if (loading || commonLoading) return <FullPageLoader />;
-  if (error || !done) return <FullPageError refresh={refresh} />;
+  if (error) return <FullPageError refresh={refresh} />;
   const identity = commonData.identity;
   return <PageContent detail={data} routerParams={params} identity={identity} />;
 };
 
 // 曲谱按钮 modal
-function ScoreButton() {
+function ScoreButton({ detail }) {
   const [visible, set] = useState(false);
   return (
     <>
@@ -159,13 +163,32 @@ function ScoreButton() {
       <AtModal isOpened={visible} onClose={() => set(false)} className="modal-score">
         <AtModalHeader>曲谱</AtModalHeader>
         <AtModalContent>
-          <Image className="modal-score__img" src="" />
+          <CustomSwiper
+            className="modal-score__swiper__wrapper"
+            swiperClassName="modal-score__swiper"
+            data={detail.composer_content || []}
+            itemRender={(img) => <Image className="modal-score__img" src={img} />}
+          />
           <Typography.Text type="secondary" size="sm">
             长按保存图片
           </Typography.Text>
         </AtModalContent>
       </AtModal>
     </>
+  );
+}
+
+// 申请唱歌按钮
+function ApplySingButton({ detail }) {
+  const { status } = detail;
+  return (
+    <Button circle full size="lg" type="primary">
+      {(() => {
+        if (+status === 1) return '已申请';
+        if (+status === 2) return '已有歌手唱';
+        return '申请唱歌';
+      })()}
+    </Button>
   );
 }
 
@@ -202,8 +225,26 @@ function GiveUpButton() {
 }
 
 // 还价按钮 modal
-function CounterOfferButton() {
+function CounterOfferButton({ routerParams }) {
+  const [state, change] = useState({
+    lyricist_price: '',
+    composer_price: '',
+  });
   const [visible, set] = useState(false);
+  const onConfirm = async () => {
+    const payload = {
+      ...state,
+      ids: routerParams.ids,
+      operation_type: 2,
+    };
+    try {
+      showToast({ icon: 'loading', title: '确认中...' });
+      const { msg } = await operationMusicSongPrice(payload);
+      showToast({ icon: 'none', title: msg });
+    } catch (error) {
+      hideToast();
+    }
+  };
   return (
     <>
       <Button
@@ -219,15 +260,27 @@ function CounterOfferButton() {
       <AtModal isOpened={visible} onClose={() => set(false)}>
         <AtModalHeader>还价</AtModalHeader>
         <AtModalContent>
-          <CounterOfferInput title="曲" price={2000} name="n1" value="" onChange={() => null} />
-          <CounterOfferInput title="词" price={3000} name="n1" value="" onChange={() => null} />
+          <CounterOfferInput
+            title="曲"
+            price={2000}
+            name="n1"
+            value={state.composer_price}
+            onChange={(value) => change((v) => ({ ...v, composer_price: value }))}
+          />
+          <CounterOfferInput
+            title="词"
+            price={3000}
+            name="n1"
+            value={state.lyricist_price}
+            onChange={(value) => change((v) => ({ ...v, lyricist_price: value }))}
+          />
         </AtModalContent>
         <AtModalAction>
           <Flex justify="between" className="p-default pb40">
             <Button onClick={() => set(false)} outline circle>
               取消
             </Button>
-            <Button type="primary" circle>
+            <Button onClick={() => onConfirm()} type="primary" circle>
               确定
             </Button>
           </Flex>

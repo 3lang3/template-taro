@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
 import cls from 'classnames';
 import Image from '@/components/Image';
 import { View, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
 import Flex from '@/components/Flex';
-import { processScrollLyricData, useCustomAudio } from './helper';
+import { useCustomAudio } from './helper';
 import type { UseCustomAudioParams } from './helper';
 
 import './index.less';
@@ -12,7 +11,7 @@ type PlayCoreProps = {
   /**
    * 服务端歌词数据
    */
-  lyrics?: string[];
+  lyricData: { time: number; text: string }[];
   /**
    * 歌词是否自动滚动
    * @default true
@@ -21,8 +20,7 @@ type PlayCoreProps = {
 } & Omit<UseCustomAudioParams, 'lyric'>;
 
 // 歌曲播放
-export default ({ src, lyrics, lyricAutoScroll = true }: PlayCoreProps) => {
-  const lyricData = useMemo(() => processScrollLyricData(lyrics || []), [lyrics]);
+export default ({ src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
   const { paused, state, movableViewProps, audioInstance } = useCustomAudio({
     src,
     lyric: lyricData.length
@@ -74,7 +72,7 @@ export default ({ src, lyrics, lyricAutoScroll = true }: PlayCoreProps) => {
         >
           {lyricData.map((el, i) => (
             <View
-              key={el.time}
+              key={i}
               className={cls('play-core__lyric-item', {
                 'play-core__lyric-item--active': state.lyricIndex === i,
               })}

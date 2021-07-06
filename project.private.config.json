@@ -21,7 +21,7 @@
         {
           "name": "pages/play-detail/index",
           "pathName": "pages/play-detail/index",
-          "query": "",
+          "query": "type=score",
           "scene": null
         },
         {

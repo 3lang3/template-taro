@@ -3,7 +3,7 @@ import CaptchaBtn from '@/components/CaptchaBtn';
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { eventCenter, navigateBack, navigateTo, showToast, useRouter } from '@tarojs/taro';
+import { eventCenter, navigateTo, reLaunch, showToast, useRouter } from '@tarojs/taro';
 import { useEffect, useRef, useState } from 'react';
 import { useRequest } from 'ahooks';
 import { AtInput, AtForm, AtCheckbox } from 'taro-ui';
@@ -159,7 +159,8 @@ export default () => {
     const { msg } = await singerApply(postValues);
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
-    navigateBack();
+    // @summry 需要刷新个人中心页面 不能用back只能relaunch
+    reLaunch({ url: '/pages/me/index' });
     return;
   };
 

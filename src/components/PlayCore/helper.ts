@@ -212,8 +212,11 @@ export type ScrollLyricItem = {
  * 处理滚动歌词
  * @param lyrics 服务端返回的歌词数据
  */
-export function processScrollLyricData(lyrics: string[]): ScrollLyricItem[] {
-  return lyrics
+export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
+  if (typeof lyrics === 'string') {
+    return lyrics.split('\n').map((el) => ({ time: 0, text: el }));
+  }
+  return (lyrics as string[])
     .map((lyric, i) => {
       const lyricStr = lyric.substr(1);
       const splitIdx = lyricStr.search(/\]/);
