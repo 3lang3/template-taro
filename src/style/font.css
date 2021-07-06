@@ -1,9 +1,9 @@
 /* stylelint-disable */
 @font-face {
   font-family: "iconfont"; /* Project id 2629008 */
-  src: url('//at.alicdn.com/t/font_2629008_lzufty5f2hb.woff2?t=1624954869911') format('woff2'),
-       url('//at.alicdn.com/t/font_2629008_lzufty5f2hb.woff?t=1624954869911') format('woff'),
-       url('//at.alicdn.com/t/font_2629008_lzufty5f2hb.ttf?t=1624954869911') format('truetype');
+  src: url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.woff2?t=1625557476824') format('woff2'),
+       url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.woff?t=1625557476824') format('woff'),
+       url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.ttf?t=1625557476824') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +12,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-add:before {
+  content: "\e664";
+}
+
+.icon-add-circle:before {
+  content: "\e665";
+}
+
+.icon-ashbin:before {
+  content: "\e666";
+}
+
+.icon-close:before {
+  content: "\e668";
 }
 
 .icon-space:before {
@@ -177,4 +193,3 @@
 .icon-quku_bofang:before {
   content: "\e677";
 }
-

@@ -104,7 +104,7 @@ export default function CustomPicker({
         valueKey,
         cascade,
       });
-      if (onChange) onChange(payload, titleArr);
+      onChange(payload, titleArr);
     }
   };
   const _columnChange = ({ detail }) => {
@@ -150,7 +150,7 @@ export default function CustomPicker({
       <AtListItem
         disabled={disabled}
         title={title}
-        extraText={Array.isArray(titleArr) ? titleArr.join(' ') : undefined}
+        extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
         arrow={arrow && !value ? 'right' : undefined}
       />
     </Picker>

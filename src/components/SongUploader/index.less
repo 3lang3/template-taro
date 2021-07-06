@@ -37,5 +37,29 @@
     width: 32px;
     height: 32px;
     margin-left: 4px;
+    color: @gray-7;
+  }
+
+  &__status {
+    position: relative;
+    min-height: 120px;
+    border-radius: 8px;
+    &--success {
+      color: @white;
+      background-color: @primary;
+      border-color: @primary !important;
+      .settlein-uploader__icon {
+        color: @white;
+        font-size: 48px;
+      }
+    }
+  }
+
+  &__delete {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: @orange;
+    font-size: 38px;
   }
 }

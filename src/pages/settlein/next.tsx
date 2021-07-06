@@ -2,13 +2,12 @@ import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { eventCenter, hideToast, showToast, useRouter } from '@tarojs/taro';
 import { View } from '@tarojs/components';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
 import SongUploader from '@/components/SongUploader';
 import CustomPicker from '@/components/CustomPicker';
-import { validateFields } from '@/utils/form';
 import { singerApply } from '@/services/settlein';
 import './index.less';
 
@@ -22,23 +21,14 @@ const siteData = [
   { name: '其他', id: 7 },
 ];
 
-const fields = {
-  website_type: {
-    label: '站外信息',
-    rules: [{ required: true }],
-  },
-  song_url: {
-    label: '真实姓名',
-    rules: [{ required: true }],
-  },
-};
-
 type SettleNextPageParams = {
   status?: 'audit';
 };
 
 export default () => {
   const { params } = useRouter<SettleNextPageParams>();
+  //
+  const prevStepPayloadRef = useRef<any>();
   // 审核状态
   const isAudit = params.status === 'audit';
 
@@ -46,20 +36,17 @@ export default () => {
   const [payload, set] = useState({
     song_url: '',
     website_type: undefined,
-    idcard: '',
-    email: '',
-    area: undefined,
-    mobile: '',
-    code: '',
+    website_url: '',
     checked: [],
   });
 
   useEffect(() => {
     // @hack 获取上一个页面传递的数据
-    if (isAudit) {
-      eventCenter.once('page:message:settle-next', (response) => console.log(response));
-      eventCenter.trigger('page:init:settle');
-    }
+    eventCenter.once('page:message:settle-next', (response) => {
+      console.log(response);
+      prevStepPayloadRef.current = response.payload;
+    });
+    eventCenter.trigger('page:init:settle');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -69,22 +56,36 @@ export default () => {
   const onSubmit = async () => {
     if (isAudit) return;
     const { checked, ...values } = payload;
-    const hasInvalidField = validateFields(values, fields);
-    if (hasInvalidField) return;
-    // 协议勾选
-    if (!checked.length) {
-      showToast({ title: '请勾选平台协议', icon: 'none' });
-      return true;
+    // 表单校验
+    try {
+      if (values.website_type && !values.website_url) {
+        throw new Error('请输入平台个人链接');
+      }
+      if (values.website_url && !values.website_type) {
+        throw new Error('请选择站外信息');
+      }
+
+      if (!values.song_url && !values.website_url) {
+        throw new Error('平台个人链接、上传音频聊天记录至少填写一项');
+      }
+      // 协议勾选
+      if (!checked.length) {
+        throw new Error('请勾选平台协议');
+      }
+    } catch (error) {
+      showToast({ title: error.message, icon: 'none' });
+      return;
     }
 
     showToast({ icon: 'loading', title: '请求中...' });
-    await singerApply({ ...values, identity: 2 });
+    await singerApply({ ...values, ...prevStepPayloadRef.current, identity: 2 });
     hideToast();
     setVisible(true);
   };
 
-  const onSongUpload = async (file) => {
-    console.log(file);
+  const onSongUpload = async (value, file, response) => {
+    console.log(file, response);
+    set((v) => ({ ...v, song_url: value }));
   };
 
   return (
@@ -113,17 +114,21 @@ export default () => {
             <Flex className="input--border">
               <AtInput
                 disabled={isAudit}
-                name="song_url"
+                name="website_url"
                 type="text"
                 placeholder="https://www.tapd.cn/38927421/prong/stories11"
-                value={payload.song_url}
-                onChange={(value) => set((v: any) => ({ ...v, song_url: value }))}
+                value={payload.website_url}
+                onChange={(value) => set((v: any) => ({ ...v, website_url: value }))}
               />
             </Flex>
           </View>
         </View>
         <Typography.Text className="settlein-title">二、上传歌曲</Typography.Text>
-        <SongUploader webActionUrl="https://www.tapd.cn/" onChange={onSongUpload} />
+        <SongUploader
+          webActionUrl="https://www.tapd.cn/"
+          value={payload.song_url}
+          onChange={onSongUpload}
+        />
         <View className="p-default bg-white">
           <Typography.Text type="secondary" size="sm">
             1、歌曲需是本人原创/翻唱作品，且不可借用他人歌曲元素，如经发现平台将追究相关责任。

@@ -85,6 +85,12 @@ export default () => {
     area: undefined,
     mobile: '',
     code: '',
+    // real_name: '张煌',
+    // idcard: '430302199006190010',
+    // email: 'zhanghuang11211@qq.com',
+    // area: [110000, 110100, 110114],
+    // mobile: '13071856973',
+    // code: '12333',
     checked: [],
   });
 
@@ -128,21 +134,6 @@ export default () => {
       showToast({ title: '请勾选平台协议', icon: 'none' });
       return;
     }
-    if (isSinger) {
-      // 歌手入驻 进入下一步
-      navigateTo({
-        url: `/pages/settlein/next${isAudit ? '?status=audit' : ''}`,
-        success: () => {
-          // 通过eventCenter向被打开页面传送数据
-          // @hack
-          eventCenter.once('page:init:settle', () => {
-            eventCenter.trigger('page:message:settle-next', detail);
-          });
-        },
-      });
-      return;
-    }
-    showToast({ icon: 'loading', title: '请求中...' });
     const { area, ...restValues } = values;
     const [province, city, district] = area as unknown as any[];
     const postValues = {
@@ -156,6 +147,21 @@ export default () => {
       identity: params.identity,
       ...restValues,
     };
+    if (isSinger) {
+      // 歌手入驻 进入下一步
+      navigateTo({
+        url: `/pages/settlein/next${isAudit ? '?status=audit' : ''}`,
+        success: () => {
+          // 通过eventCenter向被打开页面传送数据
+          // @hack
+          eventCenter.once('page:init:settle', () => {
+            eventCenter.trigger('page:message:settle-next', { detail, payload: postValues });
+          });
+        },
+      });
+      return;
+    }
+    showToast({ icon: 'loading', title: '请求中...' });
     const { msg } = await singerApply(postValues);
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
@@ -227,7 +233,7 @@ export default () => {
             <CaptchaBtn num={3} />
           </AtInput>
         )}
-        {!isAudit && (
+        {!isAudit && !isSinger && (
           <AtCheckbox
             onChange={(value) => set((v: any) => ({ ...v, checked: value }))}
             selectedList={payload.checked}
