@@ -1,7 +1,13 @@
 import CaptchaBtn from '@/components/CaptchaBtn';
-import { showToast } from '@tarojs/taro';
+import { showToast, navigateBack, getCurrentInstance } from '@tarojs/taro';
 import { useState } from 'react';
 import { AtInput, AtForm } from 'taro-ui';
+import {
+  sendVerifyOldEmailCode,
+  sendBindNewEmailCode,
+  verifyOldEmail,
+  bindNewEmail,
+} from '@/services/email';
 import Button from '@/components/Button';
 import { View } from '@tarojs/components';
 import { validateFields } from '@/utils/form';
@@ -29,17 +35,47 @@ const fields = {
 };
 
 export default () => {
+  const { router } = getCurrentInstance();
   const [payload, set] = useState({
-    email: '',
+    email: (router as any).params.email,
     code: '',
   });
+  const [step, setStep] = useState<number>(1);
 
   const onSubmit = () => {
-    const hasInvalidField = validateFields(payload, fields);
+    const hasInvalidField = validateFields(
+      payload,
+      step === 1
+        ? {
+            email: { label: '邮箱', rules: [] },
+            code: fields.code,
+          }
+        : fields,
+    );
     if (hasInvalidField) return;
     // 协议勾选
     console.log(payload);
-    showToast({ title: '提交成功!', icon: 'success' });
+    if (step === 1) {
+      verifyOldEmail(payload).then(({ type, msg }) => {
+        if (type === 1) throw Error(msg);
+        setStep(2);
+        set({ email: '', code: '' });
+      });
+    } else {
+      bindNewEmail(payload).then(({ type, msg }) => {
+        if (type === 1) throw Error(msg);
+        navigateBack();
+        showToast({ title: '修改成功!', icon: 'success' });
+      });
+    }
+  };
+
+  const onCode = () => {
+    if (step === 1) {
+      sendVerifyOldEmailCode();
+    } else {
+      sendBindNewEmailCode(payload);
+    }
   };
 
   return (
@@ -49,7 +85,7 @@ export default () => {
           className="custom-form-left"
           name="email"
           placeholder="请输入邮箱"
-          type="phone"
+          disabled={step === 1}
           value={payload.email}
           onChange={(value) => set((v: any) => ({ ...v, email: value }))}
         />
@@ -61,11 +97,11 @@ export default () => {
           value={payload.code}
           onChange={(value) => set((v: any) => ({ ...v, code: value }))}
         >
-          <CaptchaBtn num={3} />
+          <CaptchaBtn onNodeClick={onCode} num={4} />
         </AtInput>
         <View className="p-default">
           <Button className="mt50" onClick={onSubmit} circle type="primary" size="lg">
-            绑定新邮箱
+            {step === 1 ? '下一步' : '绑定新邮箱'}
           </Button>
         </View>
       </AtForm>
