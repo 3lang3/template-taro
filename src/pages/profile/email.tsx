@@ -46,17 +46,18 @@ export default () => {
     <>
       <AtForm className="custom-form">
         <AtInput
+          className="custom-form-left"
           name="email"
-          title="手机号"
+          placeholder="请输入邮箱"
           type="phone"
           value={payload.email}
           onChange={(value) => set((v: any) => ({ ...v, email: value }))}
         />
         <AtInput
           name="code"
-          title="验证码"
+          placeholder="请输入验证码"
           type="number"
-          className="captcha-input"
+          className="captcha-input custom-form-left"
           value={payload.code}
           onChange={(value) => set((v: any) => ({ ...v, code: value }))}
         >

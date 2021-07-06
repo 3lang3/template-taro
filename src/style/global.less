@@ -302,6 +302,24 @@
   &::after {
     content: none !important;
   }
+  &-left {
+    input {
+      text-align: left !important;
+    }
+  }
+  &-picker {
+    position: relative;
+    .item-content {
+      display: none;
+    }
+    .at-icon-chevron-right {
+      position: absolute;
+      top: 28px;
+      right: 10px;
+      color: #ccc;
+      font-size: 32px !important;
+    }
+  }
   .at-input {
     margin-bottom: 0 !important;
     margin-left: 0 !important;
