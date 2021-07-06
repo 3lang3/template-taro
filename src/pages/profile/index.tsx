@@ -29,11 +29,11 @@ export default () => {
         </Typography.Title>
       </Flex>
       <AtList className="custom-list custom-form">
-        <AtListItem title="张三" disabled />
-        <AtListItem title="32323****44884" disabled />
+        <AtListItem title={memberInfo.real_name} disabled />
+        <AtListItem title={memberInfo.idcard} disabled />
         <AtListItem
-          title="75****2@163.com"
-          onClick={() => navigateTo({ url: '/pages/profile/email' })}
+          title={memberInfo.email}
+          onClick={() => navigateTo({ url: `/pages/profile/email?email=${memberInfo.email}` })}
         />
         <View className="custom-form-picker">
           <AreaPicker
@@ -45,8 +45,8 @@ export default () => {
           <AtIcon className="item-extra__icon" value="chevron-right" />
         </View>
         <AtListItem
-          title="134****4332"
-          onClick={() => navigateTo({ url: '/pages/profile/mobile' })}
+          title={memberInfo.mobile}
+          onClick={() => navigateTo({ url: `/pages/profile/mobile?mobile=${memberInfo.mobile}` })}
         />
       </AtList>
     </View>

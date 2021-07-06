@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { AtButton } from 'taro-ui';
-import './index.less'
+import './index.less';
 
-export default ({ num = 60 }) => {
+export default ({ num = 60, onNodeClick = () => {} }) => {
   const timer = useRef<any>(null);
   const [count, setCount] = useState(num);
   const [disabled, setDisabled] = useState(false);
@@ -13,6 +13,7 @@ export default ({ num = 60 }) => {
 
   const onClick = () => {
     if (disabled) return;
+    onNodeClick && onNodeClick();
     setDisabled(true);
     start();
   };
