@@ -1,8 +1,9 @@
 /* 用户数据持久化 */
 
 import config from '@/config';
-import { getCurrentUser } from '@/services/common';
+import { getCurrentUser, getTagType, getLanguageList, getSongStyleList } from '@/services/common';
 import type { CurrentUserType } from '@/services/common';
+import type { TagType, LanguageVersion, SongStyle } from '@/services/common.d';
 import type { UserInfo } from '@tarojs/taro';
 import { removeStorageSync } from '@tarojs/taro';
 
@@ -12,6 +13,7 @@ export const DONE = 'COMMON/DONE';
 export const ERROR = 'COMMON/ERROR';
 export const LOGOUT = 'USER/LOGOUT';
 export const GET_USER_PROFILE = 'COMMON/GET_USER_PROFILE';
+export const INIT = 'COMMON/INIT';
 
 // actions
 export const logout = () => {
@@ -40,6 +42,17 @@ export function getUser(localUserInfo?): any {
   };
 }
 
+export const initCommonReducer = () => {
+  return (dispath, state) => {
+    const { common: commonReducer } = state();
+    if (!commonReducer.tagType.length) {
+      Promise.all([getTagType(), getLanguageList(), getSongStyleList()]).then((res) => {
+        dispath({ type: INIT, payload: res });
+      });
+    }
+  };
+};
+
 // reducers
 export type CommonStateType = {
   loading: boolean;
@@ -47,6 +60,9 @@ export type CommonStateType = {
   done: boolean;
   userInfo: UserInfo;
   data: CurrentUserType;
+  tagType: TagType[];
+  languageVersion: LanguageVersion[];
+  songStyle: SongStyle[];
 };
 
 const INITIAL_STATE: CommonStateType = {
@@ -57,6 +73,9 @@ const INITIAL_STATE: CommonStateType = {
   userInfo: {} as UserInfo,
   // 服务端返回的用户数据
   data: {} as CurrentUserType,
+  tagType: [],
+  languageVersion: [],
+  songStyle: [],
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {
@@ -93,6 +112,13 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         error: false,
         done: true,
         userInfo: payload,
+      };
+    case INIT:
+      return {
+        ...state,
+        tagType: payload[0].data,
+        languageVersion: payload[1].data,
+        songStyle: payload[2].data,
       };
     default:
       return state;

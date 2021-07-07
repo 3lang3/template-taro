@@ -20,3 +20,25 @@ export type SuccessResType = {
   type: number;
   msg: string;
 };
+
+// 歌曲标签结构
+export type TagType = {
+  tag_type: number;
+  tag_type_name: string;
+  value: {
+    tag: number;
+    tag_name: string;
+  }[];
+};
+
+// 语种设置
+export type LanguageVersion = {
+  language: number;
+  name: string;
+};
+
+// 语种设置
+export type SongStyle = {
+  song_style: number;
+  name: string;
+};

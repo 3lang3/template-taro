@@ -41,3 +41,18 @@ export function wxMiniProgramLogin(data: wxMiniProgramLoginPayload) {
 export function getRegionList() {
   return request('/other/getRegionList');
 }
+
+// 获取歌曲标签
+export function getTagType() {
+  return request('/other/getTagType');
+}
+
+// 获取语种设置
+export function getLanguageList() {
+  return request('/other/getLanguageList');
+}
+
+// 获取曲风\流派接口
+export function getSongStyleList() {
+  return request('/other/getSongStyleList');
+}

@@ -1,5 +1,5 @@
 import Typography from '@/components/Typography';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   AtInput,
   AtForm,
@@ -10,8 +10,9 @@ import {
   AtModalHeader,
 } from 'taro-ui';
 import { validateFields } from '@/utils/form';
+import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import { setClipboardData } from '@tarojs/taro';
+import { setClipboardData, navigateTo } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import './index.less';
@@ -22,16 +23,6 @@ const simpleText = `创作目的：提高自己知名度，售卖版权取得收
 创作完成地点：北京市
 作品独创性：使用了民风和电子结合的曲风
 创作灵感：讲述男女分手后，单方面思念以前一起做过的任何事情，当听到他们喜欢的歌曲的时候，身边却只有自己了，虽然分开那么久却还是不能习惯`;
-
-const typeData = [
-  { name: '流行', id: 2 },
-  { name: '电子', id: 3 },
-];
-const langData = [
-  { name: '中文', id: 1 },
-  { name: '粤语', id: 6 },
-  { name: '英语', id: 9 },
-];
 
 const fields = {
   name: {
@@ -62,12 +53,32 @@ const fields = {
 
 export default () => {
   const [visible, setVisible] = useState(false);
+  const store = useSelector(({ common }) => common);
 
+  const pickerData = useMemo(() => {
+    return () => {
+      const before = store.tagType.map((item) => ({ name: item.tag_type_name, id: item.tag_type }));
+      const after = store.tagType.length
+        ? store.tagType[0].value.map((item) => ({ name: item.tag_name, id: item.tag }))
+        : [];
+      return [before, after];
+    };
+  }, [store.tagType]);
+  const langData = useMemo(() => {
+    return () => {
+      return store.languageVersion.map(({ name, language }) => ({ name, id: language }));
+    };
+  }, [store.languageVersion]);
+  const songStyle = useMemo(() => {
+    return () => {
+      return store.songStyle.map(({ name, song_style }) => ({ name, id: song_style }));
+    };
+  }, [store.songStyle]);
   const [payload, set] = useState({
     name: '风往北吹',
-    type: 2,
-    lang: 1,
-    label: [3, 6],
+    type: 0,
+    lang: 0,
+    label: [],
     intro: '简单的介绍',
     desc: '简单的说明',
   });
@@ -76,6 +87,7 @@ export default () => {
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     console.log(payload);
+    navigateTo({ url: '/pages/sell/next' });
   };
 
   const closeModal = () => setVisible(false);
@@ -99,7 +111,7 @@ export default () => {
         <CustomPicker
           title={fields.type.label}
           arrow
-          data={typeData}
+          data={songStyle()}
           mode="selector"
           value={payload.type}
           onChange={(value) => set((v: any) => ({ ...v, type: value }))}
@@ -107,7 +119,7 @@ export default () => {
         <CustomPicker
           title={fields.lang.label}
           arrow
-          data={langData}
+          data={langData()}
           mode="selector"
           value={payload.lang}
           onChange={(value) => set((v: any) => ({ ...v, lang: value }))}
@@ -115,7 +127,7 @@ export default () => {
         <CustomPicker
           title={`${fields.label.label}(每种最多2个)`}
           arrow
-          data={[typeData, langData]}
+          data={pickerData()}
           mode="multiSelector"
           value={payload.label}
           onChange={(value) => set((v: any) => ({ ...v, label: value }))}
