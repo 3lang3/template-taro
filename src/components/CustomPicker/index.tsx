@@ -60,13 +60,23 @@ export default function CustomPicker({
   ...props
 }: CustomPickerProps) {
   const [range, setRange] = useState(() =>
-    getPickerData(data, value, { mode, nameKey, childrenKey, valueKey, cascade }),
+    getPickerRange(data, value, { mode, nameKey, childrenKey, valueKey, cascade }),
   );
   const [pickerValue, setPickerValue] = useState(
     () => value || (getInitialValue(mode, cascade) as any),
   );
   const [titleArr, setTitleArr] = useState<string[]>([]);
+  const initRef = useRef(false);
   const innerEffect = useRef(false);
+
+  useEffect(() => {
+    if (!initRef.current) {
+      initRef.current = true;
+      return;
+    }
+    setRange(getPickerRange(data, value, { mode, nameKey, childrenKey, valueKey, cascade }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   useEffect(() => {
     // innerEffect.current为true代表内部更新value
@@ -114,14 +124,17 @@ export default function CustomPicker({
     let newValue = JSON.parse(JSON.stringify(pickerValue)) as any[];
     newValue[detail.column] = detail.value;
     newValue.fill(0, detail.column + 1);
-    const newRange = getPickerData(data, newValue, {
-      mode,
-      nameKey,
-      childrenKey,
-      valueKey,
-      cascade,
-    });
-    setRange(newRange);
+    if (cascade) {
+      // 联级重置range值
+      const newRange = getPickerRange(data, newValue, {
+        mode,
+        nameKey,
+        childrenKey,
+        valueKey,
+        cascade,
+      });
+      setRange(newRange);
+    }
     setPickerValue(newValue);
   };
 
@@ -169,19 +182,27 @@ type RegionItemType = {
   children?: RegionItemType[];
 };
 
-function getPickerData(
+function getPickerRange(
   data: RegionItemType[],
   pickerValue: number[] = [],
   opts?: Record<string, any>,
 ) {
+  // data数据非预期
+  if (!Array.isArray(data) || !data.length) return [];
   const { mode, childrenKey = 'children', nameKey = 'name', cascade } = opts || {};
+  // 非多选
   if (mode !== 'multiSelector') return data.map((el) => el[nameKey]);
+
+  // 多选
   const rs = [] as any[];
   let pValue = pickerValue;
+  // 保证value格式符合data长度
   if (!pValue.length) {
-    pValue = Array.from({ length: cascade }, () => 0);
+    // 联级取cascade值 非联级取data(二维数组)长度
+    pValue = Array.from({ length: cascade || data.length }, () => 0);
   }
 
+  // 根据当前值获取 picker range数据(联级情况下需要重置range)
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;
     if (cascade) {
