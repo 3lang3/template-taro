@@ -8,3 +8,4 @@ node_modules/
 .env
 .env.local
 /src/config/env/development.ts
+.package-lock.json
