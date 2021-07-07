@@ -213,6 +213,9 @@ function getPickerRange(
         column = data;
       }
     }
+    if (column[childrenKey]) {
+      column = column[childrenKey];
+    }
     rs.push(column.map((el) => el[nameKey]));
     return column;
   }, []);
