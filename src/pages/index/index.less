@@ -5,19 +5,25 @@
   width: 100%;
 }
 
-.index-swiper {
-  margin-bottom: 60px;
-  padding-top: 332px;
+.index-header {
+  &__placeholder {
+    padding-top: 332px;
+  }
   &__bg {
     position: absolute;
     top: 0;
     right: 0;
     left: 0;
     z-index: 0;
+    z-index: -1;
     height: 504px;
     background: @gradient-primary;
   }
+}
+
+.index-swiper {
   &__wrapper {
+    margin-bottom: 60px;
     padding: 0 24px;
   }
   &__main {

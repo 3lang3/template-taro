@@ -125,44 +125,54 @@ const IndexPageContent = () => {
     <>
       <TabNavigationBar />
       <View className="page-index">
+        <View className="index-header__placeholder" />
+        <View className="index-header__bg" />
         {/* 首页轮播图 */}
-        <View className="index-swiper">
-          <View className="index-swiper__bg" />
+        {Array.isArray(data.banner) && data.banner.length > 0 && (
           <CustomSwiper
             className="index-swiper__wrapper"
             swiperClassName="index-swiper__main"
-            data={data?.banner}
+            data={data.banner}
             itemRender={(item) => (
               <View className="index-swiper__main-item">
                 <Image className="index-swiper__main-img" src={item.url} />
               </View>
             )}
           />
-        </View>
-        <View className="index-rc-album">
-          <Typography.Title level={2}>推荐专辑</Typography.Title>
-          <RcAlbum data={data.album} />
-        </View>
-        <View className="index-hot-song">
-          <View className="index-hot-song__title">
-            <Typography.Title style={{ marginBottom: 0 }} level={2}>
-              热门歌曲
-            </Typography.Title>
-            <Typography.Text
-              onClick={() => navigateTo({ url: '/pages/hot-board/index' })}
-              type="secondary"
-              size="sm"
-            >
-              更多
-              <Icon icon="icon-icon_jinru" size="24" />
-            </Typography.Text>
+        )}
+        {Array.isArray(data.album) && data.album.length > 0 && (
+          <View className="index-rc-album">
+            <Typography.Title level={2}>推荐专辑</Typography.Title>
+            <RcAlbum data={data.album} />
           </View>
-          <HotSong data={data.hotSongList} />
-        </View>
-        <View className="index-latest-news">
-          <Typography.Title level={2}>最新动态</Typography.Title>
-          <LatestNews data={data.trends} />
-        </View>
+        )}
+
+        {Array.isArray(data.hotSongList) && data.hotSongList.length > 0 && (
+          <>
+            <View className="index-hot-song">
+              <View className="index-hot-song__title">
+                <Typography.Title style={{ marginBottom: 0 }} level={2}>
+                  热门歌曲
+                </Typography.Title>
+                <Typography.Text
+                  onClick={() => navigateTo({ url: '/pages/hot-board/index' })}
+                  type="secondary"
+                  size="sm"
+                >
+                  更多
+                  <Icon icon="icon-icon_jinru" size="24" />
+                </Typography.Text>
+              </View>
+              <HotSong data={data.hotSongList} />
+            </View>
+          </>
+        )}
+        {Array.isArray(data.trends) && data.trends.length > 0 && (
+          <View className="index-latest-news">
+            <Typography.Title level={2}>最新动态</Typography.Title>
+            <LatestNews data={data.trends} />
+          </View>
+        )}
       </View>
     </>
   );
