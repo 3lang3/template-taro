@@ -9,12 +9,14 @@ import {
   AtModalContent,
   AtModalHeader,
 } from 'taro-ui';
+import { useBoolean } from 'ahooks';
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
 import { setClipboardData, navigateTo } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
+import MoreSelect from '@/components/MoreSelect';
 import './index.less';
 import { SellSteps } from './components';
 
@@ -25,27 +27,27 @@ const simpleText = `创作目的：提高自己知名度，售卖版权取得收
 创作灵感：讲述男女分手后，单方面思念以前一起做过的任何事情，当听到他们喜欢的歌曲的时候，身边却只有自己了，虽然分开那么久却还是不能习惯`;
 
 const fields = {
-  name: {
+  song_name: {
     label: '作品名',
     rules: [{ required: true }],
   },
-  type: {
+  sect: {
     label: '流派',
     rules: [{ required: true }],
   },
-  lang: {
+  language: {
     label: '语种',
     rules: [{ required: true }],
   },
-  label: {
+  tag: {
     label: '标签',
     rules: [{ required: true }],
   },
-  intro: {
+  introduce: {
     label: '作品简介',
     rules: [{ required: true }],
   },
-  desc: {
+  explain: {
     label: '创作说明',
     rules: [{ required: true }],
   },
@@ -53,15 +55,21 @@ const fields = {
 
 export default () => {
   const [visible, setVisible] = useState(false);
+  const [moreSelectVisible, { setTrue, setFalse }] = useBoolean(false);
   const store = useSelector(({ common }) => common);
 
   const pickerData = useMemo(() => {
     return () => {
-      const before = store.tagType.map((item) => ({ name: item.tag_type_name, id: item.tag_type }));
-      const after = store.tagType.length
-        ? store.tagType[0].value.map((item) => ({ name: item.tag_name, id: item.tag }))
-        : [];
-      return [before, after];
+      return store.tagType.map((item) => ({
+        ...item,
+        name: item.tag_type_name,
+        value: item.tag_type,
+        children: item.value.map((child) => ({
+          ...child,
+          name: child.tag_name,
+          value: child.tag,
+        })),
+      }));
     };
   }, [store.tagType]);
   const langData = useMemo(() => {
@@ -75,12 +83,12 @@ export default () => {
     };
   }, [store.songStyle]);
   const [payload, set] = useState({
-    name: '风往北吹',
-    type: 0,
-    lang: 0,
-    label: [],
-    intro: '简单的介绍',
-    desc: '简单的说明',
+    song_name: '风往北吹',
+    sect: 0,
+    language: 0,
+    tag: undefined,
+    introduce: '简单的介绍',
+    explain: '简单的说明',
   });
 
   const onSubmit = () => {
@@ -97,59 +105,99 @@ export default () => {
     closeModal();
   };
 
+  function onLabel(values) {
+    const result = values.map((item, i) => {
+      const { tag_type, tag_type_name } = store.tagType[i];
+      return {
+        tag_type,
+        tag_type_name,
+        value: item,
+      };
+    });
+    setFalse();
+    set((v: any) => ({ ...v, tag: result }));
+  }
+
+  const getTagText = useMemo(() => {
+    return () => {
+      const myArr: any[] = [];
+      const tag = payload.tag as any;
+      if (tag && tag.length) {
+        for (let i = 0; i < tag.length; i++) {
+          for (let j = 0; j < tag[i].value.length; j++) {
+            if (myArr.length < 2) {
+              myArr.push(tag[i].value[j].name);
+            } else {
+              break;
+            }
+          }
+        }
+      }
+      return String(myArr);
+    };
+  }, [payload.tag]);
+
   return (
     <>
+      <MoreSelect
+        visible={moreSelectVisible}
+        title="主题选择"
+        value={payload.tag}
+        max={2}
+        onCancel={setFalse}
+        onSubmit={onLabel}
+        contentTitle="标签选择"
+        data={pickerData() as any}
+      />
       <SellSteps />
       <AtForm className="custom-form">
         <AtInput
-          name="name"
-          title={fields.name.label}
+          name="song_name"
+          title={fields.song_name.label}
           type="text"
-          value={payload.name}
-          onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+          value={payload.song_name}
+          onChange={(value) => set((v: any) => ({ ...v, song_name: value }))}
         />
         <CustomPicker
-          title={fields.type.label}
+          title={fields.sect.label}
           arrow
           data={songStyle()}
           mode="selector"
-          value={payload.type}
-          onChange={(value) => set((v: any) => ({ ...v, type: value }))}
+          value={payload.sect}
+          onChange={(value) => set((v: any) => ({ ...v, sect: value }))}
         />
         <CustomPicker
-          title={fields.lang.label}
+          title={fields.language.label}
           arrow
           data={langData()}
           mode="selector"
-          value={payload.lang}
-          onChange={(value) => set((v: any) => ({ ...v, lang: value }))}
+          value={payload.language}
+          onChange={(value) => set((v: any) => ({ ...v, language: value }))}
         />
-        <CustomPicker
-          title={`${fields.label.label}(每种最多2个)`}
-          arrow
-          data={pickerData()}
-          mode="multiSelector"
-          value={payload.label}
-          onChange={(value) => set((v: any) => ({ ...v, label: value }))}
+        <AtListItem
+          onClick={setTrue}
+          title={`${fields.tag.label}(每种最多2个)`}
+          extraText={getTagText()}
+          arrow={!getTagText() ? 'right' : undefined}
         />
-        <AtListItem title={`${fields.intro.label}(选填)`} />
+        <AtListItem title={`${fields.introduce.label}(选填)`} />
         <View className="board bg-white px24">
           <AtTextarea
             className="border--bolder"
             count={false}
-            placeholder={fields.intro.label}
-            value={payload.intro}
-            onChange={(value) => set((v: any) => ({ ...v, intro: value }))}
+            placeholder={fields.introduce.label}
+            value={payload.introduce}
+            onChange={(value) => set((v: any) => ({ ...v, introduce: value }))}
           />
         </View>
-        <AtListItem title={`${fields.desc.label}(选填)`} />
+        <AtListItem title={`${fields.explain.label}(选填)`} />
         <View className="board bg-white px24">
           <AtTextarea
             className="border--bolder"
             count={false}
-            placeholder={fields.desc.label}
-            value={payload.desc}
-            onChange={(value) => set((v: any) => ({ ...v, desc: value }))}
+            placeholder={fields.explain.label}
+            value={payload.explain}
+            onChange={(value) => set((v: any) => ({ ...v, explain: value }))}
           />
         </View>
         <View onClick={() => setVisible(true)} className="p-default bg-white">
