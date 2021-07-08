@@ -1,4 +1,4 @@
-import Taro, { getStorageSync, request } from '@tarojs/taro';
+import Taro, { getCurrentPages, getStorageSync, reLaunch, request } from '@tarojs/taro';
 import config from '@/config';
 import store from '@/state/config/store';
 import { logout } from '@/state/common';
@@ -56,6 +56,11 @@ const generateRequest = (prefix: string) => {
           // @todo logout logic
           if (statusCode === 401 || statusCode === 403) {
             store.dispatch(logout());
+            const pages = getCurrentPages();
+            const currentPage = pages[pages.length - 1];
+            if (currentPage.route !== 'pages/me/index') {
+              reLaunch({ url: '/pages/me/index' });
+            }
             reject(new Error(data.msg));
           }
           if (statusCode >= 400 || statusCode < 200) {

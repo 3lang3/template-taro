@@ -13,20 +13,29 @@ export type CurrentUserType = {
   avatar: string;
   /** 手机号 */
   mobile: string;
+  /** 用户身份 */
   identity: UserIdentityType;
+  /**
+   * 是否实名认证
+   */
+  is_authentication: 0 | 1;
+  /**
+   * 微信推送模版数据
+   */
+  template: { template_id: string; template_name: string }[];
 } & Record<string, any>;
 // 根据token获取用户信息
 export function getCurrentUser(): Promise<PromiseResponseType<CurrentUserType>> {
   return request('/member/getBaseInfo');
 }
 
-export type wxMiniProgramLoginPayload = {
+export type WxMiniProgramLoginParams = {
   code: string | number;
   userInfo: any;
   mobile?: string | number;
 };
 // 小程序登录
-export function wxMiniProgramLogin(data: wxMiniProgramLoginPayload) {
+export function wxMiniProgramLogin(data: WxMiniProgramLoginParams) {
   return request(
     '/login/wxMiniProgramLogin',
     {
@@ -55,4 +64,22 @@ export function getLanguageList() {
 // 获取曲风\流派接口
 export function getSongStyleList() {
   return request('/other/getSongStyleList');
+}
+
+type GetDecryptedDataParams = {
+  code: string;
+  encryptedData: string;
+  iv: string;
+};
+
+// 解密敏感信息接口 (微信授权绑定手机号)
+export function getDecryptedData(data: GetDecryptedDataParams) {
+  return request(
+    '/login/getDecryptedData',
+    {
+      method: 'POST',
+      data,
+    },
+    false,
+  );
 }

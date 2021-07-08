@@ -15,22 +15,25 @@ type SongUploaderProps = {
   name?: string;
   onChange?: (v: string | undefined, file?: chooseMessageFile.ChooseFile, response?: any) => void;
   chooseMessageFileType?: chooseMessageFile.Option['type'];
+  disabled?: boolean;
 };
 
 export default (props: SongUploaderProps) => {
   const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
 
   const copy = async () => {
-    if (!props.webActionUrl) return;
+    if (!props.webActionUrl || props.disabled) return;
     setClipboardData({ data: props.webActionUrl });
   };
 
   const onDelete = () => {
+    if (props.disabled) return;
     chooseFileRef.current = undefined;
     if (props.onChange) props.onChange(undefined);
   };
 
   const onUploadClick = async () => {
+    if (props.disabled) return;
     const { errMsg, tempFiles } = await chooseMessageFile({
       count: 1,
       type: props.chooseMessageFileType || 'file',

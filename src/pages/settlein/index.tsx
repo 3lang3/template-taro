@@ -1,13 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import CaptchaBtn from '@/components/CaptchaBtn';
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { eventCenter, navigateTo, reLaunch, showToast, useRouter } from '@tarojs/taro';
-import { useEffect, useRef, useState } from 'react';
 import { useRequest } from 'ahooks';
 import { AtInput, AtForm, AtCheckbox } from 'taro-ui';
-import { singerApply, getCertificationInfo, applyDetail } from '@/services/settlein';
+import { singerApply, applyDetail } from '@/services/settlein';
 import { validateFields } from '@/utils/form';
 import './index.less';
 
@@ -67,9 +68,8 @@ type SettleInPageParams = {
 };
 
 export default () => {
+  const { data: userData } = useSelector((state) => state.common);
   const { params } = useRouter<SettleInPageParams>();
-  // 是否已实名
-  const hasCert = useRef(false);
   // 区域文本值
   const areaRef = useRef<string[]>([]);
   // 
@@ -85,12 +85,6 @@ export default () => {
     area: undefined,
     mobile: '',
     code: '',
-    // real_name: '张煌',
-    // idcard: '430302199006190010',
-    // email: 'zhanghuang11211@qq.com',
-    // area: [110000, 110100, 110114],
-    // mobile: '13071856973',
-    // code: '12333',
     checked: [],
   });
 
@@ -98,36 +92,33 @@ export default () => {
   const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(applyDetail, {
     manual: true,
   });
-  // 实名信息
-  const certificaReq = useRequest(getCertificationInfo, { manual: true });
 
   useEffect(() => {
-    const getCertifica = async () => {
-      const { data } = await certificaReq.run();
-      hasCert.current = true;
-      console.log(data);
-    };
+    // 审核状态填入初始值
     const getDetail = async () => {
       showToast({ icon: 'loading', title: '数据获取中...' });
       const { data } = await detailReq.run();
-      hasCert.current = true;
       const { province, city, district, idcard, real_name, email, mobile } = data;
-      hasCert.current = true;
       set({ area: [province, city, district], mobile, idcard, real_name, email } as any);
     };
     if (isAudit) {
       getDetail();
       return;
     }
-    getCertifica();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (userData.is_authentication) {
+      set({ mobile: userData.mobile } as any);
+    }
+  }, [userData]);
+
   const onSubmit = async () => {
+    // 词曲申请审核状态
     if (isAudit && !isSinger) return;
-    const { checked, code, ...values } = payload;
-    // 已实名 则不校验验证码
-    const hasInvalidField = validateFields(hasCert.current ? values : { code, ...values }, fields);
+    const { checked, ...values } = payload;
+    const hasInvalidField = validateFields(values, fields);
     if (hasInvalidField) return;
     // 协议勾选
     if (!checked.length && !isAudit) {
@@ -143,7 +134,6 @@ export default () => {
       province_name: areaRef.current[0],
       city_name: areaRef.current[1],
       district_name: areaRef.current[2],
-      code,
       identity: params.identity,
       ...restValues,
     };
@@ -185,7 +175,7 @@ export default () => {
           name="real_name"
           title="真实姓名"
           type="text"
-          disabled={hasCert.current || isAudit}
+          disabled={isAudit}
           value={payload.real_name}
           onChange={(value) => set((v: any) => ({ ...v, real_name: value }))}
         />
@@ -193,7 +183,7 @@ export default () => {
           name="idcard"
           title="身份证号码"
           type="idcard"
-          disabled={hasCert.current || isAudit}
+          disabled={isAudit}
           value={payload.idcard}
           onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
         />
@@ -217,11 +207,11 @@ export default () => {
           name="mobile"
           title="手机号"
           type="phone"
-          disabled={hasCert.current || isAudit}
+          disabled
           value={payload.mobile}
           onChange={(value) => set((v: any) => ({ ...v, mobile: value }))}
         />
-        {!(hasCert.current || isAudit) && (
+        {!isAudit && (
           <AtInput
             name="code"
             title="验证码"
@@ -230,7 +220,7 @@ export default () => {
             value={payload.code}
             onChange={(value) => set((v: any) => ({ ...v, code: value }))}
           >
-            <CaptchaBtn num={3} />
+            <CaptchaBtn />
           </AtInput>
         )}
         {!isAudit && !isSinger && (
