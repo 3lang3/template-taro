@@ -8,7 +8,7 @@ import Typography from '@/components/Typography';
 import { eventCenter, navigateTo, reLaunch, showToast, useRouter } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { AtInput, AtForm, AtCheckbox } from 'taro-ui';
-import { singerApply, applyDetail } from '@/services/settlein';
+import { singerApply, applyDetail, sendSettleCodeSms } from '@/services/settlein';
 import { validateFields } from '@/utils/form';
 import './index.less';
 
@@ -99,7 +99,10 @@ export default () => {
       showToast({ icon: 'loading', title: '数据获取中...' });
       const { data } = await detailReq.run();
       const { province, city, district, idcard, real_name, email, mobile } = data;
-      set({ area: [province, city, district], mobile, idcard, real_name, email } as any);
+      set(
+        (v) =>
+          ({ ...v, area: [province, city, district], mobile, idcard, real_name, email } as any),
+      );
     };
     if (isAudit) {
       getDetail();
@@ -110,9 +113,21 @@ export default () => {
 
   useEffect(() => {
     if (userData.is_authentication) {
-      set({ mobile: userData.mobile } as any);
+      set((v) => ({ ...v, mobile: userData.mobile }));
     }
   }, [userData]);
+
+  // 发送验证码
+  const onCodeClick = async () => {
+    try {
+      showToast({ icon: 'loading', title: '发送中...', mask: true });
+      const { msg } = await sendSettleCodeSms({ mobile: userData.mobile });
+      showToast({ icon: 'none', title: msg });
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
 
   const onSubmit = async () => {
     // 词曲申请审核状态
@@ -121,7 +136,7 @@ export default () => {
     const hasInvalidField = validateFields(values, fields);
     if (hasInvalidField) return;
     // 协议勾选
-    if (!checked.length && !isAudit) {
+    if ((!checked || !checked.length) && !isAudit) {
       showToast({ title: '请勾选平台协议', icon: 'none' });
       return;
     }
@@ -220,7 +235,7 @@ export default () => {
             value={payload.code}
             onChange={(value) => set((v: any) => ({ ...v, code: value }))}
           >
-            <CaptchaBtn />
+            <CaptchaBtn onNodeClick={onCodeClick} />
           </AtInput>
         )}
         {!isAudit && !isSinger && (

@@ -8,14 +8,20 @@ export default ({ num = 60, onNodeClick = () => {} }) => {
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
-    return () => clearTimeout(timer.current);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
   }, []);
 
-  const onClick = () => {
+  const handleClick = async () => {
     if (disabled) return;
-    onNodeClick && onNodeClick();
-    setDisabled(true);
-    start();
+    try {
+      onNodeClick && (await onNodeClick());
+      setDisabled(true);
+      start();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const start = () => {
@@ -37,7 +43,7 @@ export default ({ num = 60, onNodeClick = () => {} }) => {
   };
 
   return (
-    <AtButton onClick={onClick} disabled={disabled} className="captcha-btn" size="small" circle>
+    <AtButton onClick={handleClick} disabled={disabled} className="captcha-btn" size="small" circle>
       {disabled ? `${count}s` : '获取验证码'}
     </AtButton>
   );

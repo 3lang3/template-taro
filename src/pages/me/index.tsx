@@ -5,9 +5,9 @@ import MePage from './components/MePage';
 import CompanyPage from './components/CompanyPage';
 
 const PageContent = () => {
-  const { loading, data } = useSelector((state) => state.common);
-
-  if (loading) return <FullPageLoader />;
+  const { loading, data, token } = useSelector((state) => state.common);
+  // 登录中...
+  if (token && loading) return <FullPageLoader />;
   // 不同身份视图不同
   // 机构身份渲染机构视图
   if (data.identity === 3) return <CompanyPage />;
