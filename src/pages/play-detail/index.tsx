@@ -9,11 +9,18 @@ import { TabNavigationBar } from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
-import { hideToast, showToast, useRouter } from '@tarojs/taro';
+import { hideToast, navigateBack, showModal, showToast, useRouter } from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import PlayCore from '@/components/PlayCore';
 import { useRequest } from 'ahooks';
-import { getSongDetail, getSaleSongDetail, operationMusicSongPrice } from '@/services/song';
+import {
+  getSongDetail,
+  getSaleSongDetail,
+  abandonMusicSong,
+  operationMusicSongPrice,
+  applyWantSong,
+  delWantSong,
+} from '@/services/song';
 import CustomSwiper from '@/components/CustomSwiper';
 import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
@@ -30,7 +37,9 @@ type PageContentProps = {
 };
 
 const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+  /** 词曲制作详情页面 */
   const isScorePage = routerParams.type === 'score';
+  /** 是否机构身份 */
   const isCompanyIdentity = +identity === 3;
   return (
     <>
@@ -49,7 +58,9 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
         >
           {isCompanyIdentity && isScorePage && (
             <Flex className="p-default bg-white mb30" justify="center">
-              <Typography.Text>曲2000元 | 词3000元</Typography.Text>
+              <Typography.Text>
+                曲{detail.composer_final_price}元 | 词{detail.lyricist_final_price}元
+              </Typography.Text>
             </Flex>
           )}
           {isScorePage ? (
@@ -109,8 +120,10 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
           <Flex justify="center" className="play-detail-action">
             {isCompanyIdentity ? (
               <>
-                <GiveUpButton />
-                <CounterOfferButton routerParams={routerParams} />
+                <GiveUpButton routerParams={routerParams} />
+                {+detail.is_change_price ? (
+                  <CounterOfferButton routerParams={routerParams} />
+                ) : null}
               </>
             ) : (
               <ApplySingButton detail={detail} />
@@ -146,7 +159,7 @@ export default () => {
     defaultParams: [{ ids: 527875806 }],
   });
   if (loading || commonLoading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
+  if (error || !data) return <FullPageError refresh={refresh} />;
   const identity = commonData.identity;
   return <PageContent detail={data} routerParams={params} identity={identity} />;
 };
@@ -180,21 +193,54 @@ function ScoreButton({ detail }) {
 
 // 申请唱歌按钮
 function ApplySingButton({ detail }) {
-  const { status } = detail;
+  const [status, setStatus] = useState<number>(() => +detail.status);
+  // 申请唱歌
+  const onSongApply = async () => {
+    showToast({ icon: 'loading', title: '申请中...', mask: true });
+    const { msg } = await applyWantSong({ ids: detail.ids });
+    setStatus(1);
+    showToast({ icon: 'success', title: msg });
+  };
+  // 取消申请
+  const onCancelApplay = async () => {
+    showToast({ icon: 'loading', title: '取消中...', mask: true });
+    const { msg } = await delWantSong({ ids: detail.ids });
+    setStatus(0);
+    showToast({ icon: 'success', title: msg });
+  };
+  const onButtonClick = async () => {
+    if (status === 2) return;
+    if (status === 1) {
+      const modalRes = await showModal({ title: '注意', content: '确定要取消申请吗？' });
+      if (modalRes.confirm) {
+        onCancelApplay();
+      }
+      return;
+    }
+    onSongApply();
+  };
   return (
-    <Button circle full size="lg" type="primary">
-      {(() => {
-        if (+status === 1) return '已申请';
-        if (+status === 2) return '已有歌手唱';
-        return '申请唱歌';
-      })()}
-    </Button>
+    <>
+      <Button onClick={onButtonClick} circle full size="lg" type="primary">
+        {(() => {
+          if (+status === 1) return '已申请';
+          if (+status === 2) return '已有歌手唱';
+          return '申请唱歌';
+        })()}
+      </Button>
+    </>
   );
 }
 
 // 放弃按钮 modal
-function GiveUpButton() {
+function GiveUpButton({ routerParams }) {
   const [visible, set] = useState(false);
+  const onConfirm = async () => {
+    showToast({ icon: 'loading', title: '确认中...', mask: true });
+    const { msg } = await abandonMusicSong({ ids: routerParams.ids });
+    showToast({ icon: 'success', title: msg });
+    setTimeout(() => navigateBack(), 1500);
+  };
   return (
     <>
       <Button
@@ -211,10 +257,10 @@ function GiveUpButton() {
         <AtModalHeader>确定放弃收购该词曲嘛?</AtModalHeader>
         <AtModalAction>
           <Flex justify="between" className="p-default pb40">
-            <Button outline circle>
+            <Button outline circle onClick={() => set(false)}>
               取消
             </Button>
-            <Button type="primary" circle>
+            <Button type="primary" circle onClick={() => onConfirm()}>
               确定
             </Button>
           </Flex>
@@ -238,9 +284,9 @@ function CounterOfferButton({ routerParams }) {
       operation_type: 2,
     };
     try {
-      showToast({ icon: 'loading', title: '确认中...' });
+      showToast({ icon: 'loading', title: '确认中...', mask: true });
       const { msg } = await operationMusicSongPrice(payload);
-      showToast({ icon: 'none', title: msg });
+      showToast({ icon: 'success', title: msg });
     } catch (error) {
       hideToast();
     }
@@ -265,12 +311,14 @@ function CounterOfferButton({ routerParams }) {
             price={2000}
             name="n1"
             value={state.composer_price}
+            placeholder="还价价格"
             onChange={(value) => change((v) => ({ ...v, composer_price: value }))}
           />
           <CounterOfferInput
             title="词"
             price={3000}
-            name="n1"
+            name="n2"
+            placeholder="还价价格"
             value={state.lyricist_price}
             onChange={(value) => change((v) => ({ ...v, lyricist_price: value }))}
           />
