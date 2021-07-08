@@ -2,20 +2,38 @@ import { useEffect, useRef, useState } from 'react';
 import { AtButton } from 'taro-ui';
 import './index.less';
 
-export default ({ num = 60, onNodeClick = () => {} }) => {
+type CaptchaBtnProps = {
+  /**
+   * 倒计时数
+   * @default 60
+   */
+  num?: number;
+  /**
+   * 点击验证码事件
+   */
+  onNodeClick?: () => void | Promise<any>;
+};
+
+export default ({ num = 60, onNodeClick }: CaptchaBtnProps) => {
   const timer = useRef<any>(null);
   const [count, setCount] = useState(num);
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
-    return () => clearTimeout(timer.current);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
   }, []);
 
-  const onClick = () => {
+  const handleClick = async () => {
     if (disabled) return;
-    onNodeClick && onNodeClick();
-    setDisabled(true);
-    start();
+    try {
+      onNodeClick && (await onNodeClick());
+      setDisabled(true);
+      start();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const start = () => {
@@ -37,7 +55,7 @@ export default ({ num = 60, onNodeClick = () => {} }) => {
   };
 
   return (
-    <AtButton onClick={onClick} disabled={disabled} className="captcha-btn" size="small" circle>
+    <AtButton onClick={handleClick} disabled={disabled} className="captcha-btn" size="small" circle>
       {disabled ? `${count}s` : '获取验证码'}
     </AtButton>
   );

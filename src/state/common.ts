@@ -4,8 +4,8 @@ import config from '@/config';
 import { getCurrentUser, getTagType, getLanguageList, getSongStyleList } from '@/services/common';
 import type { CurrentUserType } from '@/services/common';
 import type { TagType, LanguageVersion, SongStyle } from '@/services/common.d';
+import { getStorageSync, removeStorageSync } from '@tarojs/taro';
 import type { UserInfo } from '@tarojs/taro';
-import { removeStorageSync } from '@tarojs/taro';
 
 // const
 export const LOADING = 'COMMON/LOADING';
@@ -63,9 +63,11 @@ export type CommonStateType = {
   tagType: TagType[];
   languageVersion: LanguageVersion[];
   songStyle: SongStyle[];
+  token?: string;
 };
 
 const INITIAL_STATE: CommonStateType = {
+  token: getStorageSync(config.storage.tokenKey),
   loading: true,
   error: false,
   done: false,

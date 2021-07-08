@@ -17,3 +17,11 @@ export function singerApply(data) {
     data,
   });
 }
+
+// 验证码接口
+export function sendSettleCodeSms(data: { mobile: string | number }) {
+  return request('/song/sendApplyCodeSms', {
+    method: 'POST',
+    data,
+  });
+}
