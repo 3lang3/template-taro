@@ -2,7 +2,19 @@ import { useEffect, useRef, useState } from 'react';
 import { AtButton } from 'taro-ui';
 import './index.less';
 
-export default ({ num = 60, onNodeClick = () => {} }) => {
+type CaptchaBtnProps = {
+  /**
+   * 倒计时数
+   * @default 60
+   */
+  num?: number;
+  /**
+   * 点击验证码事件
+   */
+  onNodeClick?: () => void | Promise<any>;
+};
+
+export default ({ num = 60, onNodeClick }: CaptchaBtnProps) => {
   const timer = useRef<any>(null);
   const [count, setCount] = useState(num);
   const [disabled, setDisabled] = useState(false);
