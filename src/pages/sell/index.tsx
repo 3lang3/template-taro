@@ -83,19 +83,18 @@ export default () => {
     };
   }, [store.songStyle]);
   const [payload, set] = useState({
-    song_name: '风往北吹',
+    song_name: '',
     sect: 0,
     language: 0,
     tag: undefined,
-    introduce: '简单的介绍',
-    explain: '简单的说明',
+    introduce: '',
+    explain: '',
   });
 
   const onSubmit = () => {
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
-    console.log(payload);
-    navigateTo({ url: '/pages/sell/next' });
+    navigateTo({ url: `/pages/sell/next?params=${JSON.stringify(payload)}` });
   };
 
   const closeModal = () => setVisible(false);
@@ -153,6 +152,7 @@ export default () => {
       <AtForm className="custom-form">
         <AtInput
           name="song_name"
+          placeholder="请输入作品名称"
           title={fields.song_name.label}
           type="text"
           value={payload.song_name}

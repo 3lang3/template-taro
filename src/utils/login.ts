@@ -8,8 +8,8 @@ import {
   showToast,
 } from '@tarojs/taro';
 import store from '@/state/config/store';
-import { getUser } from '@/state/common';
 import { wxMiniProgramLogin } from '@/services/common';
+import { initCommonReducer, getUser } from '@/state/common';
 
 // 静默登录
 export async function silentLogin() {
@@ -22,6 +22,7 @@ export async function silentLogin() {
     if (!available) throw new Error('wx.login登录态过期, 需重新登录');
     const localUserInfo = getStorageSync(config.storage.userInfo);
     store.dispatch(getUser(localUserInfo));
+    store.dispatch(initCommonReducer() as any);
   } catch (error) {
     console.warn('静默登录失败:', error);
   }

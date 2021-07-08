@@ -1,5 +1,5 @@
 import Typography from '@/components/Typography';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   AtInput,
   AtForm,
@@ -11,10 +11,12 @@ import {
   AtModalAction,
 } from 'taro-ui';
 import Flex from '@/components/Flex';
+import { getCurrentInstance, useShareAppMessage } from '@tarojs/taro';
 import { validateFields } from '@/utils/form';
 import { View } from '@tarojs/components';
 import SongUploader from '@/components/SongUploader';
 import CustomPicker from '@/components/CustomPicker';
+import ImagePicker from '@/components/image-picker';
 import Button from '@/components/Button';
 import { CircleIndexList } from '@/components/Chore';
 import Icon from '@/components/Icon';
@@ -39,28 +41,23 @@ const langData = [
 ];
 
 const fields = {
-  name: {
+  composer: {
     label: '作曲人姓名',
     rules: [{ required: true }],
   },
-  type: {
-    label: '流派',
+  lyricist_original_price: {
+    label: '歌词期望价格',
     rules: [{ required: true }],
   },
-  lang: {
-    label: '语种',
+  composer_original_price: {
+    label: '歌曲期望价格',
     rules: [{ required: true }],
   },
-  label: {
-    label: '标签',
-    rules: [{ required: true }],
+  composer_url: {
+    label: '曲连接',
   },
-  intro: {
-    label: '作品简介',
-    rules: [{ required: true }],
-  },
-  desc: {
-    label: '创作说明',
+  lyricist_content: {
+    label: '歌词',
     rules: [{ required: true }],
   },
 };
@@ -69,15 +66,33 @@ export default () => {
   const [visible, setVisible] = useState(false);
 
   const [payload, set] = useState({
-    name: '',
-    check1: false,
+    composer: '', // 作曲人姓名
+    is_composer: false, // 是否是作曲人
+    composer_original_price: 0, // 曲期望价格
     check2: false,
-    type: '',
-    lang: '',
-    label: [3, 6],
-    intro: '简单的介绍',
-    desc: '简单的说明',
+    lyricist: '', // 作词人
+    lyricist_original_price: 0, // 词期望价格
+    idcard: '', // 身份证
+    lyricist_content: '', // 歌词
+    composer_content: [], // 曲谱照片
   });
+
+  useShareAppMessage((res) => {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(res.target);
+    }
+    return {
+      title: '自定义转发标题',
+      path: 'pages/index/index',
+    };
+  });
+
+  useEffect(() => {
+    const { router } = getCurrentInstance();
+    const { params } = (router as any).params;
+    console.log(JSON.parse(params));
+  }, []);
 
   const onSubmit = () => {
     setVisible(true);
@@ -89,21 +104,38 @@ export default () => {
 
   const closeModal = () => setVisible(false);
 
+  // 上传的谱曲
+  const onSongUploader = (path, file) => {
+    console.log(path);
+    console.log(file);
+  };
+
+  // 上传谱曲照片
+  const onImagePickerChange = (filesPath) => {
+    set((v: any) => ({ ...v, composer_content: [...v.composer_content, ...filesPath] }));
+  };
+
+  // 删除图片
+  const onImgRemove = (index: number) => {
+    payload.composer_content.splice(index, 1);
+    set((v: any) => ({ ...v, composer_content: [...v.composer_content] }));
+  };
+
   return (
     <>
       <SellSteps current={1} />
       <AtForm className="custom-form">
         <AtInput
           name="name"
-          title={fields.name.label}
+          title={fields.composer.label}
           type="text"
-          value={payload.name}
-          onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+          value={payload.composer}
+          onChange={(value) => set((v: any) => ({ ...v, composer: value }))}
         >
           <Radio
             className="px24"
-            value={payload.check1}
-            onChange={(value) => set((v) => ({ ...v, check1: value }))}
+            value={payload.is_composer}
+            onChange={(value) => set((v) => ({ ...v, is_composer: value }))}
             label="我是作曲人"
           />
         </AtInput>
@@ -112,17 +144,22 @@ export default () => {
           arrow
           data={langData}
           mode="selector"
-          value={payload.lang}
-          onChange={(value) => set((v: any) => ({ ...v, lang: value }))}
+          value={payload.composer_original_price}
+          onChange={(value) => set((v: any) => ({ ...v, composer_original_price: value }))}
         />
-        <SongUploader />
+        <SongUploader onChange={onSongUploader} webActionUrl="测试地址啦啦" />
+        <ImagePicker
+          onRemove={onImgRemove}
+          files={payload.composer_content}
+          onChange={onImagePickerChange}
+        />
         <View className="h24 bg-light" />
         <AtInput
-          name="name"
+          name="lyricist"
           title="作词人姓名"
           type="text"
-          value={payload.name}
-          onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+          value={payload.lyricist}
+          onChange={(value) => set((v: any) => ({ ...v, lyricist: value }))}
         >
           <Radio
             className="px24"
@@ -141,21 +178,21 @@ export default () => {
         <View className="px24 bg-white">
           <View className="input--border">
             <AtInput
-              name="name1"
+              name="idcard"
               type="text"
-              placeholder="请输入该作者手机尾号后四位"
-              value={payload.name}
-              onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+              placeholder="请输入该作者身份证号"
+              value={payload.idcard}
+              onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
             />
           </View>
         </View>
         <CustomPicker
-          title="请选择期望的曲价格（最终以实际成功为准）"
+          title="请选择期望的词价格（最终以实际成功为准）"
           arrow
           data={langData}
           mode="selector"
-          value={payload.lang}
-          onChange={(value) => set((v: any) => ({ ...v, lang: value }))}
+          value={payload.lyricist_original_price}
+          onChange={(value) => set((v: any) => ({ ...v, lyricist_original_price: value }))}
         />
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
@@ -163,8 +200,8 @@ export default () => {
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
-            value=""
-            onChange={(value) => set((v: any) => ({ ...v, intro: value }))}
+            value={payload.lyricist_content}
+            onChange={(value) => set((v: any) => ({ ...v, lyricist_content: value }))}
           />
         </View>
         <View className="h24 bg-light" />
@@ -232,7 +269,7 @@ function InviteButton() {
   };
   return (
     <>
-      <Button onClick={() => setVisible(true)} type="primary" circle size="sm">
+      <Button openType="share" onClick={() => setVisible(true)} type="primary" circle size="sm">
         邀请作者
       </Button>
       <AtModal isOpened={visible} onClose={() => setVisible(false)}>

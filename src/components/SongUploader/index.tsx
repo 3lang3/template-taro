@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
-import { chooseMessageFile, setClipboardData } from '@tarojs/taro';
+import { chooseMessageFile } from '@tarojs/taro';
+import Button from '@/components/Button';
 import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Typography from '../Typography';
@@ -20,11 +21,6 @@ type SongUploaderProps = {
 
 export default (props: SongUploaderProps) => {
   const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
-
-  const copy = async () => {
-    if (!props.webActionUrl || props.disabled) return;
-    setClipboardData({ data: props.webActionUrl });
-  };
 
   const onDelete = () => {
     if (props.disabled) return;
@@ -65,10 +61,12 @@ export default (props: SongUploaderProps) => {
             name="webActionUrl"
             type="text"
             disabled
-            placeholder={props.webActionUrl}
+            value={props.webActionUrl}
             onChange={() => false}
           />
-          <Typography.Link onClick={copy}>复制</Typography.Link>
+          <Button openType="share" className="settlein-list-share" circle size="sm">
+            发送
+          </Button>
         </Flex>
       </View>
       <View className="p-default">
