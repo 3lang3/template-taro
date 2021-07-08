@@ -64,7 +64,7 @@ async function checkCodeSession() {
 }
 
 // wx.login 获取微信用户code
-async function generateCode(): Promise<string> {
+export async function generateCode(): Promise<string> {
   const res = await login();
   const { code, errMsg } = res;
   if (!code) throw new Error(`wx.login调用失败${errMsg}`);

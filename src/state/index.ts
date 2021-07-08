@@ -4,6 +4,7 @@ import navigation from './navigation';
 import message from './message';
 import album from './album';
 import other from './other';
+import hotBoard from './hot-board';
 
 export default combineReducers({
   common,
@@ -11,4 +12,5 @@ export default combineReducers({
   message,
   album,
   other,
+  hotBoard,
 });

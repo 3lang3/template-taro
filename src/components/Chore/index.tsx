@@ -102,6 +102,7 @@ export const ManageSongItem = ({
 type CounterOfferInputProps = {
   /** 曲或者词 */
   title: string;
+  placeholder?: string;
   /** input name */
   name: string;
   value: string;
@@ -111,7 +112,7 @@ type CounterOfferInputProps = {
 };
 // 还价输入框
 export const CounterOfferInput = memo<CounterOfferInputProps>(
-  ({ title, name, value, onChange, price }) => {
+  ({ title, placeholder, name, value, onChange, price }) => {
     return (
       <Flex className="offer-modal-item" justify="between">
         <Typography.Text size="lg">{title}</Typography.Text>
@@ -119,7 +120,7 @@ export const CounterOfferInput = memo<CounterOfferInputProps>(
           当前: {price}元
         </Typography.Text>
         <Flex className="input--border">
-          <AtInput name={name} value={value} onChange={onChange} />
+          <AtInput name={name} value={value} placeholder={placeholder} onChange={onChange} />
         </Flex>
       </Flex>
     );

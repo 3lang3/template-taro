@@ -125,6 +125,7 @@ export default () => {
         </View>
         <Typography.Text className="settlein-title">二、上传歌曲</Typography.Text>
         <SongUploader
+          disabled={isAudit}
           webActionUrl="https://www.tapd.cn/"
           value={payload.song_url}
           onChange={onSongUpload}

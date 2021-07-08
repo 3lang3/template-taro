@@ -11,8 +11,8 @@ import { removeStorageSync } from '@tarojs/taro';
 export const LOADING = 'COMMON/LOADING';
 export const DONE = 'COMMON/DONE';
 export const ERROR = 'COMMON/ERROR';
-export const LOGOUT = 'USER/LOGOUT';
-export const GET_USER_PROFILE = 'COMMON/GET_USER_PROFILE';
+export const LOGOUT = 'COMMON/LOGOUT';
+export const UPDATE_USER_DATA = 'COMMON/UPDATE_USER_DATA';
 export const INIT = 'COMMON/INIT';
 
 // actions
@@ -22,9 +22,9 @@ export const logout = () => {
   };
 };
 
-export const getProfile = (payload) => {
+export const updateUserData = (payload) => {
   return {
-    type: GET_USER_PROFILE,
+    type: UPDATE_USER_DATA,
     payload,
   };
 };
@@ -105,13 +105,13 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         error: payload,
         done: false,
       };
-    case GET_USER_PROFILE:
+    case UPDATE_USER_DATA:
       return {
         ...state,
         loading: false,
         error: false,
         done: true,
-        userInfo: payload,
+        data: payload,
       };
     case INIT:
       return {

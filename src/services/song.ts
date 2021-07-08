@@ -3,6 +3,11 @@
 import request from '@/utils/request';
 import { stringify } from 'querystring';
 
+// 热门歌曲列表
+export function getHotSongList() {
+  return request(`/music/getHotSongList`);
+}
+
 // 词曲详情
 export function getSaleSongDetail(data: { ids: string | number }) {
   return request(`/song/getSaleSongDetail?${stringify(data)}`);
@@ -35,4 +40,16 @@ export function operationMusicSongPrice(data: OperationMusicSongPriceParams) {
     method: 'POST',
     data,
   });
+}
+// 放弃收购词曲
+export function abandonMusicSong(data: { ids: string | number }) {
+  return request(`/songe/abandonMusicSong?${stringify(data)}`);
+}
+// 我要唱
+export function applyWantSong(data: { ids: string | number }) {
+  return request(`/song/applyWantSong?${stringify(data)}`);
+}
+// 删除我要唱
+export function delWantSong(data: { ids: string | number }) {
+  return request(`/song/delWantSong?${stringify(data)}`);
 }
