@@ -8,6 +8,8 @@ import type { UseCustomAudioParams } from './helper';
 import './index.less';
 
 type PlayCoreProps = {
+  /** 封面 */
+  cover?: string;
   /**
    * 服务端歌词数据
    */
@@ -20,7 +22,7 @@ type PlayCoreProps = {
 } & Omit<UseCustomAudioParams, 'lyric'>;
 
 // 歌曲播放
-export default ({ src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
+export default ({ cover = '', src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
   const { paused, state, movableViewProps, audioInstance } = useCustomAudio({
     src,
     lyric: lyricData.length
@@ -39,7 +41,7 @@ export default ({ src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
           'play-core__record--play': !paused,
         })}
       >
-        <Image mode="aspectFit" className="play-core__record-cover" src="" />
+        <Image mode="aspectFit" className="play-core__record-cover" src={cover} />
         <TaroImage
           mode="aspectFit"
           className="play-core__record-play"

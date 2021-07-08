@@ -3,9 +3,10 @@ import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import Image from '@/components/Image';
-import { navigateTo, useRouter } from '@tarojs/taro';
+import { navigateTo, useRouter, useShareAppMessage } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import Icon from '@/components/Icon';
+import { getHttpPath } from '@/utils/utils';
 import { Empty, FullPageError, FullPageLoader } from '@/components/Chore';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAlbumDetail } from '@/state/album';
@@ -32,6 +33,17 @@ export default () => {
         refresh={() => dispatch(getAlbumDetail({ album_ids: params.ids as string }))}
       />
     );
+  return <PageContent data={data} params={params} />;
+};
+
+function PageContent({ data, params }) {
+  useShareAppMessage(() => {
+    return {
+      title: `${data.album_name}-${data.singer_name}`,
+      imageUrl: getHttpPath(data.album_image),
+    };
+  });
+
   return (
     <>
       <TabNavigationBar title="专辑" />
@@ -45,7 +57,11 @@ export default () => {
             justify="between"
             className="album-header__content"
           >
-            <Icon icon="icon-shouye_zhaunji_fenxiang" className="album-header__share" />
+            <Icon
+              openType="share"
+              icon="icon-shouye_zhaunji_fenxiang"
+              className="album-header__share"
+            />
             <View>
               <Typography.Text className="mb15" strong size="lg" type="light">
                 {data.album_name}
@@ -93,4 +109,4 @@ export default () => {
       </View>
     </>
   );
-};
+}

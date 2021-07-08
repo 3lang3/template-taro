@@ -9,7 +9,14 @@ import { TabNavigationBar } from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
-import { hideToast, navigateBack, showModal, showToast, useRouter } from '@tarojs/taro';
+import {
+  hideToast,
+  navigateBack,
+  showModal,
+  showToast,
+  useRouter,
+  useShareAppMessage,
+} from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import PlayCore from '@/components/PlayCore';
 import { useRequest } from 'ahooks';
@@ -22,6 +29,7 @@ import {
   delWantSong,
 } from '@/services/song';
 import CustomSwiper from '@/components/CustomSwiper';
+import { getHttpPath } from '@/utils/utils';
 import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
 import { processLyricData } from '@/components/PlayCore/helper';
@@ -37,6 +45,16 @@ type PageContentProps = {
 };
 
 const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+  useShareAppMessage(({ from }) => {
+    if (from === 'button') {
+      return {
+        title: `${detail.song_name}-${detail.singer}`,
+        imageUrl: getHttpPath(detail.song_image),
+      };
+    }
+    return {};
+  });
+
   /** 词曲制作详情页面 */
   const isScorePage = routerParams.type === 'score';
   /** 是否机构身份 */
@@ -65,24 +83,32 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
           )}
           {isScorePage ? (
             <>
-              <View className="play-detail__tags">
-                <Tag type="light">摇滚</Tag>
-                <Tag type="light">国语</Tag>
-                <Tag type="light">古风</Tag>
-                <Tag type="light">西域风</Tag>
-              </View>
+              {Array.isArray(detail.tag) && detail.tag.length > 0 && (
+                <View className="play-detail__tags">
+                  {detail.tag.map((el, i) => (
+                    <Tag key={i} type="light">
+                      {el}
+                    </Tag>
+                  ))}
+                </View>
+              )}
             </>
           ) : (
             <>
               <Typography.Text type="light" className="play-detail__author">
                 {detail.singer}
               </Typography.Text>
-              <Icon icon="icon-shouye_zhaunji_fenxiang" className="play-detail__share" />
+              <Icon
+                openType="share"
+                icon="icon-shouye_zhaunji_fenxiang"
+                className="play-detail__share"
+              />
             </>
           )}
         </View>
         <PlayCore
-          src={AUDIO_DEMO_URL}
+          src={detail.url || AUDIO_DEMO_URL}
+          cover={detail.background_image}
           lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
           lyricAutoScroll={routerParams.type !== 'score'}
         />
@@ -99,21 +125,19 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
             <View className="play-detail-desc__content">
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">作者简介:</Text>
-                <Text>{detail.introduce}</Text>
+                <Text>{detail.explain?.author_desc}</Text>
               </View>
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">创作目的:</Text>
-                <Text>{detail.explain}</Text>
+                <Text>{detail.explain?.create_goal}</Text>
               </View>
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">创作完成时间:</Text>
-                <Text>{detail.created_at}</Text>
+                <Text>{detail.explain?.finish_time}</Text>
               </View>
               <View className="play-detail-desc__content-item">
                 <Text className="play-detail-desc__content-title">作品灵感:</Text>
-                <Text>
-                  人们难辩过去何时成为过去,却能牢记过去的样子——从北二环到昌平近40公里,10年后的他,将这个印象深刻的儿时交付,又从斑斓浩瀚的音乐光谱中,精选与自我共振频率最高的6首经单作品~
-                </Text>
+                <Text>{detail.explain?.create_inspiration}</Text>
               </View>
             </View>
           </View>
