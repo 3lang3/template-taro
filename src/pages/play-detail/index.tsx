@@ -41,8 +41,7 @@ const AUDIO_DEMO_URL = 'http://music.163.com/song/media/outer/url?id=1847422867.
 type PageContentProps = {
   detail: Record<string, any>;
   routerParams: PlayDetailParams;
-  identity: UserIdentityType;
-};
+} & UserIdentityType;
 
 const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   useShareAppMessage(({ from }) => {
