@@ -52,6 +52,7 @@ export async function userLogin(opts: getUserProfile.Option) {
   // token写入本地缓存
   setStorageSync(config.storage.tokenKey, data.token);
   store.dispatch(getUser(payload.userInfo));
+  store.dispatch(initCommonReducer() as any);
 }
 
 // 检查用户登录状态
