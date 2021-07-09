@@ -5,6 +5,7 @@ import message from './message';
 import album from './album';
 import other from './other';
 import hotBoard from './hot-board';
+import mySong from './my-song';
 
 export default combineReducers({
   common,
@@ -13,4 +14,5 @@ export default combineReducers({
   album,
   other,
   hotBoard,
+  mySong,
 });

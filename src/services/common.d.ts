@@ -15,8 +15,8 @@ export type ListResType<T> = {
   msg: string;
 };
 
-export type SuccessResType = {
-  data: null;
+export type SuccessResType<T> = {
+  data: T;
   type: number;
   msg: string;
 };

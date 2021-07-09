@@ -22,7 +22,7 @@ export function getMusicsongmakeList(): Promise<PromiseResponseType<Node>> {
 
 // 歌曲制作列表
 export function editInfo([province, city, district]: number[]): Promise<
-  PromiseResponseType<SuccessResType>
+  PromiseResponseType<SuccessResType<null>>
 > {
   return request('/member/editInfo', {
     method: 'POST',

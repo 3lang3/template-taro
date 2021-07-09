@@ -2,33 +2,57 @@ import CustomTabBar from '@/components/CustomTabBar';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
-import { LibSongItem } from '@/components/Chore';
+import { FullPageLoader, FullPageError, LibSongItem } from '@/components/Chore';
+import { getWantSongList } from '@/services/my-song';
+import { setList } from '@/state/my-song';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRequest } from 'ahooks';
+import PopSelect from '@/components/PopSelect';
 import './index.less';
 
-const songsData = [
-  { title: '最好的都给你', tags: ['摇滚', '国语'], lyric: 1 },
-  { title: '下辈子不一定还能遇见不下辈子不一定还能遇见不', tags: ['摇滚', '国语'], lyric: 0 },
-];
-
 export default () => {
+  const dispatch = useDispatch();
+  const { list } = useSelector((state) => {
+    return state.mySong;
+  });
+  const { loading, error, refresh } = useRequest(getWantSongList, {
+    onSuccess: ({ data, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      if (data.length) {
+        dispatch(setList([...list, ...data] as any));
+      }
+    },
+  });
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
+
   return (
     <>
-      {songsData.map((song, i) => (
+      {list.map((song, i) => (
         <LibSongItem
           key={i}
-          title={song.title}
-          tags={song.tags}
+          title={song.song_name}
+          tags={[song.language, song.sect]}
           actionRender={() => {
             return (
               <Flex justify="end">
-                {+song.lyric ? (
+                {+song.is_appoint ? (
                   <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
                 ) : null}
-                <Icon
-                  onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-                  icon="icon-quku_bofang"
-                  className="lib-song-action__item"
-                />
+                <>
+                  <PopSelect title="歌词查看">
+                    <Icon
+                      onClick={() => song.lyricist_content}
+                      icon="icon-quku_qupu"
+                      className="lib-song-action__item"
+                    />
+                  </PopSelect>
+                  <Icon
+                    onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                    icon="icon-quku_bofang"
+                    className="lib-song-action__item"
+                  />
+                </>
               </Flex>
             );
           }}

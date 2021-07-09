@@ -22,7 +22,9 @@ export function getBuySongList(data: listParams): Promise<PromiseResponseType<Bu
   });
 }
 
-export function appointMusicSong(data: AppointNode): Promise<PromiseResponseType<SuccessResType>> {
+export function appointMusicSong(
+  data: AppointNode,
+): Promise<PromiseResponseType<SuccessResType<null>>> {
   return request('/song/appointMusicSong', {
     method: 'POST',
     data,
