@@ -7,7 +7,7 @@ import { getWantSongList } from '@/services/my-song';
 import { setList } from '@/state/my-song';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRequest } from 'ahooks';
-import PopSelect from '@/components/PopSelect';
+import ContentPop from '@/components/ContentPop';
 import './index.less';
 
 export default () => {
@@ -40,9 +40,9 @@ export default () => {
                   <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
                 ) : null}
                 <>
-                  <PopSelect title="歌词查看" content={song.lyricist_content}>
+                  <ContentPop title="歌词查看" content={song.lyricist_content}>
                     <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                  </PopSelect>
+                  </ContentPop>
                   <Icon
                     onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
                     icon="icon-quku_bofang"
