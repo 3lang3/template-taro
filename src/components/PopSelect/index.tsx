@@ -7,19 +7,19 @@ import './index.less';
 
 export type P = {
   title: string;
+  content: string | React.ReactNode;
   children: React.ReactElement; // 是否显示
 };
 
-export default ({ title, children }) => {
+export default ({ title, content, children }) => {
   const [visible, setVisible] = useState(false);
-  const [content, setContent] = useState(false);
   return (
     <>
       {React.cloneElement(children, {
         onClick: () => {
           if (children.props.onClick) {
             // 设置显示内容
-            setContent(children.props.onClick());
+            children.props.onClick();
           }
           setVisible(true);
         },
