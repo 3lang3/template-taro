@@ -3,7 +3,14 @@ import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
 import config from '@/config';
-import { chooseMessageFile, getStorageSync, uploadFile } from '@tarojs/taro';
+import {
+  chooseMessageFile,
+  getStorageSync,
+  hideLoading,
+  showLoading,
+  showToast,
+  uploadFile,
+} from '@tarojs/taro';
 import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Typography from '../Typography';
@@ -31,24 +38,39 @@ export default (props: SongUploaderProps) => {
 
   const onUploadClick = async () => {
     if (props.disabled) return;
+    // 选择聊天文件
     const { errMsg, tempFiles } = await chooseMessageFile({
       count: 1,
       type: props.chooseMessageFileType || 'file',
     });
+    // 选择失败 退出
     if (errMsg !== 'chooseMessageFile:ok') throw Error(errMsg);
+    // 获取文件
     const [file] = tempFiles;
     chooseFileRef.current = file;
-    const u = await uploadFile({
+    // 文件上传
+    const uploadTask = uploadFile({
       url: config.uploadFile,
       filePath: file.path,
       name: 'file',
+      // header头添加token字段
       header: {
         [config.storage.tokenKey]: getStorageSync(config.storage.tokenKey),
       },
+      success: ({ data, statusCode, errMsg: taskErrMsg }) => {
+        hideLoading();
+        if (statusCode !== 200) throw Error(taskErrMsg);
+        const res = typeof data === 'string' ? JSON.parse(data) : data;
+        if (res.type === 1) throw Error(res.msg);
+        showToast({ icon: 'none', title: '上传成功' });
+        if (props.onChange) props.onChange(res.data.path, file, res);
+      },
+      fail: () => showToast({ icon: 'none', title: '上传失败' }),
     });
-    console.log(u);
-    // @todo upload file pipe
-    if (props.onChange) props.onChange(file.path, file, {});
+    // 上传进度条
+    uploadTask.progress(({ progress }) => {
+      showLoading({ title: `已上传${progress}%` });
+    });
   };
 
   return (

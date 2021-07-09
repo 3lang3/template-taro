@@ -84,10 +84,10 @@ export default () => {
   };
 
   const onSongUpload = async (value, file, response) => {
-    console.log(file, response);
+    console.log(value, file, response);
     set((v) => ({ ...v, song_url: value }));
   };
-
+  console.log(payload);
   return (
     <>
       <Flex className="settlein-reason" align="start">
