@@ -138,8 +138,8 @@ export default () => {
                 立即登录
               </Button>
             )}
-            {/* 绑定了手机号可修改资料 */}
-            {!!(isLogin && userData.is_authentication) && (
+            {/* 普通用户身份以上才可修改资料 */}
+            {!!(isLogin && +userData.identity > 0) && (
               <Button
                 onClick={() => navigateTo({ url: '/pages/profile/index' })}
                 circle

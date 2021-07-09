@@ -44,7 +44,7 @@ export default () => {
           </Flex>
         </Flex>
         <Image style={{ width: '100%' }} src={data.image} />
-        <View>{data.content}</View>
+        <View dangerouslySetInnerHTML={{ __html: data.content }} />
       </View>
     </>
   );
