@@ -132,11 +132,11 @@ export default () => {
   const onSubmit = async () => {
     // 词曲申请审核状态
     if (isAudit && !isSinger) return;
-    const { checked, ...values } = payload;
-    const hasInvalidField = validateFields(values, fields);
+    const { checked, code, ...values } = payload;
+    const hasInvalidField = validateFields(isAudit ? values : { ...values, code }, fields);
     if (hasInvalidField) return;
     // 协议勾选
-    if ((!checked || !checked.length) && !isAudit) {
+    if ((!checked || !checked.length) && !isAudit && !isSinger) {
       showToast({ title: '请勾选平台协议', icon: 'none' });
       return;
     }
@@ -262,7 +262,7 @@ export default () => {
           className="settlein-form__submit settlein-form__submit--fixed"
           onClick={onSubmit}
           circle
-          type={isAudit ? 'disabled' : 'primary'}
+          type={isAudit && !isSinger ? 'disabled' : 'primary'}
           size="lg"
           disabled={isAudit && !isSinger}
         >

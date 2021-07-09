@@ -91,3 +91,8 @@ export function getDecryptedData(data: GetDecryptedDataParams) {
     false,
   );
 }
+
+// 音乐网站列表
+export function getWebsiteType() {
+  return request('/other/getWebsiteType');
+}

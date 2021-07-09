@@ -42,3 +42,9 @@ export type SongStyle = {
   song_style: number;
   name: string;
 };
+
+// 音乐网站列表
+export type MusicSiteItem = {
+  website_type: number | string;
+  name: string;
+};
