@@ -8,6 +8,7 @@ export type ConfigType = {
     msg: string;
   };
   cdn: string;
+  uploadFile: string;
   plugin: string;
   storage: Record<string, string>;
 };
@@ -19,6 +20,7 @@ const config = {
 
 export default {
   ...config,
+  uploadFile: config.api.current + '/other/UploadFile',
   storage: {
     // token
     tokenKey: 'authorization',

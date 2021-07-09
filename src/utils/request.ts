@@ -44,7 +44,7 @@ const generateRequest = (prefix: string) => {
   ) => {
     const tk = getStorageSync(config.storage.tokenKey);
     if (tk) {
-      header.authorization = tk;
+      header[config.storage.tokenKey] = tk;
     }
     opts = opts || {};
     opts.header = { ...header, ...opts.header };
@@ -52,7 +52,7 @@ const generateRequest = (prefix: string) => {
       request({
         url: `${prefix}${url}`,
         header,
-        success: ({ data, statusCode }: { data: PromiseResponseType<any>; statusCode: number }) => {
+        success: ({ data, statusCode }) => {
           // @todo logout logic
           if (statusCode === 401 || statusCode === 403) {
             store.dispatch(logout());

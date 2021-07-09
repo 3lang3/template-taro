@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Picker } from '@tarojs/components';
 import { AtListItem } from 'taro-ui';
 
+type ChildrenFuncPramas = {
+  /** 选中的`nameKey`数组 */
+  titleArr: string[];
+};
+
 type CustomPickerProps = {
   /**
    * picker模式
@@ -14,7 +19,7 @@ type CustomPickerProps = {
   /**
    * label标题
    */
-  title: string;
+  title?: string;
   /**
    * picker展示数据
    * 如果是二维数组根据数组长度生成column列数
@@ -43,6 +48,7 @@ type CustomPickerProps = {
    */
   cascade?: number;
   disabled?: boolean;
+  children?: React.ReactNode | ((params: ChildrenFuncPramas) => React.ReactNode);
 };
 
 export default function CustomPicker({
@@ -57,6 +63,7 @@ export default function CustomPicker({
   arrow,
   cascade,
   disabled,
+  children,
   ...props
 }: CustomPickerProps) {
   const [range, setRange] = useState(() =>
@@ -160,12 +167,20 @@ export default function CustomPicker({
       onColumnChange={_columnChange}
       {...props}
     >
-      <AtListItem
-        disabled={disabled}
-        title={title}
-        extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
-        arrow={arrow && !value ? 'right' : undefined}
-      />
+      {(() => {
+        if (children && typeof children === 'function') {
+          return children({ titleArr });
+        }
+        if (children) return children;
+        return (
+          <AtListItem
+            disabled={disabled}
+            title={title}
+            extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
+            arrow={arrow && !value ? 'right' : undefined}
+          />
+        );
+      })()}
     </Picker>
   );
 }

@@ -14,7 +14,6 @@ type CustomSwiperProps = {
   itemRender: (item: any, idx: number) => React.ReactNode;
   className?: string;
   swiperClassName?: string;
-  dotWrapperClassName?: string;
   style?: React.CSSProperties;
 };
 
@@ -29,7 +28,6 @@ export default ({
   style,
   className,
   swiperClassName,
-  dotWrapperClassName,
   indicatorDots = true,
   ...props
 }: Omit<SwiperProps, 'onChange'> & CustomSwiperProps) => {

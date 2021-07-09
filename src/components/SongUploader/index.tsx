@@ -1,8 +1,9 @@
 import { useRef } from 'react';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
-import { chooseMessageFile } from '@tarojs/taro';
 import Button from '@/components/Button';
+import config from '@/config';
+import { chooseMessageFile, getStorageSync, uploadFile } from '@tarojs/taro';
 import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Typography from '../Typography';
@@ -37,6 +38,15 @@ export default (props: SongUploaderProps) => {
     if (errMsg !== 'chooseMessageFile:ok') throw Error(errMsg);
     const [file] = tempFiles;
     chooseFileRef.current = file;
+    const u = await uploadFile({
+      url: config.uploadFile,
+      filePath: file.path,
+      name: 'file',
+      header: {
+        [config.storage.tokenKey]: getStorageSync(config.storage.tokenKey),
+      },
+    });
+    console.log(u);
     // @todo upload file pipe
     if (props.onChange) props.onChange(file.path, file, {});
   };
