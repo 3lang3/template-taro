@@ -1,9 +1,15 @@
 /* 用户数据持久化 */
 
 import config from '@/config';
-import { getCurrentUser, getTagType, getLanguageList, getSongStyleList } from '@/services/common';
+import {
+  getCurrentUser,
+  getTagType,
+  getLanguageList,
+  getSongStyleList,
+  getWebsiteType,
+} from '@/services/common';
 import type { CurrentUserType } from '@/services/common';
-import type { TagType, LanguageVersion, SongStyle } from '@/services/common.d';
+import type { TagType, LanguageVersion, SongStyle, MusicSiteItem } from '@/services/common.d';
 import { getStorageSync, removeStorageSync } from '@tarojs/taro';
 import type { UserInfo } from '@tarojs/taro';
 
@@ -46,9 +52,11 @@ export const initCommonReducer = () => {
   return (dispath, state) => {
     const { common: commonReducer } = state();
     if (!commonReducer.tagType.length) {
-      Promise.all([getTagType(), getLanguageList(), getSongStyleList()]).then((res) => {
-        dispath({ type: INIT, payload: res });
-      });
+      Promise.all([getTagType(), getLanguageList(), getSongStyleList(), getWebsiteType()]).then(
+        (res) => {
+          dispath({ type: INIT, payload: res });
+        },
+      );
     }
   };
 };
@@ -63,6 +71,7 @@ export type CommonStateType = {
   tagType: TagType[];
   languageVersion: LanguageVersion[];
   songStyle: SongStyle[];
+  musicSiteList: MusicSiteItem[];
   token?: string;
 };
 
@@ -78,6 +87,7 @@ const INITIAL_STATE: CommonStateType = {
   tagType: [],
   languageVersion: [],
   songStyle: [],
+  musicSiteList: [],
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {
@@ -121,6 +131,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         tagType: payload[0].data,
         languageVersion: payload[1].data,
         songStyle: payload[2].data,
+        musicSiteList: payload[3].data,
       };
     default:
       return state;

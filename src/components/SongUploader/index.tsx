@@ -96,7 +96,13 @@ export default (props: SongUploaderProps) => {
             value={props.webActionUrl}
             onChange={() => false}
           />
-          <Button openType="share" className="settlein-list-share" circle size="sm">
+          <Button
+            disabled={props.disabled}
+            openType="share"
+            className="settlein-list-share"
+            circle
+            size="sm"
+          >
             发送
           </Button>
         </Flex>
@@ -106,9 +112,13 @@ export default (props: SongUploaderProps) => {
           <Flex
             direction="column"
             justify="center"
-            className="settlein-uploader__status settlein-uploader__status--success"
+            className={cls('settlein-uploader__status', 'settlein-uploader__status--success', {
+              'settlein-uploader__status--disabled': props.disabled,
+            })}
           >
-            <Icon onClick={onDelete} className="settlein-uploader__delete" icon="icon-ashbin" />
+            {!props.disabled && (
+              <Icon onClick={onDelete} className="settlein-uploader__delete" icon="icon-ashbin" />
+            )}
             <Flex justify="center">
               <Icon className="settlein-uploader__icon mr10" icon="icon-icon_qupu" />
               <Typography.Title style={{ margin: 0 }} level={3} type="light">

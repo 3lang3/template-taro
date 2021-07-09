@@ -1,6 +1,7 @@
+import { useSelector } from 'react-redux';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { eventCenter, hideToast, showToast, useRouter } from '@tarojs/taro';
+import { eventCenter, hideToast, reLaunch, showToast, useRouter } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
@@ -11,15 +12,10 @@ import CustomPicker from '@/components/CustomPicker';
 import { singerApply } from '@/services/settlein';
 import './index.less';
 
-const siteData = [
-  { name: 'QQ音乐', id: 1 },
-  { name: '酷狗音乐', id: 2 },
-  { name: '网易云音乐', id: 3 },
-  { name: '5sing', id: 4 },
-  { name: 'B站', id: 5 },
-  { name: '微博', id: 6 },
-  { name: '其他', id: 7 },
-];
+const MusicSitePicker = (props) => {
+  const musicSiteList = useSelector((state) => state.common.musicSiteList);
+  return <CustomPicker data={musicSiteList} valueKey="website_type" {...props} />;
+};
 
 type SettleNextPageParams = {
   status?: 'audit';
@@ -43,8 +39,15 @@ export default () => {
   useEffect(() => {
     // @hack 获取上一个页面传递的数据
     eventCenter.once('page:message:settle-next', (response) => {
-      console.log(response);
       prevStepPayloadRef.current = response.payload;
+      if (isAudit) {
+        set((v) => ({
+          ...v,
+          song_url: response.detail.song_url,
+          website_url: response.detail.website_url,
+          website_type: response.detail.website_type,
+        }));
+      }
     });
     eventCenter.trigger('page:init:settle');
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,11 +86,14 @@ export default () => {
     setVisible(true);
   };
 
-  const onSongUpload = async (value, file, response) => {
-    console.log(value, file, response);
+  const onSongUpload = async (value) => {
     set((v) => ({ ...v, song_url: value }));
   };
-  console.log(payload);
+
+  const onSubmitAfter = () => {
+    closeModal();
+    reLaunch({ url: '/pages/me/index' });
+  };
   return (
     <>
       <Flex className="settlein-reason" align="start">
@@ -96,10 +102,9 @@ export default () => {
       <AtForm className="settlein-form custom-form">
         <Typography.Text className="settlein-title">一、填写站外信息</Typography.Text>
         <View className="settlein-list">
-          <CustomPicker
-            title="填写站外信息"
+          <MusicSitePicker
             arrow
-            data={siteData}
+            title="填写站外信息"
             mode="selector"
             disabled={isAudit}
             value={payload.website_type}
@@ -183,7 +188,7 @@ export default () => {
             审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
           </Typography.Text>
           <View className="text-center">
-            <Button onClick={closeModal} circle className="mt40" type="primary" inline>
+            <Button onClick={onSubmitAfter} circle className="mt40" type="primary" inline>
               知道了
             </Button>
           </View>
