@@ -4,9 +4,9 @@
 
 ```js
 import Icon from '@/components/Icon';
-import PopSelect from '@/components/PopSelect';
+import ContentPop from '@/components/ContentPop';
 
-<PopSelect title="歌词查看" content="显示内容">
+<ContentPop title="歌词查看" content="显示内容">
   <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-</PopSelect>;
+</ContentPop>;
 ```
