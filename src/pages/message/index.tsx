@@ -1,6 +1,6 @@
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
 import { View } from '@tarojs/components';
 import Taro, { navigateTo, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,6 +67,7 @@ export default function Index() {
   };
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+  if (!list.length) return <Empty className="mt50" />;
   return (
     <>
       <View className="p-default text-right">
