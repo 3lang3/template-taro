@@ -9,3 +9,5 @@ export const IDENTITY = {
   /** 机构 */
   COMPANY: 3,
 };
+
+export const PAGINATION = { page: 1, pageSize: 10, totalPage: 99 };

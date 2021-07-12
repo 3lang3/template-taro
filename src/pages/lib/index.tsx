@@ -1,16 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { AtActivityIndicator } from 'taro-ui';
 import { Text, View } from '@tarojs/components';
+import { PAGINATION } from '@/config/constant';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
-import { navigateTo } from '@tarojs/taro';
+import { navigateTo, useReachBottom } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import { useSelector } from 'react-redux';
 import { getMusicSongList, Node } from '@/services/lib';
 import { useRequest } from 'ahooks';
-import { FullPageLoader, FullPageError, LibSongItem } from '@/components/Chore';
+import { Empty, LibSongItem } from '@/components/Chore';
 import ContentPop from '@/components/ContentPop';
 import './index.less';
 
@@ -123,28 +125,42 @@ const LibPageContent = () => {
 
   const [list, setList] = useState<Node[]>([]);
   const [params, setParams] = useState({});
-  const { loading, error, refresh, run } = useRequest(getMusicSongList, {
-    // manual: true,
-    onSuccess: ({ data: { _list }, type, msg }) => {
+  const paginationRef = useRef(PAGINATION);
+  const nomoreRef = useRef(false);
+  const { loading, error, run } = useRequest(getMusicSongList, {
+    onSuccess: ({ data: { _list, _page }, type, msg }) => {
       if (type === 1) throw Error(msg);
-      if (_list.length) {
-        setList([...list, ..._list]);
-      }
+      paginationRef.current = _page;
+      nomoreRef.current = _page.page >= _page.totalPage;
+      setList([...list, ..._list]);
     },
   });
-  if (loading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
 
+  // 滚动加载
+  useReachBottom(() => {
+    // 请求中或者没有更多数据 return
+    if (loading || nomoreRef.current) return;
+    const payload = getParams(params);
+    const { page, pageSize } = paginationRef.current;
+    run({ ...payload, pageSize, page: page + 1 });
+  });
+
+  // 获取查询参数
+  const getParams = (p) => {
+    const result = {};
+    Object.keys(p).forEach((item) => {
+      result[item] = p[item].value;
+    });
+    return result;
+  };
   function onTabChange(values) {
     setParams((v) => ({
       ...v,
       ...values,
     }));
-    const target = { ...params, ...values };
-    const result = {};
-    Object.keys(target).forEach((item) => {
-      result[item] = target[item].value;
-    });
+    setList([]);
+    paginationRef.current = PAGINATION;
+    const result = getParams({ ...params, ...values });
     run(result);
   }
 
@@ -153,30 +169,44 @@ const LibPageContent = () => {
       <TabNavigationBar />
       <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
       <View className="lib-song-wrapper">
-        {list.map((song, i) => (
-          <LibSongItem
-            key={i}
-            title={song.song_name}
-            tags={[song.sect, song.language]}
-            actionRender={() => {
-              return (
-                <Flex justify="end">
-                  {song.lyricist_content && (
-                    <ContentPop title="歌词查看" content={song.lyricist_content}>
-                      <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                    </ContentPop>
-                  )}
-                  <Icon
-                    onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-                    icon="icon-quku_bofang"
-                    className="lib-song-action__item"
-                  />
-                </Flex>
-              );
-            }}
-          />
-        ))}
+        {(() => {
+          if (error) return <Flex justify="center">加载失败</Flex>;
+          if (nomoreRef.current && !list.length) return <Empty />;
+          return list.map((song, i) => (
+            <LibSongItem
+              key={i}
+              title={song.song_name}
+              tags={[song.sect, song.language]}
+              actionRender={() => {
+                return (
+                  <Flex justify="end">
+                    {song.lyricist_content && (
+                      <ContentPop title="歌词查看" content={song.lyricist_content}>
+                        <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                      </ContentPop>
+                    )}
+                    <Icon
+                      onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                      icon="icon-quku_bofang"
+                      className="lib-song-action__item"
+                    />
+                  </Flex>
+                );
+              }}
+            />
+          ));
+        })()}
       </View>
+      {loading && (
+        <Flex justify="center">
+          <AtActivityIndicator />
+        </Flex>
+      )}
+      {nomoreRef.current && !!list.length && (
+        <Flex justify="center">
+          <Typography.Text type="secondary">全部加载完拉~</Typography.Text>
+        </Flex>
+      )}
     </>
   );
 };
