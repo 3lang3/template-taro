@@ -67,7 +67,7 @@ export default function Index() {
   };
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
-  if (!list.length) return <Empty className="mt50" />;
+  if (!list.length) return <Empty className="mt60" message="暂无消息" />;
   return (
     <>
       <View className="p-default text-right">

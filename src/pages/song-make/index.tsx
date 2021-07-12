@@ -1,8 +1,11 @@
 import Button from '@/components/Button';
-import { LibSongItem } from '@/components/Chore';
 import Flex from '@/components/Flex';
 import { View } from '@tarojs/components';
 import { navigateTo } from '@tarojs/taro';
+import { getMakeSongList, Node } from '@/services/song-make';
+import { FullPageLoader, FullPageError, LibSongItem, Empty } from '@/components/Chore';
+import { useState } from 'react';
+import { useRequest } from 'ahooks';
 import './index.less';
 
 const songsData = [
@@ -11,6 +14,16 @@ const songsData = [
 ];
 
 export default () => {
+  const [list, setList] = useState<Node[]>([]);
+  const { loading, error, refresh, run } = useRequest(getMakeSongList, {
+    onSuccess: ({ data, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      setList(data);
+    },
+  });
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
+  if (!list.length) return <Empty />;
   return (
     <View className="mt20">
       {songsData.map((song, i) => (
