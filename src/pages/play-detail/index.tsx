@@ -19,6 +19,7 @@ import {
 } from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import PlayCore from '@/components/PlayCore';
+import { IDENTITY } from '@/config/constant';
 import { useRequest } from 'ahooks';
 import {
   getSongDetail,
@@ -57,7 +58,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   /** 词曲制作详情页面 */
   const isScorePage = routerParams.type === 'score';
   /** 是否机构身份 */
-  const isCompanyIdentity = +identity === 3;
+  const isCompanyIdentity = +identity === IDENTITY.COMPANY;
   return (
     <>
       <TabNavigationBar title={detail.song_name} />

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { IDENTITY } from '@/config/constant';
 import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import CaptchaBtn from '@/components/CaptchaBtn';
 import Button from '@/components/Button';
@@ -76,7 +77,7 @@ export default () => {
   // 审核状态
   const isAudit = params.status === 'audit';
   // 歌手认证
-  const isSinger = params.identity === '2';
+  const isSinger = +params.identity === IDENTITY.SINGER;
 
   const [payload, set] = useState({
     real_name: '',

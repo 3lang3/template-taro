@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { FullPageLoader } from '@/components/Chore';
+import { IDENTITY } from '@/config/constant';
 import CustomTabBar from '@/components/CustomTabBar';
 import MePage from './components/MePage';
 import CompanyPage from './components/CompanyPage';
@@ -10,7 +11,7 @@ const PageContent = () => {
   if (token && loading) return <FullPageLoader />;
   // 不同身份视图不同
   // 机构身份渲染机构视图
-  if (data.identity === 3) return <CompanyPage />;
+  if (data.identity === IDENTITY.COMPANY) return <CompanyPage />;
   return <MePage />;
 };
 

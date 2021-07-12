@@ -4,6 +4,7 @@ import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import Image from '@/components/Image';
 import Typography from '@/components/Typography';
+import { IDENTITY } from '@/config/constant';
 import { getDecryptedData } from '@/services/common';
 import { getHomePageDetail, MePageResType } from '@/services/me';
 import { updateUserData } from '@/state/common';
@@ -168,7 +169,7 @@ export default () => {
               <View className="me-service">
                 <Flex className="me-service__header">我的服务</Flex>
                 <Flex justify="around" wrap="wrap" className="me-service__body">
-                  {+userData.identity === 1 && (
+                  {+userData.identity === IDENTITY.AUTHOR && (
                     <Flex className="me-service__item" direction="column">
                       <Icon
                         icon="icon-wode_icon_renzheng"
@@ -178,7 +179,7 @@ export default () => {
                       <Typography.Text>歌手认证</Typography.Text>
                     </Flex>
                   )}
-                  {+userData.identity === 2 && (
+                  {+userData.identity === IDENTITY.SINGER && (
                     <>
                       <Flex className="me-service__item" direction="column">
                         <Icon
@@ -232,7 +233,7 @@ export default () => {
                       <Typography.Title level={3} style={{ marginBottom: 0 }}>
                         词曲作者
                       </Typography.Title>
-                      {page?.audit_info?.identity === 1 && (
+                      {page?.audit_info?.identity === IDENTITY.AUTHOR && (
                         <Typography.Text className="ml10" type="primary">
                           审核中
                         </Typography.Text>
@@ -254,7 +255,7 @@ export default () => {
                       <Typography.Title level={3} style={{ marginBottom: 0 }}>
                         歌手/校园歌手
                       </Typography.Title>
-                      {page?.audit_info?.identity === 2 && (
+                      {page?.audit_info?.identity === IDENTITY.SINGER && (
                         <Typography.Text className="ml10" type="primary">
                           审核中
                         </Typography.Text>

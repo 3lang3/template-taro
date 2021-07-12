@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import cls from 'classnames';
+import { IDENTITY } from '@/config/constant';
 import { useSelector } from 'react-redux';
 import { CoverImage, CoverView, View } from '@tarojs/components';
 import { getCurrentInstance, useRouter, switchTab } from '@tarojs/taro';
@@ -35,7 +36,7 @@ export default () => {
   const { done, data } = useSelector((state) => state.common);
   // 为方便开发 暂时隐藏此逻辑
   // @ts-ignore;
-  const showLib = done && data.identity === 2;
+  const showLib = done && data.identity === IDENTITY.SINGER;
 
   const router = useRouter();
 
