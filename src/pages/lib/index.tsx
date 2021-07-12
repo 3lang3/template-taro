@@ -213,6 +213,9 @@ const LibPageContent = () => {
   );
 };
 
+/**
+ * @summary tab类页面不能阻塞底部导航条渲染, 页面内容请求和默认页面渲染分离
+ */
 export default () => {
   return (
     <>
