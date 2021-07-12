@@ -1,7 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
-import { chooseImage, uploadFile } from '@tarojs/taro';
+import { chooseImage, showToast } from '@tarojs/taro';
 import removePng from '@/assets/icon/icon_shanchu.png';
-import config from '@/config';
+import { uploadSingleFile } from '@/utils/upload';
 import './index.less';
 import Flex from '../Flex';
 
@@ -17,17 +17,16 @@ export default ({ files, onChange, onRemove }) => {
       count: 1, // 默认9
       sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
       sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有，在H5浏览器端支持使用 `user` 和 `environment`分别指定为前后摄像头
-      success: function (res) {
+      success: async function (res) {
         // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
         const tempFilePaths = res.tempFilePaths;
-        uploadFile({
-          url: `${config.uploadFile}`,
-          filePath: tempFilePaths[0],
-          name: 'file',
-          success: (response) => {
-            onChange(JSON.parse(response.data).data.path);
-          },
-        });
+        try {
+          const { data, msg } = await uploadSingleFile({ filePath: tempFilePaths[0] });
+          showToast({ icon: 'success', title: msg });
+          if (onChange) onChange(data.path, tempFilePaths);
+        } catch (error) {
+          showToast({ icon: 'none', title: error.message });
+        }
       },
     });
   }
