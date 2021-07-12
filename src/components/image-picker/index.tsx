@@ -1,6 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
-import { chooseImage } from '@tarojs/taro';
+import { chooseImage, uploadFile } from '@tarojs/taro';
 import removePng from '@/assets/icon/icon_shanchu.png';
+import config from '@/config';
 import './index.less';
 import Flex from '../Flex';
 
@@ -19,7 +20,14 @@ export default ({ files, onChange, onRemove }) => {
       success: function (res) {
         // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
         const tempFilePaths = res.tempFilePaths;
-        onChange(tempFilePaths, res);
+        uploadFile({
+          url: `${config.uploadFile}`,
+          filePath: tempFilePaths[0],
+          name: 'file',
+          success: (response) => {
+            onChange(JSON.parse(response.data).data.path);
+          },
+        });
       },
     });
   }

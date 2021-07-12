@@ -114,7 +114,7 @@ export default () => {
 
   // 上传谱曲照片
   const onImagePickerChange = (filesPath) => {
-    set((v: any) => ({ ...v, composer_content: [...v.composer_content, ...filesPath] }));
+    set((v: any) => ({ ...v, composer_content: [...v.composer_content, filesPath] }));
   };
 
   // 删除图片
