@@ -1,5 +1,5 @@
-import { useState, useMemo, memo } from 'react';
-import { Image, Text, View } from '@tarojs/components';
+import { useState, useMemo } from 'react';
+import { Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
@@ -30,11 +30,7 @@ const TabsItem = ({ active, text, ...props }) => {
       {...props}
     >
       <Text className="lib-tabs-item__text">{text}</Text>
-      <Image
-        mode="aspectFit"
-        className="lib-tabs-item__arrow"
-        src={require('@/assets/icon/arrow_down_fill.svg')}
-      />
+      <Icon className="lib-tabs-item__arrow" icon="icon-quku_arrow_down" />
     </View>
   );
 };
@@ -127,6 +123,7 @@ export default () => {
   const [list, setList] = useState<Node[]>([]);
   const [params, setParams] = useState({});
   const { loading, error, refresh, run } = useRequest(getMusicSongList, {
+    // manual: true,
     onSuccess: ({ data: { _list }, type, msg }) => {
       if (type === 1) throw Error(msg);
       if (_list.length) {
@@ -152,29 +149,31 @@ export default () => {
     <>
       <TabNavigationBar />
       <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
-      {list.map((song, i) => (
-        <LibSongItem
-          key={i}
-          title={song.song_name}
-          tags={[song.sect, song.language]}
-          actionRender={() => {
-            return (
-              <Flex justify="end">
-                {song.lyricist_content && (
-                  <ContentPop title="歌词查看" content={song.lyricist_content}>
-                    <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                  </ContentPop>
-                )}
-                <Icon
-                  onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-                  icon="icon-quku_bofang"
-                  className="lib-song-action__item"
-                />
-              </Flex>
-            );
-          }}
-        />
-      ))}
+      <View className="lib-song-wrapper">
+        {list.map((song, i) => (
+          <LibSongItem
+            key={i}
+            title={song.song_name}
+            tags={[song.sect, song.language]}
+            actionRender={() => {
+              return (
+                <Flex justify="end">
+                  {song.lyricist_content && (
+                    <ContentPop title="歌词查看" content={song.lyricist_content}>
+                      <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                    </ContentPop>
+                  )}
+                  <Icon
+                    onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                    icon="icon-quku_bofang"
+                    className="lib-song-action__item"
+                  />
+                </Flex>
+              );
+            }}
+          />
+        ))}
+      </View>
       <CustomTabBar />
     </>
   );

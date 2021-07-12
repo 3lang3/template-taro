@@ -2,10 +2,6 @@
 
 @tabs-height: 277px;
 
-page {
-  padding-top: @tabs-height + 40px;
-}
-
 .lib-tabs {
   position: absolute;
   top: 0;
@@ -32,6 +28,8 @@ page {
     &__arrow {
       width: 20px;
       height: 20px;
+      color: #fff;
+      font-size: 12px;
     }
 
     &--active {
@@ -86,6 +84,9 @@ page {
   }
 }
 
+.lib-song-wrapper {
+  padding-top: @tabs-height + 40px;
+}
 .lib-song-action {
   &__item {
     width: 42px;

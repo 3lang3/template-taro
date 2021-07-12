@@ -7,6 +7,7 @@ import {
   chooseMessageFile,
   getStorageSync,
   hideLoading,
+  setClipboardData,
   showLoading,
   showToast,
   uploadFile,
@@ -27,7 +28,7 @@ type SongUploaderProps = {
   disabled?: boolean;
 };
 
-export default (props: SongUploaderProps) => {
+export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => {
   const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
 
   const onDelete = () => {
@@ -93,17 +94,17 @@ export default (props: SongUploaderProps) => {
             name="webActionUrl"
             type="text"
             disabled
-            value={props.webActionUrl}
+            value={webActionUrl}
             onChange={() => false}
           />
           <Button
             disabled={props.disabled}
-            openType="share"
             className="settlein-list-share"
             circle
             size="sm"
+            onClick={() => setClipboardData({ data: webActionUrl })}
           >
-            发送
+            复制
           </Button>
         </Flex>
       </View>
