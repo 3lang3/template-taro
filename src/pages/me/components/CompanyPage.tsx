@@ -40,7 +40,7 @@ export default () => {
               price1={song.composer_final_price}
               price2={song.lyricist_final_price}
               onClick={() =>
-                navigateTo({ url: `/pages/play-detail/index?type=score&ids=${song.song_ids}` })
+                navigateTo({ url: `/pages/play-detail/index?type=score&ids=${song.ids}` })
               }
               actionRender={() => (
                 <Button circle size="xs" type="primary">

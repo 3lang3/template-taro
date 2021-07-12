@@ -6,7 +6,7 @@ export default ({ src, mode = 'aspectFill', ...props }: ImageProps) => {
   let finallySrc = src;
   if (/^(data:image|\/\/)/.test(src)) {
     finallySrc = src;
-  } else if (!/^https?:\/\//.test(src) && finallySrc) {
+  } else if (!/^https?:\/\//.test(src)) {
     finallySrc = `${config.cdn}/${src}`;
   }
 

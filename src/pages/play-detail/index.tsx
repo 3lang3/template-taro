@@ -76,9 +76,20 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
         >
           {isCompanyIdentity && isScorePage && (
             <Flex className="p-default bg-white mb30" justify="center">
-              <Typography.Text>
-                曲{detail.composer_final_price}元 | 词{detail.lyricist_final_price}元
-              </Typography.Text>
+              {+detail.composer_final_price ? (
+                <>
+                  <Typography.Text>
+                    原: 曲 {detail.composer_original_price}元 | 词{detail.lyricist_original_price}元
+                  </Typography.Text>
+                  <Typography.Text type="primary">
+                    新: 曲 {detail.composer_final_price}元 | 词{detail.lyricist_final_price}元
+                  </Typography.Text>
+                </>
+              ) : (
+                <Typography.Text type="primary">
+                  曲{detail.composer_original_price}元 | 词{detail.lyricist_original_price}元
+                </Typography.Text>
+              )}
             </Flex>
           )}
           {isScorePage ? (
@@ -107,7 +118,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
           )}
         </View>
         <PlayCore
-          src={detail.url || AUDIO_DEMO_URL}
+          src={AUDIO_DEMO_URL || detail.url}
           cover={detail.background_image}
           lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
           lyricAutoScroll={routerParams.type !== 'score'}
@@ -180,7 +191,7 @@ export default () => {
     refresh,
     data: { data } = { data: {} },
   } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
-    defaultParams: [{ ids: 527875806 }],
+    defaultParams: [{ ids: params.ids }],
   });
   if (loading || commonLoading) return <FullPageLoader />;
   if (error || !data) return <FullPageError refresh={refresh} />;
