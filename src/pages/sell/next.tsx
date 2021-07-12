@@ -1,5 +1,6 @@
+import { useSelector } from 'react-redux';
 import Typography from '@/components/Typography';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   AtInput,
   AtForm,
@@ -31,7 +32,7 @@ const inviteStepsData = [
   { title: '作者确认词曲归属', desc: '词曲作者签署协议' },
 ];
 
-const langData = [
+const priceData = [
   { name: '1000元', id: 1 },
   { name: '2000元', id: 2 },
   { name: '3000元', id: 3 },
@@ -63,18 +64,20 @@ const fields = {
 };
 
 export default () => {
+  const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
-
+  const radioDisabledRef = useRef({ composer: false, lyricist: false });
   const [payload, set] = useState({
     composer: '', // 作曲人姓名
     is_composer: false, // 是否是作曲人
     composer_original_price: 0, // 曲期望价格
-    check2: false,
+    is_lyricist: false, // 是否作词人
     lyricist: '', // 作词人
     lyricist_original_price: 0, // 词期望价格
     idcard: '', // 身份证
     lyricist_content: '', // 歌词
     composer_content: [], // 曲谱照片
+    composer_url: '',
   });
 
   useShareAppMessage((res) => {
@@ -91,7 +94,7 @@ export default () => {
   useEffect(() => {
     const { router } = getCurrentInstance();
     const { params } = (router as any).params;
-    console.log(JSON.parse(params));
+    console.log(params);
   }, []);
 
   const onSubmit = () => {
@@ -105,9 +108,8 @@ export default () => {
   const closeModal = () => setVisible(false);
 
   // 上传的谱曲
-  const onSongUploader = (path, file) => {
-    console.log(path);
-    console.log(file);
+  const onSongUploader = (path) => {
+    set((v: any) => ({ ...v, composer_url: path }));
   };
 
   // 上传谱曲照片
@@ -121,53 +123,78 @@ export default () => {
     set((v: any) => ({ ...v, composer_content: [...v.composer_content] }));
   };
 
+  // 我是作曲人点击
+  const radioClick = (value, type) => {
+    console.log(userData);
+    const _payload = { ...payload, [`is_${type}`]: value };
+    if (value) {
+      _payload[type] = userData.real_name;
+      radioDisabledRef.current[type] = true;
+    } else {
+      _payload[type] = '';
+      radioDisabledRef.current[type] = false;
+    }
+    set(_payload);
+  };
+
   return (
     <>
       <SellSteps current={1} />
       <AtForm className="custom-form">
-        <AtInput
-          name="name"
-          title={fields.composer.label}
-          type="text"
-          value={payload.composer}
-          onChange={(value) => set((v: any) => ({ ...v, composer: value }))}
-        >
+        <Flex justify="between" className="bg-white">
+          <AtInput
+            name="composer"
+            title={fields.composer.label}
+            type="text"
+            disabled={radioDisabledRef.current.composer}
+            value={payload.composer}
+            onChange={(value) => set((v: any) => ({ ...v, composer: value }))}
+          />
           <Radio
+            style={{ flex: '1 0 auto' }}
             className="px24"
             value={payload.is_composer}
-            onChange={(value) => set((v) => ({ ...v, is_composer: value }))}
+            onChange={(v) => radioClick(v, 'composer')}
             label="我是作曲人"
           />
-        </AtInput>
+        </Flex>
+
         <CustomPicker
           title="请选择期望的曲价格（最终以实际成功为准）"
           arrow
-          data={langData}
+          data={priceData}
           mode="selector"
           value={payload.composer_original_price}
           onChange={(value) => set((v: any) => ({ ...v, composer_original_price: value }))}
         />
-        <SongUploader onChange={onSongUploader} webActionUrl="测试地址啦啦" />
+        <SongUploader
+          value={payload.composer_url}
+          onChange={onSongUploader}
+          webActionUrl="测试地址啦啦"
+        />
         <ImagePicker
           onRemove={onImgRemove}
           files={payload.composer_content}
           onChange={onImagePickerChange}
         />
         <View className="h24 bg-light" />
-        <AtInput
-          name="lyricist"
-          title="作词人姓名"
-          type="text"
-          value={payload.lyricist}
-          onChange={(value) => set((v: any) => ({ ...v, lyricist: value }))}
-        >
+        <Flex justify="between" className="bg-white">
+          <AtInput
+            name="lyricist"
+            title="作词人姓名"
+            type="text"
+            value={payload.lyricist}
+            disabled={radioDisabledRef.current.lyricist}
+            onChange={(value) => set((v: any) => ({ ...v, lyricist: value }))}
+          />
           <Radio
+            style={{ flex: '1 0 auto' }}
             className="px24"
-            value={payload.check2}
-            onChange={(value) => set((v) => ({ ...v, check2: value }))}
+            value={payload.is_lyricist}
+            onChange={(v) => radioClick(v, 'lyricist')}
             label="我是作词人"
           />
-        </AtInput>
+        </Flex>
         <Flex justify="between" className="cell-item bg-white">
           <Flex style={{ flex: 1 }}>
             <Typography.Text type="secondary">该词或曲作者尚未入驻，作者需认证</Typography.Text>
@@ -189,7 +216,7 @@ export default () => {
         <CustomPicker
           title="请选择期望的词价格（最终以实际成功为准）"
           arrow
-          data={langData}
+          data={priceData}
           mode="selector"
           value={payload.lyricist_original_price}
           onChange={(value) => set((v: any) => ({ ...v, lyricist_original_price: value }))}

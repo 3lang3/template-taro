@@ -2,16 +2,8 @@ import { useRef } from 'react';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
-import config from '@/config';
-import {
-  chooseMessageFile,
-  getStorageSync,
-  hideLoading,
-  setClipboardData,
-  showLoading,
-  showToast,
-  uploadFile,
-} from '@tarojs/taro';
+import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
+import { uploadSingleFile } from '@/utils/upload';
 import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Typography from '../Typography';
@@ -49,29 +41,13 @@ export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => 
     // 获取文件
     const [file] = tempFiles;
     chooseFileRef.current = file;
-    // 文件上传
-    const uploadTask = uploadFile({
-      url: config.uploadFile,
-      filePath: file.path,
-      name: 'file',
-      // header头添加token字段
-      header: {
-        [config.storage.tokenKey]: getStorageSync(config.storage.tokenKey),
-      },
-      success: ({ data, statusCode, errMsg: taskErrMsg }) => {
-        hideLoading();
-        if (statusCode !== 200) throw Error(taskErrMsg);
-        const res = typeof data === 'string' ? JSON.parse(data) : data;
-        if (res.type === 1) throw Error(res.msg);
-        showToast({ icon: 'none', title: '上传成功' });
-        if (props.onChange) props.onChange(res.data.path, file, res);
-      },
-      fail: () => showToast({ icon: 'none', title: '上传失败' }),
-    });
-    // 上传进度条
-    uploadTask.progress(({ progress }) => {
-      showLoading({ title: `已上传${progress}%` });
-    });
+    try {
+      const { data, msg } = await uploadSingleFile({ filePath: file.path });
+      showToast({ icon: 'success', title: msg });
+      if (props.onChange) props.onChange(data.path, file, data);
+    } catch (error) {
+      showToast({ icon: 'none', title: error.message });
+    }
   };
 
   return (
