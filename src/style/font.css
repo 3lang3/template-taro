@@ -1,9 +1,9 @@
 /* stylelint-disable */
 @font-face {
   font-family: "iconfont"; /* Project id 2629008 */
-  src: url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.woff2?t=1625557476824') format('woff2'),
-       url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.woff?t=1625557476824') format('woff'),
-       url('//at.alicdn.com/t/font_2629008_ez8vj03gpyt.ttf?t=1625557476824') format('truetype');
+  src: url('//at.alicdn.com/t/font_2629008_e1ytq1v467.woff2?t=1626067416942') format('woff2'),
+       url('//at.alicdn.com/t/font_2629008_e1ytq1v467.woff?t=1626067416942') format('woff'),
+       url('//at.alicdn.com/t/font_2629008_e1ytq1v467.ttf?t=1626067416942') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +12,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-logo:before {
+  content: "\e601";
 }
 
 .icon-add:before {
@@ -174,26 +178,6 @@
   content: "\e680";
 }
 
-.icon-tab_wode_default:before {
-  content: "\e681";
-}
-
-.icon-tab_shouye_default:before {
-  content: "\e682";
-}
-
-.icon-shouye_bofang:before {
-  content: "\e683";
-}
-
-.icon-tab_quku_default:before {
-  content: "\e684";
-}
-
 .icon-quku_bofang:before {
   content: "\e677";
-}
-
-.icon-quku_qupu:before {
-  content: "\e685";
 }
