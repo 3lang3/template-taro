@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { getAlbumDetail } from '@/state/album';
 import Flex from '@/components/Flex';
-import { TabNavigationBar } from '@/components/CustomNavigation';
+import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import { useRouter } from '@tarojs/taro';
@@ -33,7 +33,7 @@ export default () => {
   if (loading) return <FullPageLoader />;
   return (
     <>
-      <TabNavigationBar title="专辑" />
+      <CustomNavigation title="专辑" titleColor="#fff" />
       <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-detail__bg">
         <View className="album-detail">
           <Image className="album-detail__cover" src={data.album_image} />

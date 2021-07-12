@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { TabNavigationBar } from '@/components/CustomNavigation';
+import CustomNavigation from '@/components/CustomNavigation';
 import Image from '@/components/Image';
 import { navigateTo, useRouter, useShareAppMessage } from '@tarojs/taro';
 import { View } from '@tarojs/components';
@@ -46,7 +46,7 @@ function PageContent({ data, params }) {
 
   return (
     <>
-      <TabNavigationBar title="专辑" />
+      <CustomNavigation home={false} title="专辑" titleColor="#fff" />
 
       <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-header__bg">
         <Flex className="album-header" align="start">

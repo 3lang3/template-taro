@@ -13,6 +13,11 @@
     justify-content: flex-start;
     box-sizing: border-box;
     overflow: hidden;
+    color: #fff;
+  }
+
+  &__btn {
+    font-size: 38px;
   }
 
   &__title {
@@ -21,8 +26,27 @@
     font-size: 36px;
     transform: translate(-50%, 0);
   }
-}
 
+  &__capsule {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 174px;
+    height: 64px;
+    padding: 0 22px;
+    // background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #fff;
+    border-radius: 33px;
+    opacity: 1;
+
+    &--border {
+      width: 1px;
+      height: 37px;
+      background-color: #ccc;
+    }
+  }
+}
 
 .message-box {
   position: relative;
@@ -40,9 +64,10 @@
     background: #ed513b;
     border-radius: 50%;
   }
-  &__img {
-    display: block;
+  &__icon {
     width: 44px;
     height: 44px;
+    color: #fff;
+    font-size: 44px;
   }
 }
