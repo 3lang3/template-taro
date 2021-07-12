@@ -135,7 +135,7 @@ export default (props: SongUploaderProps) => {
           <View onClick={onUploadClick} className="border--bolder p-default">
             <Flex justify="center">
               <Typography.Text type="secondary">添加歌曲</Typography.Text>
-              <Icon className="settlein-uploader__icon" icon="icon-shouye_bofang" />
+              <Icon className="settlein-uploader__icon" icon="icon-quku_bofang" />
             </Flex>
             <Typography.Text center type="secondary" size="sm">
               选择一个上传音频的聊天对话窗口

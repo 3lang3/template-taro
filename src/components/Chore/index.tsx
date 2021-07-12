@@ -175,10 +175,12 @@ type EmptyProps = {
    */
   message?: string;
 } & FlexProps;
-export const Empty = ({ message = '暂无相关数据', ...props }: EmptyProps) => {
+export const Empty = ({ message = '暂无数据', ...props }: EmptyProps) => {
   return (
     <Flex className="emptybox" direction="column" justify="center" {...props}>
-      <Icon className="emptybox__icon" icon="icon-icon_qupu" />
+      <Flex justify="center" className="emptybox__icon__wrapper">
+        <Icon className="emptybox__icon" icon="icon-logo" />
+      </Flex>
       <Typography.Text className="emptybox__text">{message}</Typography.Text>
     </Flex>
   );

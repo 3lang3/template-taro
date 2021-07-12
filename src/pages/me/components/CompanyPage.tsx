@@ -26,7 +26,7 @@ export default () => {
         <Button
           circle
           type="light"
-          onClick={() => navigateTo({ url: 'pages/company-bought/index' })}
+          onClick={() => navigateTo({ url: '/pages/company-bought/index' })}
         >
           已购词曲
         </Button>
