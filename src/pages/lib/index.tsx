@@ -96,7 +96,7 @@ const LibTabs = ({ onChange, data = [], params = {} }: P) => {
   );
 };
 
-export default () => {
+const LibPageContent = () => {
   const { songStyle, languageVersion } = useSelector((state) => state.common);
   const tabsData = useMemo(() => {
     return () => [
@@ -120,6 +120,7 @@ export default () => {
       },
     ];
   }, [songStyle, languageVersion]);
+
   const [list, setList] = useState<Node[]>([]);
   const [params, setParams] = useState({});
   const { loading, error, refresh, run } = useRequest(getMusicSongList, {
@@ -133,6 +134,7 @@ export default () => {
   });
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+
   function onTabChange(values) {
     setParams((v) => ({
       ...v,
@@ -145,6 +147,7 @@ export default () => {
     });
     run(result);
   }
+
   return (
     <>
       <TabNavigationBar />
@@ -174,6 +177,14 @@ export default () => {
           />
         ))}
       </View>
+    </>
+  );
+};
+
+export default () => {
+  return (
+    <>
+      <LibPageContent />
       <CustomTabBar />
     </>
   );
