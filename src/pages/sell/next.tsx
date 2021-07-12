@@ -125,7 +125,8 @@ export default () => {
 
   // 我是作曲人点击
   const radioClick = (value, type) => {
-    console.log(userData);
+    // 勾选“我是作曲人”则将用户实名姓名替换已有书写内容，且不可更改
+    // 取消勾选则恢复成默认样式
     const _payload = { ...payload, [`is_${type}`]: value };
     if (value) {
       _payload[type] = userData.real_name;

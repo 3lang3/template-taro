@@ -27,6 +27,10 @@ export type CurrentUserType = {
    */
   is_authentication: 0 | 1;
   /**
+   * 用户真实姓名
+   */
+  real_name: string;
+  /**
    * 微信推送模版数据
    */
   template: { template_id: string; template_name: string }[];
