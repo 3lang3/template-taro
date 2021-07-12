@@ -3,7 +3,7 @@ import { getHotSongList } from '@/services/song';
 import { navigateTo } from '@tarojs/taro';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { TabNavigationBar } from '@/components/CustomNavigation';
+import CustomNavigation from '@/components/CustomNavigation';
 import { FullPageError, FullPageLoader, Empty } from '@/components/Chore';
 import { View, Image as TaroImage } from '@tarojs/components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ export default () => {
 
   return (
     <>
-      <TabNavigationBar />
+      <CustomNavigation home={false} />
 
       <Flex className="hot-board-header" align="end" justify="between">
         <TaroImage

@@ -32,11 +32,11 @@ const {
 } = getCurrentInstance() as unknown as { app: AppInstance };
 
 export default () => {
-  // 登录状态切身份为歌手的才有查看曲库页面的权限
+  // 登录状态且身份为歌手的才有查看曲库页面的权限
   const { done, data } = useSelector((state) => state.common);
   // 为方便开发 暂时隐藏此逻辑
   // @ts-ignore;
-  const showLib = done && data.identity === IDENTITY.SINGER;
+  const isNotSinger = !done || data.identity !== IDENTITY.SINGER;
 
   const router = useRouter();
 
@@ -49,7 +49,7 @@ export default () => {
     <>
       <CoverView
         className={cls('custom-tabbar', {
-          'custom-tabbar--nologin': !done,
+          'custom-tabbar--nosinger': isNotSinger,
         })}
       >
         {tabBar.list.map((item, i) => (

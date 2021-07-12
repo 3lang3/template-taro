@@ -1,8 +1,8 @@
-import { View, Image } from '@tarojs/components';
-import { navigateTo } from '@tarojs/taro';
+import { View } from '@tarojs/components';
+import { navigateBack, navigateTo, switchTab } from '@tarojs/taro';
 import { useSelector } from 'react-redux';
-import messageSrc from '@/assets/icon/index_message.svg';
 import './index.less';
+import Icon from '../Icon';
 
 type CustomTabBarProps = {
   /**
@@ -16,6 +16,17 @@ type CustomTabBarProps = {
   children?: React.ReactNode;
   title?: React.ReactNode | string;
   titleColor?: string;
+  className?: string;
+  /**
+   * 是否展示主页按钮
+   * @default true
+   */
+  home?: boolean;
+  /**
+   * 返回的页面深度
+   * @default 1
+   */
+  delta?: number;
 };
 
 const CustomNavigation = ({
@@ -23,9 +34,18 @@ const CustomNavigation = ({
   fixedHeight,
   title,
   titleColor,
+  home = true,
+  delta = 1,
   ...props
 }: CustomTabBarProps) => {
   const navigation = useSelector((state: any) => state.navigation);
+  const goBack = () => {
+    navigateBack({ delta });
+  };
+  const goHome = () => {
+    switchTab({ url: '/pages/index/index' });
+  };
+
   return (
     <>
       <View className="custom-navi" style={{ height: navigation.navBarHeight }}>
@@ -41,7 +61,35 @@ const CustomNavigation = ({
             backgroundColor: props.bgColor,
           }}
         >
-          {children}
+          {(() => {
+            // 自定义模式
+            if (children) return children;
+            // 只有返回按钮
+            if (!home)
+              return (
+                <Icon
+                  className="custom-navi__btn"
+                  onClick={() => goBack()}
+                  icon="icon-nav_icon_fanhui"
+                />
+              );
+            // 带返回按钮和主页按钮
+            return (
+              <View className="custom-navi__capsule">
+                <Icon
+                  className="custom-navi__btn"
+                  onClick={() => goBack()}
+                  icon="icon-nav_icon_fanhui"
+                />
+                <View className="custom-navi__capsule--border" />
+                <Icon
+                  className="custom-navi__btn"
+                  onClick={() => goHome()}
+                  icon="icon-nav_shouye"
+                />
+              </View>
+            );
+          })()}
           {title ? (
             <View style={{ color: titleColor }} className="custom-navi__title">
               {title}
@@ -58,10 +106,10 @@ export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) =
   return (
     <CustomNavigation title={title} titleColor="#fff">
       <View className="message-box">
-        <Image
-          className="message-box__img"
+        <Icon
+          icon="icon-nav_xiaoxi"
+          className="message-box__icon"
           onClick={() => navigateTo({ url: '/pages/message/index' })}
-          src={messageSrc}
         />
         <View className="message-box__dot" />
       </View>

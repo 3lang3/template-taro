@@ -5,7 +5,7 @@ import Button from '@/components/Button';
 import Image from '@/components/Image';
 import { useState } from 'react';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
-import { TabNavigationBar } from '@/components/CustomNavigation';
+import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
@@ -61,7 +61,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   const isCompanyIdentity = +identity === IDENTITY.COMPANY;
   return (
     <>
-      <TabNavigationBar title={detail.song_name} />
+      <CustomNavigation title={detail.song_name} />
 
       <View
         className={cls('play-detail', {
