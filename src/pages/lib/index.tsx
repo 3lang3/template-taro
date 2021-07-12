@@ -186,7 +186,9 @@ const LibPageContent = () => {
                       </ContentPop>
                     )}
                     <Icon
-                      onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                      onClick={() =>
+                        navigateTo({ url: `/pages/play-detail/index?type=score&ids=${song.ids}` })
+                      }
                       icon="icon-quku_bofang"
                       className="lib-song-action__item"
                     />
