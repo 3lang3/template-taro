@@ -149,7 +149,7 @@ const LibPageContent = () => {
   const getParams = (p) => {
     const result = {};
     Object.keys(p).forEach((item) => {
-      result[item] = p[item].value;
+      if (p[item]) result[item] = p[item].value;
     });
     return result;
   };
@@ -170,8 +170,8 @@ const LibPageContent = () => {
       <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
       <View className="lib-song-wrapper">
         {(() => {
-          if (error) return <Flex justify="center">加载失败</Flex>;
-          if (nomoreRef.current && !list.length) return <Empty />;
+          if (error && !loading) return <Flex justify="center">加载失败</Flex>;
+          if (nomoreRef.current && !list.length && !loading) return <Empty />;
           return list.map((song, i) => (
             <LibSongItem
               key={i}
