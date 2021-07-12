@@ -4,7 +4,7 @@ import cls from 'classnames';
 import React from 'react';
 import './index.less';
 
-type FlexProps = {
+export type FlexProps = {
   align?: 'center' | 'baseline' | 'start' | 'end' | 'stretch';
   justify?: 'center' | 'start' | 'end' | 'between' | 'around' | 'evenly' | 'stretch';
   wrap?: 'wrap' | 'nowrap';

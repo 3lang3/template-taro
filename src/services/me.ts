@@ -31,3 +31,8 @@ export type MePageResType = {
 export function getHomePageDetail(): Promise<PromiseResponseType<MePageResType>> {
   return request('/member/getHomePageDetail');
 }
+
+// 机构接口
+export function getMechanismInfo() {
+  return request('/member/getMechanismInfo');
+}

@@ -1,46 +1,57 @@
 import Button from '@/components/Button';
-import { ManageSongItem } from '@/components/Chore';
+import { Empty, FullPageError, FullPageLoader, ManageSongItem } from '@/components/Chore';
 import Flex from '@/components/Flex';
+import Image from '@/components/Image';
 import Typography from '@/components/Typography';
-import { Image, View } from '@tarojs/components';
+import { getMechanismInfo } from '@/services/me';
+import { View } from '@tarojs/components';
 import { navigateTo } from '@tarojs/taro';
+import { useRequest } from 'ahooks';
 import './company.less';
 
-const songsData = [
-  { title: '告白气球', price1: 2000, price2: 3000 },
-  { title: '手心里的蔷薇', price1: 2000, price2: 3000 },
-  { title: '原来如此', price1: 2000, price2: 3000 },
-  { title: '我们都一样', price1: 2000, price2: 3000 },
-];
-
 export default () => {
+  const { data: { data } = { data: {} }, loading, error, refresh } = useRequest(getMechanismInfo);
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <View className="page-company">
       <Flex className="company-header" justify="between">
         <Image
           className="company-header__avatar"
-          src={require('@/assets/icon/avatar_default.svg')}
+          src={data.avatar ? data.avatar : require('@/assets/icon/avatar_default.svg')}
         />
         <Typography.Text className="company-header__name" type="light" size="xl" ellipsis>
-          杭州一哥传媒有限公司杭州一哥传媒有限公司
+          {data.company}
         </Typography.Text>
-        <Button circle type="light">
+        <Button
+          circle
+          type="light"
+          onClick={() => navigateTo({ url: 'pages/company-bought/index' })}
+        >
           已购词曲
         </Button>
       </Flex>
       <View className="company-body">
-        {songsData.map((song, i) => (
-          <ManageSongItem
-            key={i}
-            {...song}
-            onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-            actionRender={() => (
-              <Button circle size="xs" type="primary">
-                查看
-              </Button>
-            )}
-          />
-        ))}
+        {Array.isArray(data.song) && data.song.length > 0 ? (
+          data.song.map((song, i) => (
+            <ManageSongItem
+              key={i}
+              title={song.song_name}
+              price1={song.composer_final_price}
+              price2={song.lyricist_final_price}
+              onClick={() =>
+                navigateTo({ url: `/pages/play-detail/index?type=score&ids=${song.song_ids}` })
+              }
+              actionRender={() => (
+                <Button circle size="xs" type="primary">
+                  查看
+                </Button>
+              )}
+            />
+          ))
+        ) : (
+          <Empty className="mt50" />
+        )}
       </View>
     </View>
   );

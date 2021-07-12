@@ -8,8 +8,8 @@ import { View } from '@tarojs/components';
 import { memo } from 'react';
 import { AtInput, AtActivityIndicator } from 'taro-ui';
 import Button from '../Button';
-
 import Flex from '../Flex';
+import type { FlexProps } from '../Flex';
 import Icon from '../Icon';
 import Tag from '../Tag';
 import Typography from '../Typography';
@@ -68,7 +68,9 @@ export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItem
 
 type ManageSongItemProps = {
   title: string;
+  /** 曲价格 */
   price1: string | number;
+  /** 词价格 */
   price2: string | number;
   actionRender?: () => React.ReactNode | string;
   onClick?: () => void;
@@ -166,9 +168,16 @@ export const FullPageError = ({ refresh }: FullPageErrorProps) => {
   );
 };
 
-export const Empty = ({ message = '暂无相关数据' }) => {
+type EmptyProps = {
+  /**
+   * 提示标题
+   * @default '暂无相关数据'
+   */
+  message?: string;
+} & FlexProps;
+export const Empty = ({ message = '暂无相关数据', ...props }: EmptyProps) => {
   return (
-    <Flex className="emptybox" direction="column" justify="center">
+    <Flex className="emptybox" direction="column" justify="center" {...props}>
       <Icon className="emptybox__icon" icon="icon-icon_qupu" />
       <Typography.Text className="emptybox__text">{message}</Typography.Text>
     </Flex>
