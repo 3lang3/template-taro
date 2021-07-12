@@ -1,19 +1,16 @@
 import request, { PromiseResponseType } from '@/utils/request';
-import type { listParams, ListResType } from './common.d';
 
-export type MakeNode = {
-  ids: Number;
-  number_ids: Number;
-  nickname: String;
-  singer: String;
+export type Node = {
+  ids: number;
+  song_name: string;
+  sect: string;
+  language: string;
+  make_status: number;
 };
 
 // 歌曲制作列表
-export function getMusicsongmakeList(
-  data: listParams,
-): Promise<PromiseResponseType<ListResType<Node[]>>> {
-  return request('/index.php?_url=/music/Musicsongmake/getLists', {
+export function getMakeSongList(): Promise<PromiseResponseType<Node[]>> {
+  return request('/song/getMakeSongList', {
     method: 'GET',
-    data,
   });
 }
