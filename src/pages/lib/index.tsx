@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { Image, Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
@@ -17,6 +17,7 @@ import './index.less';
 export type P = {
   onChange?: (v: Record<string, any>) => void;
   data?: any[];
+  params?: Object;
 };
 
 // 顶部筛选器子项
@@ -39,9 +40,8 @@ const TabsItem = ({ active, text, ...props }) => {
 };
 
 // 顶部筛选器
-const LibTabs = ({ onChange, data }: P) => {
+const LibTabs = ({ onChange, data = [], params = {} }: P) => {
   const [current, setCurrent] = useState<any>(undefined);
-  const [params, setParams] = useState({});
   // tab点击事件
   const onShow = (tab) => {
     if ((current && current.key) === tab.key) {
@@ -59,12 +59,8 @@ const LibTabs = ({ onChange, data }: P) => {
     const result = {
       [tab.key]: params[tab.key] && fil.value === params[tab.key].value ? undefined : fil,
     };
-    setParams((v) => ({
-      ...v,
-      ...result,
-    }));
     onClose();
-    if (onChange) onChange({ ...params, ...result });
+    if (onChange) onChange(result);
   };
 
   return (
@@ -129,11 +125,10 @@ export default () => {
     ];
   }, [songStyle, languageVersion]);
   const [list, setList] = useState<Node[]>([]);
+  const [params, setParams] = useState({});
   const { loading, error, refresh, run } = useRequest(getMusicSongList, {
     onSuccess: ({ data: { _list }, type, msg }) => {
       if (type === 1) throw Error(msg);
-      console.log('data--------');
-      console.log(_list);
       if (_list.length) {
         setList([...list, ..._list]);
       }
@@ -141,13 +136,22 @@ export default () => {
   });
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
-  function onTabChange(value) {
-    console.log(value);
+  function onTabChange(values) {
+    setParams((v) => ({
+      ...v,
+      ...values,
+    }));
+    const target = { ...params, ...values };
+    const result = {};
+    Object.keys(target).forEach((item) => {
+      result[item] = target[item].value;
+    });
+    run(result);
   }
   return (
     <>
       <TabNavigationBar />
-      <LibTabs onChange={onTabChange} data={tabsData()} />
+      <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
       {list.map((song, i) => (
         <LibSongItem
           key={i}
