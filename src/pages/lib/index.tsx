@@ -1,18 +1,16 @@
-import { useState, useMemo, useRef } from 'react';
-import { AtActivityIndicator } from 'taro-ui';
+import { useState, useMemo } from 'react';
 import { Text, View } from '@tarojs/components';
-import { PAGINATION } from '@/config/constant';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
-import { navigateTo, useReachBottom } from '@tarojs/taro';
+import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import { useSelector } from 'react-redux';
+import ScrollLoadList from '@/components/ScrollLoadList';
 import { getMusicSongList, Node } from '@/services/lib';
-import { useRequest } from 'ahooks';
-import { Empty, LibSongItem } from '@/components/Chore';
+import { LibSongItem } from '@/components/Chore';
 import ContentPop from '@/components/ContentPop';
 import './index.less';
 
@@ -123,27 +121,7 @@ const LibPageContent = () => {
     ];
   }, [songStyle, languageVersion]);
 
-  const [list, setList] = useState<Node[]>([]);
   const [params, setParams] = useState({});
-  const paginationRef = useRef(PAGINATION);
-  const nomoreRef = useRef(false);
-  const { loading, error, run } = useRequest(getMusicSongList, {
-    onSuccess: ({ data: { _list, _page }, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      paginationRef.current = _page;
-      nomoreRef.current = _page.page >= _page.totalPage;
-      setList([...list, ..._list]);
-    },
-  });
-
-  // 滚动加载
-  useReachBottom(() => {
-    // 请求中或者没有更多数据 return
-    if (loading || nomoreRef.current) return;
-    const payload = getParams(params);
-    const { page, pageSize } = paginationRef.current;
-    run({ ...payload, pageSize, page: page + 1 });
-  });
 
   // 获取查询参数
   const getParams = (p) => {
@@ -158,10 +136,6 @@ const LibPageContent = () => {
       ...v,
       ...values,
     }));
-    setList([]);
-    paginationRef.current = PAGINATION;
-    const result = getParams({ ...params, ...values });
-    run(result);
   }
 
   return (
@@ -169,10 +143,10 @@ const LibPageContent = () => {
       <TabNavigationBar />
       <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
       <View className="lib-song-wrapper">
-        {(() => {
-          if (error && !loading) return <Flex justify="center">加载失败</Flex>;
-          if (nomoreRef.current && !list.length && !loading) return <Empty />;
-          return list.map((song, i) => (
+        <ScrollLoadList<Node>
+          params={getParams(params)}
+          request={getMusicSongList}
+          row={(song, i) => (
             <LibSongItem
               key={i}
               title={song.song_name}
@@ -196,19 +170,9 @@ const LibPageContent = () => {
                 );
               }}
             />
-          ));
-        })()}
+          )}
+        />
       </View>
-      {loading && (
-        <Flex justify="center">
-          <AtActivityIndicator />
-        </Flex>
-      )}
-      {nomoreRef.current && !!list.length && (
-        <Flex justify="center">
-          <Typography.Text type="secondary">全部加载完拉~</Typography.Text>
-        </Flex>
-      )}
     </>
   );
 };
