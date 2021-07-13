@@ -21,7 +21,7 @@
         {
           "name": "pages/play-detail/index",
           "pathName": "pages/play-detail/index",
-          "query": "",
+          "query": "type=score",
           "scene": null
         },
         {
@@ -33,7 +33,7 @@
         {
           "name": "pages/settlein/index",
           "pathName": "pages/settlein/index",
-          "query": "",
+          "query": "identity=2",
           "scene": null
         },
         {
@@ -57,13 +57,13 @@
         {
           "name": "pages/album/index",
           "pathName": "pages/album/index",
-          "query": "",
+          "query": "ids=514767083",
           "scene": null
         },
         {
           "name": "pages/album-detail/index",
           "pathName": "pages/album-detail/index",
-          "query": "",
+          "query": "ids=123",
           "scene": null
         },
         {
@@ -111,6 +111,18 @@
         {
           "name": "pages/song-manage/index",
           "pathName": "pages/song-manage/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/index/index",
+          "pathName": "pages/index/index",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "pages/my-song/index",
+          "pathName": "pages/my-song/index",
           "query": "",
           "scene": null
         }

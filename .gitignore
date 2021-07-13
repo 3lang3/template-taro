@@ -4,3 +4,8 @@ deploy_versions/
 .rn_temp/
 node_modules/
 .DS_Store
+.eslintcache
+.env
+.env.local
+/src/config/env/development.ts
+.package-lock.json

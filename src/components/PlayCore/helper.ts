@@ -1,7 +1,6 @@
-import { createInnerAudioContext, createSelectorQuery, useReady } from '@tarojs/taro';
+import { createInnerAudioContext, createSelectorQuery } from '@tarojs/taro';
 import type { MovableViewProps } from '@tarojs/components/types/MovableView';
 import { useEffect, useRef, useState } from 'react';
-import './index.less';
 
 type AudioStateProps = {
   current: number;
@@ -29,22 +28,19 @@ const audioInitialState: AudioStateProps = {
 };
 
 // @todo 拓展audio属性设置
-type UseCustomAudioParams = {
+export type UseCustomAudioParams = {
   /**
    * 音频地址
    */
   src: string;
   /**
-   * 定制进度条
-   * movable-view组件的id
-   */
-  movableAreaId: string;
-  /**
    * 歌词功能
    */
   lyric?: {
+    // 歌词自动滚动
+    autoScroll: boolean;
     data: any[];
-    class: string;
+    nodeClassName: string;
   };
 };
 type UseCustomAudioReturn = {
@@ -69,11 +65,7 @@ type UseCustomAudioReturn = {
 /**
  * @name 定制audio-hook
  */
-export function useCustomAudio({
-  src,
-  movableAreaId,
-  lyric,
-}: UseCustomAudioParams): UseCustomAudioReturn {
+export function useCustomAudio({ src, lyric }: UseCustomAudioParams): UseCustomAudioReturn {
   // 音频是否暂停
   const [paused, setPaused] = useState(true);
   const [state, set] = useState<AudioStateProps>(audioInitialState);
@@ -105,12 +97,12 @@ export function useCustomAudio({
      */
     audio.current.onTimeUpdate(() => {
       let payload = {
-        currentFtm: formatSecToHmm(audio.current.currentTime),
+        currentFtm: formatSecToHm(audio.current.currentTime),
         current: audio.current.currentTime,
       } as AudioStateProps;
       // 获取音频总时长
       if (audio.current.duration && state.duration === audioInitialState.duration) {
-        payload.durationFtm = formatSecToHmm(audio.current.duration);
+        payload.durationFtm = formatSecToHm(audio.current.duration);
         payload.duration = audio.current.duration;
       }
       // 进度条百分比
@@ -121,8 +113,8 @@ export function useCustomAudio({
         payload.dotProgress = payload.progress * movable.current.width;
       }
 
-      // 滚动歌词功能
-      if (lyric) {
+      // 歌词功能
+      if (lyric && lyric.autoScroll) {
         const lyricReverseIdx = lyricRef.current.reverseData.findIndex(
           (el) => el.time <= payload.current,
         );
@@ -136,30 +128,33 @@ export function useCustomAudio({
       set((v) => ({ ...v, ...payload }));
     });
 
+    // useReady在自定义hook中不执行
+    // useLayoutEffect中获取不到dom实例真实属性
+    // @hack
+    setImmediate(() => {
+      // 获取movable-view宽度
+      createSelectorQuery()
+        .select('.play-core__ctrl-bar')
+        .boundingClientRect((rect) => {
+          movable.current.width = rect.width;
+        })
+        .exec();
+
+      // 初始化歌词相关dom信息
+      if (lyric) {
+        createSelectorQuery()
+          .selectAll(lyric.nodeClassName)
+          .boundingClientRect((rects: any) => {
+            lyricRef.current.lyricNodesHeight = rects.map((el) => el.height);
+            lyricRef.current.lyricNodesHeight[0] = 0;
+          })
+          .exec();
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     return () => audio.current.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // 获取movable-view宽度
-  useReady(() => {
-    createSelectorQuery()
-      .select(movableAreaId)
-      .boundingClientRect((rect) => {
-        movable.current.width = rect.width;
-      })
-      .exec();
-
-    if (lyric) {
-      createSelectorQuery()
-        .selectAll(lyric.class)
-        .boundingClientRect((rects: any) => {
-          lyricRef.current.lyricNodesHeight = rects.map((el) => el.height);
-          lyricRef.current.lyricNodesHeight[0] = 0;
-        })
-        .exec();
-    }
-  });
 
   // 进度条开始拖动
   const onTouchStart = () => {
@@ -194,7 +189,7 @@ export function useCustomAudio({
  * 秒数转HH:mm:ss格式
  * @param {number} s
  */
-function formatSecToHmm(s: number, includeHour = false): string {
+function formatSecToHm(s: number, includeHour = false): string {
   let hour: any = Math.floor(s / 3600);
   let minu: any = Math.floor(s / 60) % 60;
   let sec: any = Math.floor(s % 60);
@@ -202,6 +197,39 @@ function formatSecToHmm(s: number, includeHour = false): string {
   if (minu < 10) minu = '0' + minu;
   if (sec < 10) sec = '0' + sec;
   return includeHour ? `${hour}:${minu}:${sec}` : `${minu}:${sec}`;
+}
+
+function formatMsToSec(t: string): number {
+  const [minu, sec] = t.split(':');
+  return parseInt(minu, 10) * 60 + parseInt(sec, 10);
+}
+
+export type ScrollLyricItem = {
+  time: number;
+  text: string;
+};
+/**
+ * 处理滚动歌词
+ * @param lyrics 服务端返回的歌词数据
+ */
+export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
+  if (typeof lyrics === 'string') {
+    return lyrics.split('\n').map((el) => ({ time: 0, text: el }));
+  }
+  return (lyrics as string[])
+    .map((lyric, i) => {
+      const lyricStr = lyric.substr(1);
+      const splitIdx = lyricStr.search(/\]/);
+      if (splitIdx === -1) {
+        console.warn(`原歌词第${i}条格式不正确，无法解析，已忽略`);
+        return false;
+      }
+      const splitChar = lyricStr[splitIdx];
+      const [timeStr, lyricFtm] = lyricStr.split(splitChar);
+
+      return { time: formatMsToSec(timeStr), text: lyricFtm };
+    })
+    .filter(Boolean) as ScrollLyricItem[];
 }
 
 /**

@@ -6,8 +6,11 @@
 
 import { View } from '@tarojs/components';
 import { memo } from 'react';
-import { AtInput } from 'taro-ui';
+import { AtInput, AtActivityIndicator } from 'taro-ui';
+import Button from '../Button';
 import Flex from '../Flex';
+import type { FlexProps } from '../Flex';
+import Icon from '../Icon';
 import Tag from '../Tag';
 import Typography from '../Typography';
 import './index.less';
@@ -65,7 +68,9 @@ export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItem
 
 type ManageSongItemProps = {
   title: string;
+  /** 曲价格 */
   price1: string | number;
+  /** 词价格 */
   price2: string | number;
   actionRender?: () => React.ReactNode | string;
   onClick?: () => void;
@@ -99,6 +104,7 @@ export const ManageSongItem = ({
 type CounterOfferInputProps = {
   /** 曲或者词 */
   title: string;
+  placeholder?: string;
   /** input name */
   name: string;
   value: string;
@@ -108,7 +114,7 @@ type CounterOfferInputProps = {
 };
 // 还价输入框
 export const CounterOfferInput = memo<CounterOfferInputProps>(
-  ({ title, name, value, onChange, price }) => {
+  ({ title, placeholder, name, value, onChange, price }) => {
     return (
       <Flex className="offer-modal-item" justify="between">
         <Typography.Text size="lg">{title}</Typography.Text>
@@ -116,7 +122,13 @@ export const CounterOfferInput = memo<CounterOfferInputProps>(
           当前: {price}元
         </Typography.Text>
         <Flex className="input--border">
-          <AtInput name={name} value={value} onChange={onChange} />
+          <AtInput
+            type="number"
+            name={name}
+            value={value}
+            placeholder={placeholder}
+            onChange={onChange}
+          />
         </Flex>
       </Flex>
     );
@@ -127,3 +139,55 @@ function counterOfferInputeQualfn(prev, next) {
   if (prev.value === next.value) return true;
   return false;
 }
+
+/**
+ * 页面loading时UI
+ */
+type FullPageLoaderProps = {
+  content?: string;
+};
+export const FullPageLoader = ({ content }: FullPageLoaderProps) => {
+  return (
+    <Flex justify="center" className="full-page--loader">
+      <AtActivityIndicator size={38} mode={content ? 'center' : 'normal'} content={content} />
+    </Flex>
+  );
+};
+
+type FullPageErrorProps = {
+  refresh?: () => void;
+};
+/**
+ * 页面加载出错UI
+ */
+export const FullPageError = ({ refresh }: FullPageErrorProps) => {
+  return (
+    <Flex direction="column" justify="center" className="full-page--error">
+      <Icon className="full-page--error__icon" icon="icon-space" />
+      <Typography.Title>Sorry...页面请求失败</Typography.Title>
+      {refresh ? (
+        <Button type="primary" onClick={refresh}>
+          刷新试试
+        </Button>
+      ) : null}
+    </Flex>
+  );
+};
+
+type EmptyProps = {
+  /**
+   * 提示标题
+   * @default '暂无相关数据'
+   */
+  message?: string;
+} & FlexProps;
+export const Empty = ({ message = '暂无数据', ...props }: EmptyProps) => {
+  return (
+    <Flex className="emptybox" direction="column" justify="center" {...props}>
+      <Flex justify="center" className="emptybox__icon__wrapper">
+        <Icon className="emptybox__icon" icon="icon-logo" />
+      </Flex>
+      <Typography.Text className="emptybox__text">{message}</Typography.Text>
+    </Flex>
+  );
+};

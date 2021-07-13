@@ -1,0 +1,146 @@
+@import '../../../style/var.less';
+
+page {
+  background-color: @gray-2;
+}
+
+.page-me {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 90vh;
+  padding: 0 24px;
+  overflow: hidden;
+
+  &::before {
+    position: absolute;
+    left: -25%;
+    z-index: -1;
+    width: 150%;
+    height: 428px;
+    background: @gradient-primary;
+    border-radius: 0 0 50% 50%;
+    content: ' ';
+  }
+}
+
+.me-header {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 60px 0 40px;
+
+  &__avatar {
+    width: 120px;
+    height: 120px;
+    margin-right: 24px;
+    border: 2px solid @white;
+    border-radius: 50%;
+  }
+
+  &__action {
+    &-btn {
+      width: 244px;
+      &__icon {
+        width: 30px;
+        height: 30px;
+        margin-right: 4px;
+        color: @primary;
+        font-size: 32px;
+      }
+    }
+  }
+}
+
+.me-card {
+  &-item {
+    box-sizing: border-box;
+    width: 100%;
+    height: auto;
+    margin-bottom: 24px;
+    padding: 36px 24px;
+    background: @white;
+    border: none;
+    border-radius: 12px;
+
+    .at-button {
+      &__text {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+      }
+    }
+
+    &__content {
+      flex: 1;
+      color: @gray-8;
+    }
+
+    &__title {
+      margin-bottom: 8px;
+    }
+
+    &__icon {
+      width: 84px;
+      height: 84px;
+      margin-right: 20px;
+      color: #ed513b;
+      font-size: 80px;
+    }
+    &__action {
+      width: 36px;
+      height: 36px;
+      color: @gray-8;
+      font-size: 32px;
+    }
+  }
+}
+
+.me-service {
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 24px;
+  padding: 0 24px;
+  background: @white;
+  border-radius: 12px;
+
+  &__header {
+    height: 80px;
+    color: @gray-8;
+    font-size: 30px;
+    border-bottom: 1px solid @gray-2;
+  }
+
+  &__item {
+    box-sizing: border-box;
+    width: 33.3333%;
+    padding: 24px;
+    &__img {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 8px;
+      font-size: 58px;
+    }
+  }
+  &__item--fake {
+    width: 33.3333%;
+  }
+}
+
+.me-bottom {
+  margin-bottom: 24px;
+  color: @blue;
+  font-size: 28px;
+  text-align: center;
+
+  &__link {
+    margin-bottom: 100px;
+    text-align: center;
+  }
+
+  &__action {
+    font-size: 26px !important;
+  }
+}

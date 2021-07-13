@@ -1,41 +1,69 @@
+import { useEffect } from 'react';
+import { getAlbumDetail } from '@/state/album';
 import Flex from '@/components/Flex';
-import { TabNavigationBar } from '@/components/CustomNavigation';
+import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
+import { useRouter } from '@tarojs/taro';
+import { useDispatch, useSelector } from 'react-redux';
+import { FullPageError, FullPageLoader } from '@/components/Chore';
 import { View } from '@tarojs/components';
 import './index.less';
 
 export default () => {
+  const { params } = useRouter();
+  const dispatch = useDispatch();
+  const { albumEunm } = useSelector((state) => state.album);
+  const { data, loading = true, error, done } = albumEunm[params.ids as string] || {};
+
+  useEffect(() => {
+    if (!data || !done) {
+      dispatch(getAlbumDetail({ album_ids: params.ids as string }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (error)
+    return (
+      <FullPageError
+        refresh={() => dispatch(getAlbumDetail({ album_ids: params.ids as string }))}
+      />
+    );
+
+  if (loading) return <FullPageLoader />;
   return (
     <>
-      <TabNavigationBar title="专辑" />
+      <CustomNavigation title="专辑" titleColor="#fff" />
+      <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-detail__bg">
+        <View className="album-detail">
+          <Image className="album-detail__cover" src={data.album_image} />
 
-      <Image className="album-detail__cover" src="" />
-
-      <View className="album-detail__wrapper">
-        <Flex className="album-detail__p">
-          <View className="album-detail__p-label">专辑:</View>
-          <View className="album-detail__p-text">后座剧场</View>
-        </Flex>
-        <Flex className="album-detail__p">
-          <View className="album-detail__p-label">语种:</View>
-          <View className="album-detail__p-text">国语</View>
-        </Flex>
-        <Flex className="album-detail__p">
-          <View className="album-detail__p-label">发行时间:</View>
-          <View className="album-detail__p-text">2021.05.20</View>
-        </Flex>
-        <Flex className="album-detail__p">
-          <View className="album-detail__p-label">唱片公司:</View>
-          <View className="album-detail__p-text">一哥传媒有限公司</View>
-        </Flex>
-        <Flex className="album-detail__p">
-          <View className="album-detail__p-label">流派:</View>
-          <View className="album-detail__p-text">摇滚</View>
-        </Flex>
-        <Typography.Text type="light" className="mt50">
-          人们难辩过去何时成为过去,却能牢记过去的样子——从北二环到昌平近40公里,10年后的他,将这个印象深刻的儿时交付,又从斑斓浩瀚的音乐光谱中,精选与自我共振频率最高的6首经单作品~
-        </Typography.Text>
+          <View className="album-detail__wrapper">
+            <Flex className="album-detail__p">
+              <View className="album-detail__p-label">专辑:</View>
+              <View className="album-detail__p-text">{data.album_name}</View>
+            </Flex>
+            <Flex className="album-detail__p">
+              <View className="album-detail__p-label">语种:</View>
+              <View className="album-detail__p-text">{data.language}</View>
+            </Flex>
+            <Flex className="album-detail__p">
+              <View className="album-detail__p-label">发行时间:</View>
+              <View className="album-detail__p-text">{data.issue_date}</View>
+            </Flex>
+            <Flex className="album-detail__p">
+              <View className="album-detail__p-label">唱片公司:</View>
+              <View className="album-detail__p-text">{data.company}</View>
+            </Flex>
+            <Flex className="album-detail__p">
+              <View className="album-detail__p-label">流派:</View>
+              <View className="album-detail__p-text">{data.sect}</View>
+            </Flex>
+            <Typography.Text type="light" className="mt50">
+              {data.desc}
+            </Typography.Text>
+          </View>
+        </View>
       </View>
     </>
   );

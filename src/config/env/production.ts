@@ -1,13 +1,13 @@
-import { makeUpApi } from "./helper";
+import { makeUpApi } from './helper';
 
-const DOMAIN = "yigeyougou.com";
+const DOMAIN = 'gygmall.com';
 
 export default {
   api: {
-    current: makeUpApi("shopapi", DOMAIN),
-    trade: makeUpApi("trade", DOMAIN),
-    msg: makeUpApi("msgapi", DOMAIN),
+    current: makeUpApi('testydjshopapi', DOMAIN),
+    trade: makeUpApi('trade', DOMAIN),
+    msg: makeUpApi('msgapi', DOMAIN),
   },
-  cdn: makeUpApi("imgs", DOMAIN),
-  plugin: makeUpApi("plugin", DOMAIN),
+  cdn: makeUpApi('imgs', DOMAIN),
+  plugin: makeUpApi('plugin', DOMAIN),
 };

@@ -7,6 +7,15 @@
     box-sizing: border-box;
     width: 100%;
     padding: 0 24px 20px;
+    .input--border {
+      padding-right: 0;
+    }
+  }
+
+  &-share {
+    color: #40a9ff !important;
+    background-color: #fff !important;
+    border: 0;
   }
 
   &__item {
@@ -37,5 +46,33 @@
     width: 32px;
     height: 32px;
     margin-left: 4px;
+    color: @gray-7;
+  }
+
+  &__status {
+    position: relative;
+    min-height: 120px;
+    border-radius: 8px;
+    &--success {
+      color: @white;
+      background-color: @primary;
+      border-color: @primary !important;
+      .settlein-uploader__icon {
+        color: @white;
+        font-size: 48px;
+      }
+    }
+    &--disabled {
+      background-color: @gray-5;
+      border-color: @gray-5 !important;
+    }
+  }
+
+  &__delete {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: @orange;
+    font-size: 38px;
   }
 }

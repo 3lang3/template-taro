@@ -2,6 +2,10 @@ export default {
   pages: [
     // 首页
     'pages/index/index',
+    // 我要唱
+    'pages/my-song/index',
+    // 消息通知
+    'pages/message/index',
     // 曲库
     'pages/lib/index',
     // 我的
@@ -34,14 +38,12 @@ export default {
     'pages/sell/index',
     // 出售词曲第二步
     'pages/sell/next',
-    // 消息通知
-    'pages/message/index',
     // 消息通知详情
     'pages/message/detail',
     // 词曲制作
     'pages/song-make/index',
     // 词曲制作详情
-    'pages/song-make/detail',
+    'pages/song-detail/index',
     // 词曲管理
     'pages/song-manage/index',
   ],

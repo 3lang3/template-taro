@@ -1,89 +1,176 @@
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import { CounterOfferInput, ManageSongItem } from '@/components/Chore';
+import Typography from '@/components/Typography';
 import Radio from '@/components/Radio';
 import { View } from '@tarojs/components';
+import { operationMusicSongPrice } from '@/services/song';
+import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
+import { showModal, showToast } from '@tarojs/taro';
+import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import './index.less';
 
-const songsData = [
-  { title: '告白气球', price1: 2000, price2: 3000, status: 0 },
-  { title: '手心里的蔷薇', price1: 2000, price2: 3000, status: 1 },
-  { title: '原来如此', price1: 2000, price2: 3000, status: 2 },
-  { title: '我们都一样', price1: 2000, price2: 3000, status: 3 },
-];
-
 export default () => {
-  const [payload, setPayload] = useState<any>({
-    price1: '',
-    price2: '',
-    agree: false,
-  });
-  const [visible, setVisible] = useState(false);
-
-  const onSingerClick = () => {
-    setVisible(true);
-  };
-  const closeModal = () => {
-    setVisible(false);
-    setPayload({
-      price1: '',
-      price2: '',
-      agree: false,
+  const actionRef = useRef<ActionType>();
+  const selectRecordRef = useRef<any>(null);
+  // 删除
+  const onDeleteClick = async (record) => {
+    const { confirm } = await showModal({
+      title: '提示',
+      content: '这是一个模态弹窗',
     });
+    if (!confirm) return;
+    showToast({ icon: 'loading', title: '删除中' });
+    const { msg } = await delMusicSong({ ids: record.ids });
+    showToast({ icon: 'success', title: msg });
   };
-  const onModalConfirm = () => {
-    console.log(payload);
-    closeModal();
+  const onSignClick = async (record) => {
+    selectRecordRef.current = record;
   };
 
   return (
     <>
-      {songsData.map((song, i) => (
-        <ManageSongItem
-          key={i}
-          {...song}
-          actionRender={() => {
-            if (song.status === 0)
-              return (
-                <Button onClick={onSingerClick} circle size="xs" type="primary">
-                  待认领
-                </Button>
-              );
-            return (
-              <Button circle size="xs" outline>
-                已认领
-              </Button>
-            );
-          }}
-        />
-      ))}
+      <ScrollLoadList
+        actionRef={actionRef}
+        request={getMusicSongManageList}
+        row={(song) => (
+          <ManageSongItem
+            key={song.ids}
+            title={song.song_name}
+            price1={song.composer_price}
+            price2={song.lyricist_price}
+            actionRender={() => {
+              if (song.status === 0)
+                return (
+                  <Button circle size="xs" type="primary">
+                    待认领
+                  </Button>
+                );
+              if (song.status === 2)
+                return (
+                  <Button circle size="xs" type="primary" outline>
+                    词曲认领中
+                  </Button>
+                );
+              if (song.status === 3)
+                return (
+                  <Button circle size="xs" type="secondary" outline>
+                    审核中
+                  </Button>
+                );
+              if (song.status === 4)
+                return (
+                  <>
+                    <Button circle size="xs" type="secondary" outline>
+                      已通过
+                    </Button>
+                    <CounterOfferButton current={song} refresh={actionRef.current?.reload} />
+                  </>
+                );
+              if (song.status === 5)
+                return (
+                  <>
+                    <Button circle size="xs" type="danger" outline>
+                      已驳回
+                    </Button>
+                    <Typography.Text
+                      onClick={() => onDeleteClick(song)}
+                      className="ml20"
+                      type="danger"
+                    >
+                      删除
+                    </Typography.Text>
+                  </>
+                );
+              if (song.status === 6)
+                return (
+                  <Button onClick={() => onSignClick(song)} circle size="xs" type="primary">
+                    签署协议
+                  </Button>
+                );
+              if (song.status === 8)
+                return (
+                  <Button circle size="xs" type="secondary" outline>
+                    签署完成
+                  </Button>
+                );
+
+              if (song.status === 9)
+                return (
+                  <Button circle size="xs" type="secondary" outline>
+                    交易完成
+                  </Button>
+                );
+
+              return null;
+            }}
+          />
+        )}
+      />
+    </>
+  );
+};
+
+function CounterOfferButton({ current, refresh }) {
+  const [payload, setPayload] = useState<any>({
+    composer_price: '',
+    lyricist_price: '',
+    is_change_price: false,
+  });
+  const [visible, set] = useState(false);
+
+  const closeModal = () => set(false);
+
+  const onConfirm = async () => {
+    const { is_change_price, ...rest } = payload;
+    if (!rest.composer_price || !rest.lyricist_price) {
+      showToast({ icon: 'none', title: '请输入词曲价格' });
+      return;
+    }
+    showToast({ icon: 'loading', title: '提交中' });
+    const { msg } = await operationMusicSongPrice({
+      ids: current.ids,
+      ...rest,
+      is_change_price: Number(is_change_price),
+    });
+    showToast({ icon: 'success', title: msg });
+    refresh();
+    closeModal();
+  };
+  return (
+    <>
+      <Typography.Text onClick={() => set(true)} className="ml20" type="primary">
+        改价
+      </Typography.Text>
       <AtModal isOpened={visible} onClose={closeModal}>
         <AtModalHeader>改价</AtModalHeader>
         <AtModalContent>
           <CounterOfferInput
             title="曲"
-            price={2000}
-            name="n1aasd"
-            value={payload.value1}
+            price={current.composer_price}
+            name="composer_price"
+            value={payload.composer_price}
+            placeholder="修改后曲价格"
             onChange={(value) => {
-              setPayload((v) => ({ ...v, price1: value }));
-              return value
+              setPayload((v) => ({ ...v, composer_price: value }));
+              return value;
             }}
           />
           <CounterOfferInput
             title="词"
-            price={3000}
-            name="n2123"
-            value={payload.value2}
-            onChange={(value) => setPayload((v) => ({ ...v, price2: value }))}
+            price={current.lyricist_price}
+            placeholder="修改后词价格"
+            name="lyricist_price"
+            value={payload.lyricist_price}
+            onChange={(value) => setPayload((v) => ({ ...v, lyricist_price: value }))}
           />
           <View className="ml30">
             <Radio
               label="接受还价"
-              value={payload.agree}
-              onChange={(value) => setPayload((v) => ({ ...v, agree: value }))}
+              value={payload.is_change_price}
+              onChange={(value) => setPayload((v) => ({ ...v, is_change_price: value }))}
             />
           </View>
         </AtModalContent>
@@ -92,7 +179,7 @@ export default () => {
             <Button onClick={closeModal} outline circle>
               取消
             </Button>
-            <Button onClick={onModalConfirm} type="primary" circle>
+            <Button onClick={onConfirm} type="primary" circle>
               确定
             </Button>
           </Flex>
@@ -100,4 +187,4 @@ export default () => {
       </AtModal>
     </>
   );
-};
+}

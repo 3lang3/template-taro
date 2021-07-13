@@ -44,3 +44,38 @@
     }
   }
 }
+
+.full-page {
+  &--loader,
+  &--error {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: @white;
+  }
+
+  &--error {
+    &__icon {
+      margin-bottom: 40px;
+      color: #222;
+      font-size: 120px;
+    }
+  }
+}
+
+.emptybox {
+  &__icon__wrapper {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+    background-color: #e4e4e4;
+    border-radius: 50%;
+  }
+  &__icon {
+    color: #fff;
+    font-size: 112px;
+  }
+  &__text {
+    color: @gray-5;
+  }
+}

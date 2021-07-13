@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import cls from 'classnames';
+import { IDENTITY } from '@/config/constant';
+import { useSelector } from 'react-redux';
 import { CoverImage, CoverView, View } from '@tarojs/components';
 import { getCurrentInstance, useRouter, switchTab } from '@tarojs/taro';
 import './index.less';
@@ -29,19 +32,30 @@ const {
 } = getCurrentInstance() as unknown as { app: AppInstance };
 
 export default () => {
+  // 登录状态且身份为歌手的才有查看曲库页面的权限
+  const { done, data } = useSelector((state) => state.common);
+  // 为方便开发 暂时隐藏此逻辑
+  // @ts-ignore;
+  const isNotSinger = !done || data.identity !== IDENTITY.SINGER;
+
   const router = useRouter();
 
   const handleClick = (item: TabbarListItem) => {
     switchTab({ url: '/' + item.pagePath });
   };
   const idx = getInitialTabIdx(router.path);
+
   return (
     <>
-      <CoverView className="custom-tabbar">
+      <CoverView
+        className={cls('custom-tabbar', {
+          'custom-tabbar--nosinger': isNotSinger,
+        })}
+      >
         {tabBar.list.map((item, i) => (
           <CoverView
             key={item.pagePath}
-            className={cls('custom-tabbar--item', {
+            className={cls('custom-tabbar__item', {
               'custom-tabbar__item-ac': idx === i,
             })}
             onClick={() => handleClick(item)}
