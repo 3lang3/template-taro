@@ -52,6 +52,28 @@ const fields = {
   },
 };
 
+export type TagNode = {
+  tag_type_name: string;
+  tag_type: number;
+  value: [
+    {
+      name: string;
+      tag: number;
+      tag_name: string;
+      value: number;
+    },
+  ];
+};
+
+export type State = {
+  song_name: string;
+  sect: number;
+  language: number;
+  tag: TagNode[];
+  introduce: string;
+  explain: string;
+};
+
 export default () => {
   const [visible, setVisible] = useState(false);
   const store = useSelector(({ common }) => common);
@@ -80,11 +102,11 @@ export default () => {
       return store.songStyle.map(({ name, song_style }) => ({ name, id: song_style }));
     };
   }, [store.songStyle]);
-  const [payload, set] = useState({
+  const [payload, set] = useState<State>({
     song_name: '',
     sect: 0,
     language: 0,
-    tag: undefined,
+    tag: [],
     introduce: '',
     explain: '',
   });
@@ -111,13 +133,13 @@ export default () => {
         value: item,
       };
     });
-    set((v: any) => ({ ...v, tag: result }));
+    set((v: State) => ({ ...v, tag: result }));
   }
 
   const getTagText = useMemo(() => {
     return () => {
-      const myArr: any[] = [];
-      const tag = payload.tag as any;
+      const myArr: string[] = [];
+      const tag: TagNode[] = payload.tag;
       if (tag && tag.length) {
         for (let i = 0; i < tag.length; i++) {
           for (let j = 0; j < tag[i].value.length; j++) {
@@ -143,7 +165,7 @@ export default () => {
           title={fields.song_name.label}
           type="text"
           value={payload.song_name}
-          onChange={(value) => set((v: any) => ({ ...v, song_name: value }))}
+          onChange={(value: string) => set((v: State) => ({ ...v, song_name: value }))}
         />
         <CustomPicker
           title={fields.sect.label}
@@ -151,7 +173,7 @@ export default () => {
           data={songStyle()}
           mode="selector"
           value={payload.sect}
-          onChange={(value) => set((v: any) => ({ ...v, sect: value }))}
+          onChange={(value) => set((v: State) => ({ ...v, sect: value }))}
         />
         <CustomPicker
           title={fields.language.label}
@@ -159,7 +181,7 @@ export default () => {
           data={langData()}
           mode="selector"
           value={payload.language}
-          onChange={(value) => set((v: any) => ({ ...v, language: value }))}
+          onChange={(value) => set((v: State) => ({ ...v, language: value }))}
         />
         <MoreSelect
           title="主题选择"
@@ -168,7 +190,7 @@ export default () => {
           max={2}
           onSubmit={onLabel}
           contentTitle="标签选择"
-          data={pickerData() as any}
+          data={pickerData() as any[]}
         >
           <AtListItem
             title={`${fields.tag.label}(每种最多2个)`}
@@ -183,7 +205,7 @@ export default () => {
             count={false}
             placeholder={fields.introduce.label}
             value={payload.introduce}
-            onChange={(value) => set((v: any) => ({ ...v, introduce: value }))}
+            onChange={(value) => set((v: State) => ({ ...v, introduce: value }))}
           />
         </View>
         <AtListItem title={`${fields.explain.label}(选填)`} />
@@ -193,7 +215,7 @@ export default () => {
             count={false}
             placeholder={fields.explain.label}
             value={payload.explain}
-            onChange={(value) => set((v: any) => ({ ...v, explain: value }))}
+            onChange={(value) => set((v: State) => ({ ...v, explain: value }))}
           />
         </View>
         <View onClick={() => setVisible(true)} className="p-default bg-white">

@@ -14,7 +14,7 @@ export type Node = {
 
 export type P = {
   data: Node[]; // 数据
-  value?: (number | string)[]; // 默认值
+  value?: any[]; // 默认值
   max?: number; // 最大可选数
   title?: string; // 主标题
   toastMsg?: string; // 是否显示弹窗

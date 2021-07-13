@@ -7,25 +7,40 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRequest, useUpdate } from 'ahooks';
 import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message';
 import { setList, msgRefresh, setTotalPage } from '@/state/message';
+import { useEffect, useState } from 'react';
 import './index.less';
 
 export default function Index() {
   const dispatch = useDispatch();
   const update = useUpdate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(true);
   const { list, page, pageSize, totalPage } = useSelector((state) => {
     return state.message;
   });
-  const { loading, error, refresh, run } = useRequest(getMessageList, {
+  const { refresh, run } = useRequest(getMessageList, {
     defaultParams: [{ page, pageSize }],
-    ready: !list.length && page === 1, // 是否发起请求
+    // ready: page <= 2, // 是否发起请求
+    manual: true, // 手动触发
     onSuccess: ({ data: { _list, _page }, type, msg }) => {
+      setLoading(false);
       if (type === 1) throw Error(msg);
+      setError(false);
       dispatch(setTotalPage(_page.totalPage));
       if (_list.length) {
         dispatch(setList([...list, ..._list]));
       }
     },
+    onError: () => setLoading(false),
   });
+  useEffect(() => {
+    if (!list.length) {
+      run({ page: 1, pageSize: 10 });
+    } else {
+      setLoading(false);
+      setError(false);
+    }
+  }, []);
   usePullDownRefresh(() => {
     run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
       if (type === 1) throw Error(msg);
