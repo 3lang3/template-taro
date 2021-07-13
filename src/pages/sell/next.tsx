@@ -12,7 +12,7 @@ import {
   AtModalAction,
 } from 'taro-ui';
 import Flex from '@/components/Flex';
-import { getCurrentInstance, useShareAppMessage } from '@tarojs/taro';
+import { getCurrentInstance, switchTab, useShareAppMessage } from '@tarojs/taro';
 import { validateFields } from '@/utils/form';
 import { View } from '@tarojs/components';
 import SongUploader from '@/components/SongUploader';
@@ -254,7 +254,16 @@ export default () => {
             审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
           </Typography.Text>
           <View className="text-center">
-            <Button onClick={closeModal} circle className="mt40" type="primary" inline>
+            <Button
+              onClick={() => {
+                closeModal();
+                switchTab({ url: '/pages/song-manage/index' });
+              }}
+              circle
+              className="mt40"
+              type="primary"
+              inline
+            >
               知道了
             </Button>
           </View>

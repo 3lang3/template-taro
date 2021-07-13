@@ -161,7 +161,12 @@ export default () => {
                   <Icon icon="icon-wode_icon_chushou" className="me-header__action-btn__icon" />
                   出售词曲
                 </Button>
-                <Button className="me-header__action-btn" type="light" circle>
+                <Button
+                  onClick={() => navigateTo({ url: '/pages/song-manage/index' })}
+                  className="me-header__action-btn"
+                  type="light"
+                  circle
+                >
                   <Icon icon="icon-wode_icon_guanli" className="me-header__action-btn__icon" />
                   词曲管理
                 </Button>
@@ -181,7 +186,11 @@ export default () => {
                   )}
                   {+userData.identity === IDENTITY.SINGER && (
                     <>
-                      <Flex className="me-service__item" direction="column">
+                      <Flex
+                        onClick={() => navigateTo({ url: '/pages/my-song/index' })}
+                        className="me-service__item"
+                        direction="column"
+                      >
                         <Icon
                           icon="icon-wode_icon_yaochang"
                           className="me-service__item__img"
@@ -189,7 +198,11 @@ export default () => {
                         />
                         <Typography.Text>我要唱</Typography.Text>
                       </Flex>
-                      <Flex className="me-service__item" direction="column">
+                      <Flex
+                        onClick={() => navigateTo({ url: '/pages/song-make/index' })}
+                        className="me-service__item"
+                        direction="column"
+                      >
                         <Icon
                           icon="icon-wode_icon_zhizuo"
                           className="me-service__item__img"
