@@ -9,7 +9,6 @@ import {
   AtModalContent,
   AtModalHeader,
 } from 'taro-ui';
-import { useBoolean } from 'ahooks';
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
@@ -55,7 +54,6 @@ const fields = {
 
 export default () => {
   const [visible, setVisible] = useState(false);
-  const [moreSelectVisible, { setTrue, setFalse }] = useBoolean(false);
   const store = useSelector(({ common }) => common);
 
   const pickerData = useMemo(() => {
@@ -113,7 +111,6 @@ export default () => {
         value: item,
       };
     });
-    setFalse();
     set((v: any) => ({ ...v, tag: result }));
   }
 
@@ -138,16 +135,6 @@ export default () => {
 
   return (
     <>
-      <MoreSelect
-        visible={moreSelectVisible}
-        title="主题选择"
-        value={payload.tag}
-        max={2}
-        onCancel={setFalse}
-        onSubmit={onLabel}
-        contentTitle="标签选择"
-        data={pickerData() as any}
-      />
       <SellSteps />
       <AtForm className="custom-form">
         <AtInput
@@ -174,12 +161,21 @@ export default () => {
           value={payload.language}
           onChange={(value) => set((v: any) => ({ ...v, language: value }))}
         />
-        <AtListItem
-          onClick={setTrue}
-          title={`${fields.tag.label}(每种最多2个)`}
-          extraText={getTagText()}
-          arrow={!getTagText() ? 'right' : undefined}
-        />
+        <MoreSelect
+          title="主题选择"
+          toastMsg="每种最多选择2个"
+          value={payload.tag}
+          max={2}
+          onSubmit={onLabel}
+          contentTitle="标签选择"
+          data={pickerData() as any}
+        >
+          <AtListItem
+            title={`${fields.tag.label}(每种最多2个)`}
+            extraText={getTagText()}
+            arrow={!getTagText() ? 'right' : undefined}
+          />
+        </MoreSelect>
         <AtListItem title={`${fields.introduce.label}(选填)`} />
         <View className="board bg-white px24">
           <AtTextarea
