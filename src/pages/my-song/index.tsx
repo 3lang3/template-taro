@@ -1,8 +1,7 @@
-import CustomTabBar from '@/components/CustomTabBar';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
-import { FullPageLoader, FullPageError, LibSongItem } from '@/components/Chore';
+import { FullPageLoader, FullPageError, LibSongItem, Empty } from '@/components/Chore';
 import { getWantSongList } from '@/services/my-song';
 import { setList } from '@/state/my-song';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +18,7 @@ export default () => {
     onSuccess: ({ data, type, msg }) => {
       if (type === 1) throw Error(msg);
       if (data.length) {
-        dispatch(setList([...list, ...data] as any));
+        dispatch(setList(data as any));
       }
     },
   });
@@ -28,33 +27,36 @@ export default () => {
 
   return (
     <>
-      {list.map((song, i) => (
-        <LibSongItem
-          key={i}
-          title={song.song_name}
-          tags={[song.language, song.sect]}
-          actionRender={() => {
-            return (
-              <Flex justify="end">
-                {+song.is_appoint ? (
-                  <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                ) : null}
-                <>
-                  <ContentPop title="歌词查看" content={song.lyricist_content}>
+      {list.length ? (
+        list.map((song, i) => (
+          <LibSongItem
+            key={i}
+            title={song.song_name}
+            tags={[song.language, song.sect]}
+            actionRender={() => {
+              return (
+                <Flex justify="end">
+                  {+song.is_appoint ? (
                     <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                  </ContentPop>
-                  <Icon
-                    onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
-                    icon="icon-quku_bofang"
-                    className="lib-song-action__item"
-                  />
-                </>
-              </Flex>
-            );
-          }}
-        />
-      ))}
-      <CustomTabBar />
+                  ) : null}
+                  <>
+                    <ContentPop title="歌词查看" content={song.lyricist_content}>
+                      <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                    </ContentPop>
+                    <Icon
+                      onClick={() => navigateTo({ url: '/pages/play-detail/index' })}
+                      icon="icon-quku_bofang"
+                      className="lib-song-action__item"
+                    />
+                  </>
+                </Flex>
+              );
+            }}
+          />
+        ))
+      ) : (
+        <Empty className="mt50" />
+      )}
     </>
   );
 };

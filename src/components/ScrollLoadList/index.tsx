@@ -7,6 +7,10 @@ import { Empty } from '../Chore';
 import Flex from '../Flex';
 import Typography from '../Typography';
 
+export type ActionType<T = {}> = {
+  reload: () => void;
+} & T;
+
 type ScrollLoadListProps<T = {}> = {
   /** 列表请求的service */
   request: (params?: any) => Promise<any>;
@@ -16,6 +20,8 @@ type ScrollLoadListProps<T = {}> = {
   params?: Record<string, any>;
   /** 空状态ui */
   emptyRender?: () => React.ReactNode;
+  /** 初始化的参数，可以操作 list */
+  actionRef?: React.MutableRefObject<ActionType | undefined>;
 };
 
 /**
@@ -28,7 +34,7 @@ type ScrollLoadListProps<T = {}> = {
  */
 const ScrollLoadList: <T extends Record<string, any>>(
   props: ScrollLoadListProps<T>,
-) => JSX.Element = ({ params = {}, emptyRender = () => <Empty />, ...props }) => {
+) => JSX.Element = ({ params = {}, emptyRender = () => <Empty />, actionRef, ...props }) => {
   const [list, setList] = useState<any[]>([]);
   const paginationRef = useRef(PAGINATION);
   const nomoreRef = useRef(false);
@@ -43,13 +49,26 @@ const ScrollLoadList: <T extends Record<string, any>>(
     },
   });
 
-  // params变动 列表刷新
-  useEffect(() => {
-    if (list.length) setList([]);
+  const reload = () => {
+    setList([]);
     paginationRef.current = PAGINATION;
     run(params);
+  };
+
+  // params变动 列表刷新
+  useEffect(() => {
+    reload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(params)]);
+
+  useEffect(() => {
+    if (actionRef && !actionRef.current) {
+      actionRef.current = {
+        reload,
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionRef]);
 
   // 滚动加载
   useReachBottom(() => {
@@ -71,9 +90,10 @@ const ScrollLoadList: <T extends Record<string, any>>(
           <AtActivityIndicator />
         </Flex>
       )}
-      {nomoreRef.current && !!list.length && (
+      {/* 请求页数大于1才展示加载完文案 */}
+      {nomoreRef.current && paginationRef.current.page > 1 && (
         <Flex justify="center">
-          <Typography.Text type="secondary">全部加载完拉~</Typography.Text>
+          <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
         </Flex>
       )}
     </>

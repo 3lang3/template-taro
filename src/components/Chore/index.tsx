@@ -122,7 +122,13 @@ export const CounterOfferInput = memo<CounterOfferInputProps>(
           当前: {price}元
         </Typography.Text>
         <Flex className="input--border">
-          <AtInput name={name} value={value} placeholder={placeholder} onChange={onChange} />
+          <AtInput
+            type="number"
+            name={name}
+            value={value}
+            placeholder={placeholder}
+            onChange={onChange}
+          />
         </Flex>
       </Flex>
     );

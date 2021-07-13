@@ -33,6 +33,8 @@ export type OperationMusicSongPriceParams = {
   operation_type: number | string;
   lyricist_price: string;
   composer_price: string;
+  /** 是否接受还价 */
+  is_change_price?: number | string;
 };
 // 修改词曲价格接口
 export function operationMusicSongPrice(data: OperationMusicSongPriceParams) {

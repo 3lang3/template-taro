@@ -10,7 +10,7 @@ import './index.less';
 
 export default () => {
   const [list, setList] = useState<Node[]>([]);
-  const { loading, error, refresh, run } = useRequest(getMakeSongList, {
+  const { loading, error, refresh } = useRequest(getMakeSongList, {
     onSuccess: ({ data, type, msg }) => {
       if (type === 1) throw Error(msg);
       setList(data);
@@ -18,7 +18,7 @@ export default () => {
   });
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
-  if (!list.length) return <Empty />;
+  if (!list.length) return <Empty className="mt50" />;
   return (
     <View className="mt20">
       {list.map((song, i) => (
