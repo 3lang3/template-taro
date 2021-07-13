@@ -135,20 +135,12 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
             </Flex>
             <View className="play-detail-desc__content">
               <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">作者简介:</Text>
-                <Text>{detail.explain?.author_desc}</Text>
+                <Text className="play-detail-desc__content-title">作品简介:</Text>
+                <Text>{detail.introduce}</Text>
               </View>
               <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">创作目的:</Text>
-                <Text>{detail.explain?.create_goal}</Text>
-              </View>
-              <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">创作完成时间:</Text>
-                <Text>{detail.explain?.finish_time}</Text>
-              </View>
-              <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">作品灵感:</Text>
-                <Text>{detail.explain?.create_inspiration}</Text>
+                <Text className="play-detail-desc__content-title">创作说明:</Text>
+                <Text>{detail.explain}</Text>
               </View>
             </View>
           </View>
