@@ -64,11 +64,24 @@ const fields = {
   },
 };
 
+export type MyState = {
+  composer: string | number; // 作曲人姓名
+  is_composer: boolean; // 是否是作曲人
+  composer_original_price: number; // 曲期望价格
+  is_lyricist: boolean; // 是否作词人
+  lyricist: string | number; // 作词人
+  lyricist_original_price: 0; // 词期望价格
+  idcard: string | number; // 身份证
+  lyricist_content: string; // 歌词
+  composer_content: string[]; // 曲谱照片
+  composer_url: string;
+};
+
 export default () => {
   const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
   const radioDisabledRef = useRef({ composer: false, lyricist: false });
-  const [payload, set] = useState({
+  const [payload, set] = useState<MyState>({
     composer: '', // 作曲人姓名
     is_composer: false, // 是否是作曲人
     composer_original_price: 0, // 曲期望价格
@@ -105,18 +118,18 @@ export default () => {
 
   // 上传的谱曲
   const onSongUploader = (path) => {
-    set((v: any) => ({ ...v, composer_url: path }));
+    set((v: MyState) => ({ ...v, composer_url: path }));
   };
 
   // 上传谱曲照片
   const onImagePickerChange = (filesPath) => {
-    set((v: any) => ({ ...v, composer_content: [...v.composer_content, filesPath] }));
+    set((v: MyState) => ({ ...v, composer_content: [...v.composer_content, filesPath] }));
   };
 
   // 删除图片
   const onImgRemove = (index: number) => {
     payload.composer_content.splice(index, 1);
-    set((v: any) => ({ ...v, composer_content: [...v.composer_content] }));
+    set((v: MyState) => ({ ...v, composer_content: [...v.composer_content] }));
   };
 
   // 我是作曲人点击
@@ -144,8 +157,8 @@ export default () => {
             title={fields.composer.label}
             type="text"
             disabled={radioDisabledRef.current.composer}
-            value={payload.composer}
-            onChange={(value) => set((v: any) => ({ ...v, composer: value }))}
+            value={payload.composer as string}
+            onChange={(value) => set((v: MyState) => ({ ...v, composer: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
@@ -162,7 +175,7 @@ export default () => {
           data={priceData}
           mode="selector"
           value={payload.composer_original_price}
-          onChange={(value) => set((v: any) => ({ ...v, composer_original_price: value }))}
+          onChange={(value) => set((v: MyState) => ({ ...v, composer_original_price: value }))}
         />
         <SongUploader
           value={payload.composer_url}
@@ -180,9 +193,9 @@ export default () => {
             name="lyricist"
             title="作词人姓名"
             type="text"
-            value={payload.lyricist}
+            value={payload.lyricist as string}
             disabled={radioDisabledRef.current.lyricist}
-            onChange={(value) => set((v: any) => ({ ...v, lyricist: value }))}
+            onChange={(value) => set((v: MyState) => ({ ...v, lyricist: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
@@ -205,7 +218,7 @@ export default () => {
               name="idcard"
               type="text"
               placeholder="请输入该作者身份证号"
-              value={payload.idcard}
+              value={payload.idcard as string}
               onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
             />
           </View>
@@ -216,7 +229,7 @@ export default () => {
           data={priceData}
           mode="selector"
           value={payload.lyricist_original_price}
-          onChange={(value) => set((v: any) => ({ ...v, lyricist_original_price: value }))}
+          onChange={(value) => set((v: MyState) => ({ ...v, lyricist_original_price: value }))}
         />
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
@@ -225,7 +238,7 @@ export default () => {
             count={false}
             placeholder="上传歌词，请输入80-1000字"
             value={payload.lyricist_content}
-            onChange={(value) => set((v: any) => ({ ...v, lyricist_content: value }))}
+            onChange={(value) => set((v: MyState) => ({ ...v, lyricist_content: value }))}
           />
         </View>
         <View className="h24 bg-light" />
