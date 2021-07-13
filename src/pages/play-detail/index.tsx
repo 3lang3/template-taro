@@ -305,6 +305,10 @@ function CounterOfferButton({ routerParams }) {
   });
   const [visible, set] = useState(false);
   const onConfirm = async () => {
+    if (!state.composer_price || !state.lyricist_price) {
+      showToast({ icon: 'none', title: '请输入词曲价格' });
+      return;
+    }
     const payload = {
       ...state,
       ids: routerParams.ids,
