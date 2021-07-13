@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import Typography from '@/components/Typography';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import {
   AtInput,
   AtForm,
@@ -22,6 +22,7 @@ import Button from '@/components/Button';
 import { CircleIndexList } from '@/components/Chore';
 import Icon from '@/components/Icon';
 import Radio from '@/components/Radio';
+import { songSale } from '@/services/sell';
 import { SellSteps } from './components';
 
 import './index.less';
@@ -91,18 +92,13 @@ export default () => {
     };
   });
 
-  useEffect(() => {
-    const { router } = getCurrentInstance();
-    const { params } = (router as any).params;
-    console.log(params);
-  }, []);
-
-  const onSubmit = () => {
-    setVisible(true);
-    return;
+  const onSubmit = async () => {
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
-    console.log(payload);
+    const { router } = getCurrentInstance();
+    const { params } = (router as any).params;
+    await songSale({ ...payload, ...JSON.parse(params) });
+    setVisible(true);
   };
 
   const closeModal = () => setVisible(false);

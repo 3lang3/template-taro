@@ -17,6 +17,7 @@ export default function Index() {
   });
   const { loading, error, refresh, run } = useRequest(getMessageList, {
     defaultParams: [{ page, pageSize }],
+    ready: !list.length && page === 1, // 是否发起请求
     onSuccess: ({ data: { _list, _page }, type, msg }) => {
       if (type === 1) throw Error(msg);
       dispatch(setTotalPage(_page.totalPage));
