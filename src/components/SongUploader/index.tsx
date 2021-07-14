@@ -3,24 +3,26 @@ import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
 import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
+import config from '@/config';
 import { uploadSingleFile } from '@/utils/upload';
 import { AtInput } from 'taro-ui';
+import Icon from '../Icon';
 import Flex from '../Flex';
 import Typography from '../Typography';
 import './index.less';
-import Icon from '../Icon';
+
+const WEB_UPLOAD_URL = config.boss + '/user/file';
 
 type SongUploaderProps = {
   value?: any;
   className?: string;
-  webActionUrl?: string;
   name?: string;
   onChange?: (v: string | undefined, file?: chooseMessageFile.ChooseFile, response?: any) => void;
   chooseMessageFileType?: chooseMessageFile.Option['type'];
   disabled?: boolean;
 };
 
-export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => {
+export default (props: SongUploaderProps) => {
   const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
 
   const onDelete = () => {
@@ -70,7 +72,7 @@ export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => 
             name="webActionUrl"
             type="text"
             disabled
-            value={webActionUrl}
+            value={WEB_UPLOAD_URL}
             onChange={() => false}
           />
           <Button
@@ -78,7 +80,7 @@ export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => 
             className="settlein-list-share"
             circle
             size="sm"
-            onClick={() => setClipboardData({ data: webActionUrl })}
+            onClick={() => setClipboardData({ data: WEB_UPLOAD_URL })}
           >
             复制
           </Button>

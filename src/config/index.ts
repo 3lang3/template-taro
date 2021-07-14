@@ -7,6 +7,8 @@ export type ConfigType = {
     trade: string;
     msg: string;
   };
+  /** boss后台地址 */
+  boss: string;
   cdn: string;
   uploadFile: string;
   plugin: string;

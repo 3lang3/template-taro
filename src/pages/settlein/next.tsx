@@ -129,12 +129,7 @@ export default () => {
           </View>
         </View>
         <Typography.Text className="settlein-title">二、上传歌曲</Typography.Text>
-        <SongUploader
-          disabled={isAudit}
-          webActionUrl="https://www.tapd.cn/"
-          value={payload.song_url}
-          onChange={onSongUpload}
-        />
+        <SongUploader disabled={isAudit} value={payload.song_url} onChange={onSongUpload} />
         <View className="p-default bg-white">
           <Typography.Text type="secondary" size="sm">
             1、歌曲需是本人原创/翻唱作品，且不可借用他人歌曲元素，如经发现平台将追究相关责任。

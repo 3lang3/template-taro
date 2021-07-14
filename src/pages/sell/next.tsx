@@ -246,7 +246,6 @@ export default () => {
           disabled={isClaimType}
           value={payload.composer_url}
           onChange={onSongUploader}
-          webActionUrl="测试地址啦啦"
         />
         <ImagePicker
           onRemove={onImgRemove}
