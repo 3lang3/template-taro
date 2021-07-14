@@ -15,7 +15,7 @@ import Flex from '@/components/Flex';
 import {
   hideLoading,
   hideToast,
-  navigateTo,
+  reLaunch,
   setNavigationBarTitle,
   showLoading,
   showToast,
@@ -370,7 +370,7 @@ export default () => {
             <Button
               onClick={() => {
                 closeModal();
-                navigateTo({ url: '/pages/song-manage/index' });
+                reLaunch({ url: '/pages/me/index' });
               }}
               circle
               className="mt40"
@@ -417,7 +417,7 @@ function ClaimButton({ detail }) {
     showToast({ icon: 'success', title: msg });
     setVisible(false);
     setTimeout(() => {
-      navigateTo({ url: '/pages/song-manage/index' });
+      reLaunch({ url: '/pages/me/index' });
     }, 1500);
   };
 
