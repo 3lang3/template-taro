@@ -11,7 +11,7 @@ type TypographyProps = {
 };
 
 type TextProps = {
-  type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary';
+  type?: 'default' | 'danger' | 'secondary' | 'light' | 'primary' | 'success';
   size?: 'md' | 'sm' | 'xs' | 'lg' | 'xl' | 'xxl';
   strong?: boolean;
   children?: React.ReactNode | string;

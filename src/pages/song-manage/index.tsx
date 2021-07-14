@@ -6,7 +6,7 @@ import Radio from '@/components/Radio';
 import { View } from '@tarojs/components';
 import { operationMusicSongPrice } from '@/services/song';
 import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
-import { showModal, showToast } from '@tarojs/taro';
+import { navigateTo, showModal, showToast } from '@tarojs/taro';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useRef, useState } from 'react';
@@ -42,25 +42,40 @@ export default () => {
             price1={song.composer_price}
             price2={song.lyricist_price}
             actionRender={() => {
-              if (song.status === 0)
+              if (+song.status === 0)
                 return (
-                  <Button circle size="xs" type="primary">
+                  <Button
+                    onClick={() =>
+                      navigateTo({ url: `/pages/sell/next?pageType=claim&ids=${song.ids}` })
+                    }
+                    circle
+                    size="xs"
+                    type="primary"
+                  >
                     待认领
                   </Button>
                 );
-              if (song.status === 2)
+              if (+song.status === 2)
                 return (
-                  <Button circle size="xs" type="primary" outline>
+                  <Button
+                    onClick={() =>
+                      navigateTo({ url: `/pages/sell/next?pageType=claim&ids=${song.ids}` })
+                    }
+                    circle
+                    size="xs"
+                    type="primary"
+                    outline
+                  >
                     词曲认领中
                   </Button>
                 );
-              if (song.status === 3)
+              if (+song.status === 3)
                 return (
                   <Button circle size="xs" type="secondary" outline>
                     审核中
                   </Button>
                 );
-              if (song.status === 4)
+              if (+song.status === 4)
                 return (
                   <>
                     <Button circle size="xs" type="secondary" outline>
@@ -69,7 +84,7 @@ export default () => {
                     <CounterOfferButton current={song} refresh={actionRef.current?.reload} />
                   </>
                 );
-              if (song.status === 5)
+              if (+song.status === 5)
                 return (
                   <>
                     <Button circle size="xs" type="danger" outline>
@@ -84,20 +99,20 @@ export default () => {
                     </Typography.Text>
                   </>
                 );
-              if (song.status === 6)
+              if (+song.status === 6)
                 return (
                   <Button onClick={() => onSignClick(song)} circle size="xs" type="primary">
                     签署协议
                   </Button>
                 );
-              if (song.status === 8)
+              if (+song.status === 8)
                 return (
                   <Button circle size="xs" type="secondary" outline>
                     签署完成
                   </Button>
                 );
 
-              if (song.status === 9)
+              if (+song.status === 9)
                 return (
                   <Button circle size="xs" type="secondary" outline>
                     交易完成
