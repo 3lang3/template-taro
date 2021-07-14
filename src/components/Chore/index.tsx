@@ -117,10 +117,14 @@ export const CounterOfferInput = memo<CounterOfferInputProps>(
   ({ title, placeholder, name, value, onChange, price }) => {
     return (
       <Flex className="offer-modal-item" justify="between">
-        <Typography.Text size="lg">{title}</Typography.Text>
-        <Typography.Text size="lg" type="secondary" className="mr20">
-          当前: {price}元
-        </Typography.Text>
+        <Flex>
+          <Typography.Text size="lg" className="mr10">
+            {title}
+          </Typography.Text>
+          <Typography.Text size="lg" type="secondary" className="mr20">
+            当前: {price}元
+          </Typography.Text>
+        </Flex>
         <Flex className="input--border">
           <AtInput
             type="number"
