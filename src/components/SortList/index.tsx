@@ -25,7 +25,9 @@ export default ({ data, onLeft, onRight }: P) => {
         <Flex align="center" justify="center" className="sort-list-right">
           <View>
             {data.help_list.map((item) => (
-              <Text onClick={() => onRight(item)}>{item.title}</Text>
+              <Text key={item.ids} onClick={() => onRight(item)}>
+                {item.title}
+              </Text>
             ))}
           </View>
         </Flex>

@@ -22,6 +22,7 @@ export default () => {
     <View className="help">
       {list.map((item: Node) => (
         <SortList
+          key={item.ids}
           onLeft={(node) => navigateTo({ url: `/pages/help-list/index?ids=${node.ids}` })}
           onRight={(node) => navigateTo({ url: `/pages/help-detail/index?ids=${node.ids}` })}
           data={item}
