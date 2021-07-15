@@ -2,6 +2,7 @@ import { View } from '@tarojs/components';
 import SortList from '@/components/SortList';
 import { getCategoryList, Node } from '@/services/help';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
+import KefuBtn from '@/components/KefuBtn';
 import { navigateTo } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ export default () => {
           data={item}
         />
       ))}
+      <KefuBtn />
     </View>
   );
 };

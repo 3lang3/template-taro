@@ -3,6 +3,7 @@ import { getDetail, ListNode } from '@/services/help';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
 import { getCurrentInstance } from '@tarojs/taro';
 import Flex from '@/components/Flex';
+import KefuBtn from '@/components/KefuBtn';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import './index.less';
@@ -29,6 +30,7 @@ export default () => {
         <Text className="before">答：</Text>
         <View dangerouslySetInnerHTML={{ __html: data.answer }} />
       </Flex>
+      <KefuBtn />
     </View>
   );
 };

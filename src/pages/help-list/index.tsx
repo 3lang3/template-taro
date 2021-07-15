@@ -3,6 +3,7 @@ import { getList, ListNode } from '@/services/help';
 import ScrollLoadList from '@/components/ScrollLoadList';
 import { getCurrentInstance, navigateTo } from '@tarojs/taro';
 import { AtList, AtListItem } from 'taro-ui';
+import KefuBtn from '@/components/KefuBtn';
 import './index.less';
 
 export default () => {
@@ -23,6 +24,7 @@ export default () => {
           </AtList>
         )}
       />
+      <KefuBtn />
     </View>
   );
 };
