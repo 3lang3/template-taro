@@ -1,27 +1,28 @@
 import { View } from '@tarojs/components';
-import { getCategoryList, Node } from '@/services/help';
-import { FullPageLoader, FullPageError } from '@/components/Chore';
-import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { getList, ListNode } from '@/services/help';
+import ScrollLoadList from '@/components/ScrollLoadList';
+import { getCurrentInstance, navigateTo } from '@tarojs/taro';
 import { AtList, AtListItem } from 'taro-ui';
 import './index.less';
 
 export default () => {
-  const [list, setList] = useState<Node[]>([]);
-  const { loading, error, refresh } = useRequest(getCategoryList, {
-    onSuccess: ({ data, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      console.log(data);
-      setList(data);
-    },
-  });
-  if (loading) return <FullPageLoader />;
-  if (error) return <FullPageError refresh={refresh} />;
+  const { router } = getCurrentInstance();
+  const { ids } = (router as any).params;
   return (
     <View className="help-list">
-      <AtList>
-        <AtListItem title="标题文字" arrow="right" />
-      </AtList>
+      <ScrollLoadList<ListNode>
+        request={getList}
+        params={{ helpCategoryIds: ids }}
+        row={(item, i) => (
+          <AtList key={'at-list-' + i}>
+            <AtListItem
+              onClick={() => navigateTo({ url: `/pages/help-detail/index?ids=${item.ids}` })}
+              title={item.question}
+              arrow="right"
+            />
+          </AtList>
+        )}
+      />
     </View>
   );
 };

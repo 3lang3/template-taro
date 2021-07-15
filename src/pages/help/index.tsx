@@ -2,6 +2,7 @@ import { View } from '@tarojs/components';
 import SortList from '@/components/SortList';
 import { getCategoryList, Node } from '@/services/help';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
+import { navigateTo } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import './index.less';
@@ -14,16 +15,17 @@ export default () => {
       setList(data);
     },
   });
-  function onLeft(node) {
-    console.log(node);
-  }
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
   if (!list.length) return <Empty className="mt50" />;
   return (
     <View className="help">
       {list.map((item: Node) => (
-        <SortList onLeft={onLeft} data={item} />
+        <SortList
+          onLeft={(node) => navigateTo({ url: `/pages/help-list/index?ids=${node.ids}` })}
+          onRight={(node) => navigateTo({ url: `/pages/help-detail/index?ids=${node.ids}` })}
+          data={item}
+        />
       ))}
     </View>
   );

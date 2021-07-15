@@ -8,9 +8,10 @@ import './index.less';
 export type P = {
   data: Node;
   onLeft: (node: Node) => void;
+  onRight: (node: any) => void;
 };
 
-export default ({ data, onLeft }: P) => {
+export default ({ data, onLeft, onRight }: P) => {
   return (
     <>
       <Flex className="sort-list">
@@ -24,7 +25,7 @@ export default ({ data, onLeft }: P) => {
         <Flex align="center" justify="center" className="sort-list-right">
           <View>
             {data.help_list.map((item) => (
-              <Text>{item.title}</Text>
+              <Text onClick={() => onRight(item)}>{item.title}</Text>
             ))}
           </View>
         </Flex>

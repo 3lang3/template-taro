@@ -1,17 +1,21 @@
 import { View, Text } from '@tarojs/components';
-import { getCategoryList, Node } from '@/services/help';
+import { getDetail, ListNode } from '@/services/help';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { getCurrentInstance } from '@tarojs/taro';
+import Flex from '@/components/Flex';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import './index.less';
 
 export default () => {
-  const [list, setList] = useState<Node[]>([]);
-  const { loading, error, refresh } = useRequest(getCategoryList, {
-    onSuccess: ({ data, type, msg }) => {
+  const { router } = getCurrentInstance();
+  const { ids } = (router as any).params;
+  const [data, setData] = useState<ListNode>({} as ListNode);
+  const { loading, error, refresh } = useRequest(getDetail, {
+    defaultParams: [{ ids }],
+    onSuccess: ({ data: node, type, msg }) => {
       if (type === 1) throw Error(msg);
-      console.log(data);
-      setList(data);
+      setData(node);
     },
   });
   if (loading) return <FullPageLoader />;
@@ -19,12 +23,12 @@ export default () => {
   return (
     <View className="help-detail">
       <View className="title">
-        <Text>问：怎么修改作品信息</Text>
+        <Text>问：{data.question}</Text>
       </View>
-      <Text className="before">答：</Text>
-      <Text>
-        信息，再打开，你就可以看到作者的话了。直接按修改然后写入你要写的话就再点击修改就好了。
-      </Text>
+      <Flex align="start">
+        <Text className="before">答：</Text>
+        <View dangerouslySetInnerHTML={{ __html: data.answer }} />
+      </Flex>
     </View>
   );
 };
