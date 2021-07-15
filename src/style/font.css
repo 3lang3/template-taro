@@ -1,9 +1,9 @@
 /* stylelint-disable */
 @font-face {
   font-family: "iconfont"; /* Project id 2629008 */
-  src: url('//at.alicdn.com/t/font_2629008_gr9ay0fgon.woff2?t=1626252333587') format('woff2'),
-       url('//at.alicdn.com/t/font_2629008_gr9ay0fgon.woff?t=1626252333587') format('woff'),
-       url('//at.alicdn.com/t/font_2629008_gr9ay0fgon.ttf?t=1626252333587') format('truetype');
+  src: url('//at.alicdn.com/t/font_2629008_1i6lq0zr1dii.woff2?t=1626343301094') format('woff2'),
+       url('//at.alicdn.com/t/font_2629008_1i6lq0zr1dii.woff?t=1626343301094') format('woff'),
+       url('//at.alicdn.com/t/font_2629008_1i6lq0zr1dii.ttf?t=1626343301094') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +12,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-sousuo:before {
+  content: "\e683";
 }
 
 .icon-hot:before {
@@ -185,3 +189,4 @@
 .icon-quku_bofang:before {
   content: "\e677";
 }
+

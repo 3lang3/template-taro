@@ -9,26 +9,27 @@ export type P = {
 };
 
 export default ({ onSearch }: P) => {
-  const [isCancel, setIsCancel] = useState(false);
+  const [str, setStr] = useState('');
   const onSubmit = ({ detail: { value } }) => {
+    setStr(value);
     onSearch(value);
-    setIsCancel(!!value);
   };
   const onCancel = () => {
+    setStr('');
     onSearch('');
-    setIsCancel(false);
   };
   return (
     <Flex align="center" className="search">
-      <Icon className="custom-navi__btn" icon="icon-shenqing_icon_weigouxuan" />
+      <Icon className="custom-navi__btn" icon="icon-sousuo" />
       <Input
         confirmType="search"
-        className={`search-input ${isCancel && 'search-cancel-input'}`}
+        className={`search-input ${str && 'search-cancel-input'}`}
         type="text"
+        value={str}
         placeholder="请输入关键字词"
         onConfirm={onSubmit}
       />
-      {isCancel && (
+      {str && (
         <Text onClick={onCancel} className="cancel">
           取消
         </Text>
