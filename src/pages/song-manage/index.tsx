@@ -1,20 +1,42 @@
+import { useSelector } from 'react-redux';
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import { CounterOfferInput, ManageSongItem } from '@/components/Chore';
 import Typography from '@/components/Typography';
 import Radio from '@/components/Radio';
+import { MP_E_SIGN_APPID } from '@/config/constant';
 import { View } from '@tarojs/components';
 import { operationMusicSongPrice } from '@/services/song';
-import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
-import { navigateTo, showModal, showToast } from '@tarojs/taro';
+import { delMusicSong, getMusicSongManageList, createSchemeUrl } from '@/services/song-manage';
+import {
+  hideLoading,
+  navigateTo,
+  navigateToMiniProgram,
+  showLoading,
+  showModal,
+  showToast,
+  useDidShow,
+} from '@tarojs/taro';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useRef, useState } from 'react';
 import './index.less';
 
 export default () => {
+  const userData = useSelector((state) => state.common.data);
   const actionRef = useRef<ActionType>();
   const selectRecordRef = useRef<any>(null);
+  const firstRenderRef = useRef(false);
+
+  useDidShow(() => {
+    if (!firstRenderRef.current) {
+      firstRenderRef.current = true;
+      return;
+    }
+    // 签署回来刷新页面
+    actionRef.current?.reload();
+  });
+
   // 删除
   const onDeleteClick = async (record) => {
     const { confirm } = await showModal({
@@ -26,8 +48,21 @@ export default () => {
     const { msg } = await delMusicSong({ ids: record.ids });
     showToast({ icon: 'success', title: msg });
   };
+  // 签约
   const onSignClick = async (record) => {
     selectRecordRef.current = record;
+    try {
+      showLoading({ title: '请稍后...' });
+      const { data } = await createSchemeUrl({ ids: record.ids });
+      hideLoading();
+      navigateToMiniProgram({
+        appId: MP_E_SIGN_APPID,
+        path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
+        extraData: { name: userData.real_name, phone: userData.mobile },
+      });
+    } catch (error) {
+      hideLoading();
+    }
   };
 
   return (

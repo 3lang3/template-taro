@@ -10,4 +10,8 @@ export const IDENTITY = {
   COMPANY: 3,
 };
 
+/** 分页默认数据 */
 export const PAGINATION = { page: 1, pageSize: 10, totalPage: 99 };
+
+/** 电子签小程序appid */
+export const MP_E_SIGN_APPID = 'wxa023b292fd19d41d';
