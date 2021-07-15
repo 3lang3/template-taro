@@ -218,7 +218,11 @@ export default () => {
                       </Flex>
                     </>
                   )}
-                  <Flex className="me-service__item" direction="column">
+                  <Flex
+                    className="me-service__item"
+                    onClick={() => navigateTo({ url: '/pages/help/index' })}
+                    direction="column"
+                  >
                     <Icon
                       icon="icon-wode_icon_bangzhu"
                       className="me-service__item__img"
