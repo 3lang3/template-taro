@@ -1,9 +1,9 @@
 export default {
   pages: [
-    // 帮助
-    'pages/help/index',
     // 首页
     'pages/index/index',
+    // 帮助
+    'pages/help/index',
     // 帮助列表
     'pages/help-list/index',
     // 帮助详情
