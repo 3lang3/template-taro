@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
-import SongUploader from '@/components/SongUploader';
+import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
 import { singerApply } from '@/services/settlein';
 import './index.less';

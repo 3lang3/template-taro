@@ -24,7 +24,7 @@ import {
 } from '@tarojs/taro';
 import { validateFields } from '@/utils/form';
 import { Text, View } from '@tarojs/components';
-import SongUploader from '@/components/SongUploader';
+import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
 import ImagePicker from '@/components/image-picker';
 import Button from '@/components/Button';
