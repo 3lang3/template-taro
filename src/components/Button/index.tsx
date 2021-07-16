@@ -32,6 +32,6 @@ export default ({
         m0: !marginAuto,
       })}
       {...props}
-    ></AtButton>
+    />
   );
 };

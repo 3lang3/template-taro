@@ -1,19 +1,9 @@
-import { useSelector } from 'react-redux';
 import Button from '@/components/Button';
 import { ManageSongItem } from '@/components/Chore';
 import Typography from '@/components/Typography';
-import { MP_E_SIGN_APPID } from '@/config/constant';
 import { operationMusicSongPrice } from '@/services/song';
-import { delMusicSong, getMusicSongManageList, createSchemeUrl } from '@/services/song-manage';
-import {
-  hideLoading,
-  navigateTo,
-  navigateToMiniProgram,
-  showLoading,
-  showModal,
-  showToast,
-  useDidShow,
-} from '@tarojs/taro';
+import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
+import { navigateTo, showModal, showToast, useDidShow } from '@tarojs/taro';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
@@ -21,7 +11,6 @@ import { useRef } from 'react';
 import './index.less';
 
 export default () => {
-  const userData = useSelector((state) => state.common.data);
   const actionRef = useRef<ActionType>();
   const selectRecordRef = useRef<any>(null);
   const counterOfferRef = useRef<ChangePriceModalType>(null);
@@ -46,22 +35,6 @@ export default () => {
     showToast({ icon: 'loading', title: '删除中' });
     const { msg } = await delMusicSong({ ids: record.ids });
     showToast({ icon: 'success', title: msg });
-  };
-  // 签约
-  const onSignClick = async (record) => {
-    selectRecordRef.current = record;
-    try {
-      showLoading({ title: '请稍后...' });
-      const { data } = await createSchemeUrl({ ids: record.ids } as any);
-      hideLoading();
-      navigateToMiniProgram({
-        appId: MP_E_SIGN_APPID,
-        path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
-        extraData: { name: userData.real_name, phone: userData.mobile },
-      });
-    } catch (error) {
-      hideLoading();
-    }
   };
 
   const onCounterOfferClick = (record) => {
@@ -171,7 +144,7 @@ export default () => {
               if (+song.status === 6)
                 return (
                   <Button
-                    onClick={() => navigateTo({ url: `/pages/company/index?ids=${song.ids}` })}
+                    onClick={() => navigateTo({ url: `/pages/account/index?ids=${song.ids}` })}
                     circle
                     size="xs"
                     type="primary"

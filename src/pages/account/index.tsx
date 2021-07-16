@@ -1,5 +1,5 @@
 // 仅开发用 实际已经在me页面中渲染了
-
+import { useSelector } from 'react-redux';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import Flex from '@/components/Flex';
@@ -8,11 +8,20 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
+import { MP_E_SIGN_APPID } from '@/config/constant';
 import { getSingerBankInfo } from '@/services/common';
+import { FullPageError, FullPageLoader } from '@/components/Chore';
+import { createSchemeUrl } from '@/services/song-manage';
 import { View } from '@tarojs/components';
-import { hideLoading, showLoading, useRouter } from '@tarojs/taro';
+import {
+  showToast,
+  hideLoading,
+  navigateToMiniProgram,
+  showLoading,
+  useRouter,
+} from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
 import './index.less';
 
@@ -51,6 +60,7 @@ const IDCardUploader = (props: BaseUploadProps) => {
 
 export default () => {
   const { params } = useRouter<{ ids: string }>();
+  const userData = useSelector((state) => state.common.data);
   const [payload, set] = useState<any>({
     id_card_image: undefined,
     bank_name: undefined,
@@ -58,8 +68,13 @@ export default () => {
     bank_branch_name: '',
   });
 
-  const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(getSingerBankInfo, {
-    manual: true,
+  const {
+    data: { data: detail } = { data: {} },
+    loading,
+    error,
+    refresh,
+  } = useRequest(getSingerBankInfo, {
+    defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
       set((v) => ({
         ...v,
@@ -70,20 +85,29 @@ export default () => {
     },
   });
 
-  useEffect(() => {
-    // 获取身份认证详情
-    const getDetail = async () => {
-      try {
-        showLoading();
-        await detailReq.run({ ids: params.ids });
-        hideLoading();
-      } catch (error) {
-        hideLoading();
-      }
-    };
-    if (params.ids) getDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.ids]);
+  // 签约
+  const onSignClick = async () => {
+    if (+detail.is_upload && !payload.id_card_image)
+      return showToast({ icon: 'none', title: '请上传身份证照片' });
+    if (!payload.bank_name) return showToast({ icon: 'none', title: '请输入银行名称' });
+    if (!payload.bank_card) return showToast({ icon: 'none', title: '请输银行卡号' });
+    if (!payload.bank_branch_name) return showToast({ icon: 'none', title: '请输开户银行支行' });
+    try {
+      showLoading({ title: '请稍后...' });
+      const { data } = await createSchemeUrl({ ids: params.ids, ...payload });
+      hideLoading();
+      navigateToMiniProgram({
+        appId: MP_E_SIGN_APPID,
+        path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
+        extraData: { name: userData.real_name, phone: userData.mobile },
+      });
+    } catch (e) {
+      hideLoading();
+    }
+  };
+
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
 
   return (
     <>
@@ -107,7 +131,7 @@ export default () => {
       )}
       <AtForm className="custom-form settlein-form">
         <View className="bg-white p-default">
-          <Typography.Text type="primary">词（5000元）+曲（3000元）</Typography.Text>
+          <Typography.Text type="primary">{detail.show_price}</Typography.Text>
         </View>
 
         <CustomPicker
@@ -139,7 +163,7 @@ export default () => {
         />
       </AtForm>
       <View className="p-lg mt50">
-        <Button size="lg" type="primary" circle>
+        <Button onClick={onSignClick} size="lg" type="primary" circle>
           签署协议
         </Button>
       </View>

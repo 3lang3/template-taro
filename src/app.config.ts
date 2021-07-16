@@ -22,8 +22,6 @@ export default {
     'pages/settlein/index',
     // 入驻申请第二步
     'pages/settlein/next',
-    // 机构页
-    'pages/company/index',
     // 机构 已购词曲
     'pages/company-bought/index',
     // 专辑
@@ -52,6 +50,8 @@ export default {
     'pages/song-detail/index',
     // 词曲管理
     'pages/song-manage/index',
+    // 账户信息
+    'pages/account/index',
   ],
   tabBar: {
     custom: true,
