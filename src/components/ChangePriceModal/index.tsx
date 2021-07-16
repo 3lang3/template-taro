@@ -35,6 +35,7 @@ export default forwardRef<ChangePriceModalType, ChangePriceModalProps>(
     });
     const [visible, set] = useState(false);
 
+    // 将组件内方法挂在传入的ref上
     useImperativeHandle<any, ChangePriceModalType>(ref, () => ({
       show: (record) => {
         staticInfoRef.current = record;
