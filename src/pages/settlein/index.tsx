@@ -181,7 +181,7 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请求中...' });
-    const { msg } = await singerApply(postValues);
+    const { msg } = await singerApply({ code, ...postValues });
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
     // @summry 需要刷新个人中心页面 不能用back只能relaunch
