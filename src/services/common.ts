@@ -18,6 +18,8 @@ export type CurrentUserType = {
   weixin_number: string;
   /** 昵称 */
   nickname: string;
+  /** 艺名 */
+  stage_name: string;
   /** 头像 */
   avatar: string;
   /** 手机号 */
@@ -99,4 +101,12 @@ export function getDecryptedData(data: GetDecryptedDataParams) {
 // 音乐网站列表
 export function getWebsiteType() {
   return request('/other/getWebsiteType');
+}
+
+// 获取大文件上传信息
+export function getPcSongUrl(data: { memberIds: string | number }) {
+  return request('/pc/getSongUrl', {
+    method: 'POST',
+    data,
+  });
 }

@@ -11,6 +11,7 @@ import Flex from '../Flex';
 import Typography from '../Typography';
 import './index.less';
 
+// 大文件上传地址
 const WEB_UPLOAD_URL = config.boss + '/user/file';
 
 type SongUploaderProps = {

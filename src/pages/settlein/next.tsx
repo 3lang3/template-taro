@@ -23,7 +23,7 @@ type SettleNextPageParams = {
 
 export default () => {
   const { params } = useRouter<SettleNextPageParams>();
-  //
+  // 上一步提交信息
   const prevStepPayloadRef = useRef<any>();
   // 审核状态
   const isAudit = params.status === 'audit';
@@ -121,7 +121,7 @@ export default () => {
                 disabled={isAudit}
                 name="website_url"
                 type="text"
-                placeholder="https://www.tapd.cn/38927421/prong/stories11"
+                placeholder="请输入平台个人链接"
                 value={payload.website_url}
                 onChange={(value) => set((v: any) => ({ ...v, website_url: value }))}
               />
