@@ -3,20 +3,13 @@ import { useSelector } from 'react-redux';
 import Flex from '@/components/Flex';
 import Button from '@/components/Button';
 import Image from '@/components/Image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
-import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
-import {
-  hideToast,
-  navigateBack,
-  showModal,
-  showToast,
-  useRouter,
-  useShareAppMessage,
-} from '@tarojs/taro';
+import { FullPageError, FullPageLoader } from '@/components/Chore';
+import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import PlayCore from '@/components/PlayCore';
 import { IDENTITY } from '@/config/constant';
@@ -33,6 +26,8 @@ import CustomSwiper from '@/components/CustomSwiper';
 import { getHttpPath } from '@/utils/utils';
 import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
+import ChangePriceModal from '@/components/ChangePriceModal';
+import type { ChangePriceModalType } from '@/components/ChangePriceModal';
 import { processLyricData } from '@/components/PlayCore/helper';
 
 import './index.less';
@@ -45,6 +40,9 @@ type PageContentProps = {
 } & UserIdentityType;
 
 const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+  // 还价modal ref
+  const counterOfferRef = useRef<ChangePriceModalType>(null);
+
   useShareAppMessage(({ from }) => {
     if (from === 'button') {
       return {
@@ -54,6 +52,25 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
     }
     return {};
   });
+
+  // 还价
+  const onCounterOfferClick = () => {
+    counterOfferRef.current?.show({
+      composer_price: detail.composer_price,
+      lyricist_price: detail.lyricist_price,
+    });
+  };
+  // 还价提交
+  const onCounterOfferConfirm = async (values) => {
+    showToast({ icon: 'loading', title: '提交中' });
+    const { msg } = await operationMusicSongPrice({
+      ids: detail.ids,
+      ...values,
+      operation_type: 2,
+    });
+    showToast({ icon: 'success', title: msg });
+    counterOfferRef.current?.close();
+  };
 
   /** 词曲制作详情页面 */
   const isScorePage = routerParams.type === 'score';
@@ -149,7 +166,16 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
               <>
                 <GiveUpButton routerParams={routerParams} />
                 {+detail.is_change_price ? (
-                  <CounterOfferButton routerParams={routerParams} />
+                  <Button
+                    onClick={() => onCounterOfferClick()}
+                    className="play-detail-action__btn"
+                    full
+                    type="primary"
+                    size="lg"
+                    circle
+                  >
+                    还价
+                  </Button>
                 ) : null}
               </>
             ) : (
@@ -159,6 +185,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
           <View className="play-detail-action--placeholder" />
         </>
       )}
+      <ChangePriceModal ref={counterOfferRef} onConfirm={onCounterOfferConfirm} />
     </>
   );
 };
@@ -288,78 +315,6 @@ function GiveUpButton({ routerParams }) {
               取消
             </Button>
             <Button type="primary" circle onClick={() => onConfirm()}>
-              确定
-            </Button>
-          </Flex>
-        </AtModalAction>
-      </AtModal>
-    </>
-  );
-}
-
-// 还价按钮 modal
-function CounterOfferButton({ routerParams }) {
-  const [state, change] = useState({
-    lyricist_price: '',
-    composer_price: '',
-  });
-  const [visible, set] = useState(false);
-  const onConfirm = async () => {
-    if (!state.composer_price || !state.lyricist_price) {
-      showToast({ icon: 'none', title: '请输入词曲价格' });
-      return;
-    }
-    const payload = {
-      ...state,
-      ids: routerParams.ids,
-      operation_type: 2,
-    };
-    try {
-      showToast({ icon: 'loading', title: '确认中...', mask: true });
-      const { msg } = await operationMusicSongPrice(payload);
-      showToast({ icon: 'success', title: msg });
-    } catch (error) {
-      hideToast();
-    }
-  };
-  return (
-    <>
-      <Button
-        onClick={() => set(true)}
-        className="play-detail-action__btn"
-        full
-        type="primary"
-        size="lg"
-        circle
-      >
-        还价
-      </Button>
-      <AtModal isOpened={visible} onClose={() => set(false)}>
-        <AtModalHeader>还价</AtModalHeader>
-        <AtModalContent>
-          <CounterOfferInput
-            title="曲"
-            price={2000}
-            name="n1"
-            value={state.composer_price}
-            placeholder="还价价格"
-            onChange={(value) => change((v) => ({ ...v, composer_price: value }))}
-          />
-          <CounterOfferInput
-            title="词"
-            price={3000}
-            name="n2"
-            placeholder="还价价格"
-            value={state.lyricist_price}
-            onChange={(value) => change((v) => ({ ...v, lyricist_price: value }))}
-          />
-        </AtModalContent>
-        <AtModalAction>
-          <Flex justify="between" className="p-default pb40">
-            <Button onClick={() => set(false)} outline circle>
-              取消
-            </Button>
-            <Button onClick={() => onConfirm()} type="primary" circle>
               确定
             </Button>
           </Flex>
