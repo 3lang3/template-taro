@@ -1,20 +1,18 @@
 import Button from '@/components/Button';
-import Flex from '@/components/Flex';
+import { showToast } from '@tarojs/taro';
 import Typography from '@/components/Typography';
-import { AtInput, AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
+import InputSelect from '@/components/InputSelect';
 import { useState } from 'react';
 import { useRequest } from 'ahooks';
-import { getBuySongList, appointMusicSong } from '@/services/company-bought';
+import { getBuySongList, getSingerByName, appointMusicSong } from '@/services/company-bought';
 import { FullPageLoader, FullPageError, ManageSongItem } from '@/components/Chore';
 import './index.less';
 
 export default () => {
-  const [singer, setSinger] = useState<string | number>('');
   const [songsData, setSongsData] = useState([] as any);
-  const [localNode, setLocalNode] = useState({} as any);
-  const [visible, setVisible] = useState(false);
   const { loading, error, refresh } = useRequest(getBuySongList, {
     defaultParams: [{ page: 1, pageSize: 10 }],
+    debounceInterval: 500,
     onSuccess: (res) => {
       setSongsData(
         res.data._list.map((item) => ({
@@ -26,22 +24,34 @@ export default () => {
       );
     },
   });
-  const onSingerClick = (node) => {
-    setLocalNode(node);
-    setVisible(true);
-  };
-  const closeModal = () => {
-    setVisible(false);
-    setSinger('');
-  };
-  const onModalConfirm = () => {
-    appointMusicSong({ ids: localNode.ids, memberIds: [singer as string] }).then(({ type }) => {
-      if (type === 1) return;
-      closeModal();
-    });
-  };
+  const { run } = useRequest(getSingerByName, {
+    manual: true,
+  });
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+  function onSubmit(node, members) {
+    if (!members.length) {
+      showToast({
+        title: '请输入指定歌手',
+        icon: 'none',
+        duration: 1500,
+      });
+      return false;
+    }
+    appointMusicSong({ ids: node.ids, memberIds: members.map((item) => item.ids) }).then(
+      ({ type, msg }) => {
+        if (type === 1) throw Error(msg);
+        showToast({
+          title: '操作成功',
+          icon: 'success',
+          duration: 1500,
+        });
+      },
+    );
+    node.singer = members.map((item) => item.nickname);
+    setSongsData([...songsData]);
+    return true;
+  }
   return (
     <>
       {songsData.map((song, i) => (
@@ -49,38 +59,28 @@ export default () => {
           key={i}
           {...song}
           actionRender={() =>
-            i === 0 ? (
-              <Button onClick={() => onSingerClick(song)} circle size="xs" type="primary">
-                指定歌手
-              </Button>
+            song.singer.length === 0 ? (
+              <InputSelect
+                title="指定歌手"
+                request={run}
+                onSubmit={(members) => onSubmit(song, members)}
+              >
+                <Button circle size="xs" type="primary">
+                  指定歌手
+                </Button>
+              </InputSelect>
             ) : (
-              <Typography.Text type="primary">{song.singer[0]}</Typography.Text>
+              <InputSelect
+                title="指定歌手"
+                request={run}
+                onSubmit={(members) => onSubmit(song, members)}
+              >
+                <Typography.Text type="primary">{song.singer[0]}</Typography.Text>
+              </InputSelect>
             )
           }
         />
       ))}
-      <AtModal isOpened={visible} onClose={closeModal}>
-        <AtModalHeader>指定歌手</AtModalHeader>
-        <AtModalContent>
-          <Flex className="input--border">
-            <AtInput
-              placeholder="请输入歌手"
-              value={singer as any}
-              name="singer"
-              onChange={(v) => setSinger(v)}
-            />
-            <Typography.Text>{localNode.singer && localNode.singer[0]}</Typography.Text>
-          </Flex>
-          <Flex className="mt50" justify="between">
-            <Button onClick={closeModal} outline circle>
-              取消
-            </Button>
-            <Button onClick={onModalConfirm} type="primary" circle>
-              确认
-            </Button>
-          </Flex>
-        </AtModalContent>
-      </AtModal>
     </>
   );
 };

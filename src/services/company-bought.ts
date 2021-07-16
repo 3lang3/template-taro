@@ -1,5 +1,5 @@
 import request, { PromiseResponseType } from '@/utils/request';
-import type { listParams, ListResType, SuccessResType } from './common.d';
+import type { listParams, ListResType } from './common.d';
 
 export type Node = {
   ids: number;
@@ -8,6 +8,12 @@ export type Node = {
   lyricist_final_price: string;
   show_created_at: string;
   singer: string[];
+};
+
+export type appointNode = {
+  ids: number;
+  nickname: string;
+  real_name: string;
 };
 
 type AppointNode = { ids: string; memberIds: string[] };
@@ -22,11 +28,26 @@ export function getBuySongList(data: listParams): Promise<PromiseResponseType<Bu
   });
 }
 
-export function appointMusicSong(
-  data: AppointNode,
-): Promise<PromiseResponseType<SuccessResType<null>>> {
-  return request('/song/appointMusicSong', {
-    method: 'POST',
-    data,
-  });
+// 通过名称查找歌手名称
+export function getSingerByName(data: AppointNode): Promise<PromiseResponseType<appointNode>> {
+  return request(
+    '/song/getSingerByName',
+    {
+      method: 'POST',
+      data,
+    },
+    false,
+  );
+}
+
+// 指定歌手接口
+export function appointMusicSong(data: AppointNode): Promise<PromiseResponseType<appointNode>> {
+  return request(
+    '/song/appointMusicSong',
+    {
+      method: 'POST',
+      data,
+    },
+    false,
+  );
 }
