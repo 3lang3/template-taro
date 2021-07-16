@@ -47,8 +47,8 @@ export default ({ files, onChange, onRemove }) => {
             direction="column"
             className="image-picker--select"
           >
-            <Text>曲谱添加</Text>
-            <Text>(选填)</Text>
+            <Text>词曲谱</Text>
+            <Text>添加</Text>
           </Flex>
         )}
       </Flex>
