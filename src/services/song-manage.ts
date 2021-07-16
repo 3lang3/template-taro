@@ -15,10 +15,20 @@ export function delMusicSong(data: { ids: number | string }) {
   });
 }
 
+type CreateSchemeUrlParams = {
+  /** 签署协议的词曲ids */
+  ids: number | string;
+  /** 银行名称 */
+  bank_name: string;
+  /** 银行卡 */
+  bank_card: string | number;
+  /** 开户银行支行 */
+  bank_branch_name: string;
+};
 // 获取跳转电子签小程序地址接口
-export function createSchemeUrl(data: { ids: number | string }) {
+export function createSchemeUrl(data: CreateSchemeUrlParams) {
   return request('/ess/CreateSchemeUrl', {
-    method: 'GET',
+    method: 'POST',
     data,
   });
 }
