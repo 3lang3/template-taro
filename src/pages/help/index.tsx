@@ -43,6 +43,7 @@ export default () => {
         ? searchList.map((item) => (
             <AtList key={item.ids}>
               <AtListItem
+                hasBorder={false}
                 onClick={() => navigateTo({ url: `/pages/help-detail/index?ids=${item.ids}` })}
                 title={item.question}
                 arrow="right"

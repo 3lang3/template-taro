@@ -17,6 +17,7 @@ export default () => {
         row={(item, i) => (
           <AtList key={'at-list-' + i}>
             <AtListItem
+              hasBorder={false}
               onClick={() => navigateTo({ url: `/pages/help-detail/index?ids=${item.ids}` })}
               title={item.question}
               arrow="right"
