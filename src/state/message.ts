@@ -22,12 +22,9 @@ export const msgRefresh = (payload: MessageListResType['_list']) => {
   };
 };
 
-export const setTotalPage = (payload: number) => {
-  return (dispath, state) => {
-    const { message } = state();
-    if (!message.totalPage) {
-      dispath({ type: MESSAGETOTALPAGE, payload });
-    }
+export const setTotalCount = (payload: number) => {
+  return (dispath) => {
+    dispath({ type: MESSAGETOTALPAGE, payload });
   };
 };
 
@@ -35,7 +32,7 @@ const INITIAL_STATE: MessageStateType = {
   list: [] as any,
   page: 1,
   pageSize: 10,
-  totalPage: 0,
+  totalCount: 0,
 };
 
 // reducers
@@ -46,7 +43,7 @@ export default function messageReducer(state = INITIAL_STATE, { type, payload })
     case MESSAGETOTALPAGE:
       return {
         ...state,
-        totalPage: payload,
+        totalCount: payload,
       };
     case MESSAGEINITREFRESH:
       return {
@@ -54,7 +51,6 @@ export default function messageReducer(state = INITIAL_STATE, { type, payload })
         page: 1,
         pageSize: 10,
         list: payload,
-        totalPage: 0,
       };
     default:
       return state;
