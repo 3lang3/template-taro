@@ -112,7 +112,7 @@ export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) =
           className="message-box__icon"
           onClick={() => navigateTo({ url: '/pages/message/index' })}
         />
-        {commonReducer.isReadAll && <View className="message-box__dot" />}
+        {commonReducer.isReadAll ? <View className="message-box__dot" /> : ''}
       </View>
     </CustomNavigation>
   );
