@@ -1,9 +1,10 @@
-import type { chooseMessageFile } from '@tarojs/taro';
-
 type ChildrenPramas = {
-  file?: chooseMessageFile.ChooseFile;
+  /** 可以直接渲染的文件路径 */
+  filePath?: string;
+  file?: { path: string; name: string } & Record<string, any>;
   /** 删除已上传的文件 */
   remove: () => void;
+  upload: () => void;
 };
 
 export type BaseUploadProps<T = Record<string, any>> = {

@@ -46,7 +46,7 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
       value={props.value}
       onChange={props.onChange}
     >
-      {({ file, remove }) => {
+      {({ file, remove, upload }) => {
         return (
           <>
             <Flex className="settlein-list__item border">
@@ -114,7 +114,7 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                   ) : null}
                 </Flex>
               ) : (
-                <View className="border--bolder p-default">
+                <View onClick={upload} className="border--bolder p-default">
                   <Flex justify="center">
                     <Typography.Text type="secondary">添加歌曲</Typography.Text>
                     <Icon className="settlein-uploader__icon" icon="icon-quku_bofang" />
