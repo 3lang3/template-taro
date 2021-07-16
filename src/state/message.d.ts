@@ -4,5 +4,5 @@ export interface MessageStateType {
   list: MessageListResType['_list'];
   page: number;
   pageSize: number;
-  totalPage: number;
+  totalCount: number;
 }

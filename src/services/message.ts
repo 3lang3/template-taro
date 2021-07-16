@@ -1,5 +1,5 @@
 import { PromiseResponseType, msgRequest } from '@/utils/request';
-import type { listParams, ListResType } from './common.d';
+import type { listParams, ListResType, SuccessResType } from './common.d';
 
 export type MessageListResType = ListResType<
   {
@@ -43,6 +43,17 @@ export function readMessageRemind(data: {
     {
       method: 'POST',
       data,
+    },
+    false,
+  );
+}
+
+// 是否有未读消息接口
+export function getUnreadMessage(): Promise<PromiseResponseType<{ is_show: 0 | 1 }>> {
+  return msgRequest(
+    '/message/getUnreadMessage',
+    {
+      method: 'GET',
     },
     false,
   );

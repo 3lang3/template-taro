@@ -8,6 +8,7 @@ import {
   getSongStyleList,
   getWebsiteType,
 } from '@/services/common';
+import { getUnreadMessage } from '@/services/message';
 import type { CurrentUserType } from '@/services/common';
 import type { TagType, LanguageVersion, SongStyle, MusicSiteItem } from '@/services/common.d';
 import { getStorageSync, removeStorageSync } from '@tarojs/taro';
@@ -20,6 +21,7 @@ export const ERROR = 'COMMON/ERROR';
 export const LOGOUT = 'COMMON/LOGOUT';
 export const UPDATE_USER_DATA = 'COMMON/UPDATE_USER_DATA';
 export const INIT = 'COMMON/INIT';
+export const ISREADALL = 'COMMON/ISREADALL';
 
 // actions
 export const logout = () => {
@@ -34,6 +36,14 @@ export const updateUserData = (payload) => {
     payload,
   };
 };
+
+// 获取消息已读
+export function setIsReadAll() {
+  return async (dispatch) => {
+    const result = await getUnreadMessage();
+    dispatch({ type: ISREADALL, payload: result.data.is_show });
+  };
+}
 
 export function getUser(localUserInfo?): any {
   return async (dispatch) => {
@@ -52,11 +62,15 @@ export const initCommonReducer = () => {
   return (dispath, state) => {
     const { common: commonReducer } = state();
     if (!commonReducer.tagType.length) {
-      Promise.all([getTagType(), getLanguageList(), getSongStyleList(), getWebsiteType()]).then(
-        (res) => {
-          dispath({ type: INIT, payload: res });
-        },
-      );
+      Promise.all([
+        getTagType(),
+        getLanguageList(),
+        getSongStyleList(),
+        getWebsiteType(),
+        getUnreadMessage(),
+      ]).then((res) => {
+        dispath({ type: INIT, payload: res });
+      });
     }
   };
 };
@@ -73,6 +87,7 @@ export type CommonStateType = {
   songStyle: SongStyle[];
   musicSiteList: MusicSiteItem[];
   token?: string;
+  isReadAll: boolean;
 };
 
 const INITIAL_STATE: CommonStateType = {
@@ -88,6 +103,7 @@ const INITIAL_STATE: CommonStateType = {
   languageVersion: [],
   songStyle: [],
   musicSiteList: [],
+  isReadAll: false,
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {
@@ -125,6 +141,11 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         done: true,
         data: payload,
       };
+    case ISREADALL:
+      return {
+        ...state,
+        isReadAll: payload,
+      };
     case INIT:
       return {
         ...state,
@@ -132,6 +153,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         languageVersion: payload[1].data,
         songStyle: payload[2].data,
         musicSiteList: payload[3].data,
+        isReadAll: !!payload[4].data.is_show,
       };
     default:
       return state;
