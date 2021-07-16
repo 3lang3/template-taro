@@ -1,4 +1,5 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
@@ -6,6 +7,8 @@ import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
 import config from '@/config';
 import { uploadSingleFile } from '@/utils/upload';
 import { AtInput } from 'taro-ui';
+import { useRequest } from 'ahooks';
+import { getPcSongUrl } from '@/services/common';
 import Icon from '../Icon';
 import Flex from '../Flex';
 import Typography from '../Typography';
@@ -24,7 +27,25 @@ type SongUploaderProps = {
 };
 
 export default (props: SongUploaderProps) => {
+  const userData = useSelector((state) => state.common.data);
   const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
+  // 轮询获取pc上传信息
+  const pcReq = useRequest(getPcSongUrl, {
+    manual: true,
+    pollingInterval: 5000,
+    onSuccess: ({ data }) => {
+      if (props.onChange) props.onChange(data.url, undefined, data);
+    },
+  });
+
+  useEffect(() => {
+    if (props.disabled) return;
+    if (userData.ids) {
+      pcReq.run({ memberIds: userData.ids });
+    }
+    return () => pcReq.cancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData.ids]);
 
   const onDelete = () => {
     if (props.disabled) return;

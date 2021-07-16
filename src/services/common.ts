@@ -105,8 +105,12 @@ export function getWebsiteType() {
 
 // 获取大文件上传信息
 export function getPcSongUrl(data: { memberIds: string | number }) {
-  return request('/pc/getSongUrl', {
-    method: 'POST',
-    data,
-  });
+  return request(
+    '/pc/getSongUrl',
+    {
+      method: 'GET',
+      data,
+    },
+    false,
+  );
 }
