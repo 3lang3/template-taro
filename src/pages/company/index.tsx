@@ -8,8 +8,11 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
+import { getSingerBankInfo } from '@/services/common';
 import { View } from '@tarojs/components';
-import { useState } from 'react';
+import { hideLoading, showLoading, useRouter } from '@tarojs/taro';
+import { useRequest } from 'ahooks';
+import { useEffect, useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
 import './index.less';
 
@@ -47,26 +50,61 @@ const IDCardUploader = (props: BaseUploadProps) => {
 };
 
 export default () => {
+  const { params } = useRouter<{ ids: string }>();
   const [payload, set] = useState<any>({
     id_card_image: undefined,
     bank_name: undefined,
     bank_card: '',
     bank_branch_name: '',
   });
+
+  const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(getSingerBankInfo, {
+    manual: true,
+    onSuccess: ({ data }) => {
+      set((v) => ({
+        ...v,
+        bank_name: data.bank_name,
+        bank_card: data.bank_card,
+        bank_branch_name: data.bank_branch_name,
+      }));
+    },
+  });
+
+  useEffect(() => {
+    // 获取身份认证详情
+    const getDetail = async () => {
+      try {
+        showLoading();
+        await detailReq.run({ ids: params.ids });
+        hideLoading();
+      } catch (error) {
+        hideLoading();
+      }
+    };
+    if (params.ids) getDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.ids]);
+
   return (
     <>
-      <View className="bg-white mb20 p-default">
-        <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>
-        <Typography.Text type="danger">2.请上传实名该账户实名姓名的身份证正反面</Typography.Text>
-      </View>
+      {+detail.is_upload === 1 && (
+        <>
+          <View className="bg-white mb20 p-default">
+            <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>
+            <Typography.Text type="danger">
+              2.请上传实名该账户实名姓名的身份证正反面
+            </Typography.Text>
+          </View>
 
-      <Flex className="bg-white p-default" align="start">
-        <IDCardUploader
-          value={payload.id_card_image}
-          onChange={(value) => set((v) => ({ ...v, id_card_image: value }))}
-        />
-        <Typography.Link className="ml20">例图查看</Typography.Link>
-      </Flex>
+          <Flex className="bg-white p-default" align="start">
+            <IDCardUploader
+              value={payload.id_card_image}
+              onChange={(value) => set((v) => ({ ...v, id_card_image: value }))}
+            />
+            <Typography.Link className="ml20">例图查看</Typography.Link>
+          </Flex>
+        </>
+      )}
       <AtForm className="custom-form settlein-form">
         <View className="bg-white p-default">
           <Typography.Text type="primary">词（5000元）+曲（3000元）</Typography.Text>

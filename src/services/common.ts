@@ -114,3 +114,14 @@ export function getPcSongUrl(data: { memberIds: string | number }) {
     false,
   );
 }
+// 获取签署用户的银行卡信息
+export function getSingerBankInfo(data: { ids: string | number }) {
+  return request(
+    '/song/getSingerBankInfo',
+    {
+      method: 'GET',
+      data,
+    },
+    false,
+  );
+}

@@ -170,7 +170,12 @@ export default () => {
                 );
               if (+song.status === 6)
                 return (
-                  <Button onClick={() => onSignClick(song)} circle size="xs" type="primary">
+                  <Button
+                    onClick={() => navigateTo({ url: `/pages/company/index?ids=${song.ids}` })}
+                    circle
+                    size="xs"
+                    type="primary"
+                  >
                     签署协议
                   </Button>
                 );
