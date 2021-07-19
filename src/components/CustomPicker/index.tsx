@@ -210,13 +210,12 @@ function getPickerRange(
 
   // 多选
   const rs = [] as any[];
-  let pValue = pickerValue;
+  let pValue = cascade ? pickerValue.filter(Boolean) : pickerValue;
   // 保证value格式符合data长度
   if (!pValue.length) {
     // 联级取cascade值 非联级取data(二维数组)长度
     pValue = Array.from({ length: cascade || data.length }, () => 0);
   }
-
   // 根据当前值获取 picker range数据(联级情况下需要重置range)
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;

@@ -14,7 +14,6 @@ export default function AreaPicker({ onChange, value, ...props }: any) {
       dispatch(setRegion(data));
     },
   });
-
   if (loading || !region.length) return null;
   return (
     <CustomPicker
