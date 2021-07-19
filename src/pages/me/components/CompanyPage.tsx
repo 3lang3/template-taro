@@ -13,6 +13,7 @@ export default () => {
   const { data: { data } = { data: {} }, loading, error, refresh } = useRequest(getMechanismInfo);
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+
   return (
     <View className="page-company">
       <Flex className="company-header" justify="between">

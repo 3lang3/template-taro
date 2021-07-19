@@ -33,12 +33,3 @@ export const uploadSingleFile = ({
     });
   });
 };
-
-export const uploadMultipleFile = async ({ filePaths, name = 'file' }) => {
-  const rs: any[] = [];
-  for (const filePath of filePaths) {
-    const res = await uploadSingleFile({ filePath, name });
-    rs.push(res);
-  }
-  return rs;
-};

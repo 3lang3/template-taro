@@ -16,6 +16,7 @@ import {
   hideLoading,
   hideToast,
   reLaunch,
+  requestSubscribeMessage,
   setNavigationBarTitle,
   showLoading,
   showToast,
@@ -163,6 +164,21 @@ export default () => {
         return;
       }
     }
+
+    // 消息通知订阅
+    try {
+      const tmplIds = userData.template.map((el) => el.template_id);
+      if (!tmplIds.length) throw new Error('no tmplIds... ignore action: requestSubscribeMessage');
+      const { errMsg } = await requestSubscribeMessage({
+        tmplIds: userData.template.map((el) => el.template_id),
+      });
+      if (errMsg !== 'requestSubscribeMessage:ok')
+        throw new Error('requestSubscribeMessage: failed.');
+    } catch (error) {
+      // requestSubscribeMessage error
+      console.log(error);
+    }
+
     showToast({ icon: 'loading', title: '出售中...', mask: true });
     await songSale({
       ...rest,
@@ -171,6 +187,8 @@ export default () => {
       ...JSON.parse(params.params),
     });
     hideToast();
+
+    // 出售确认弹窗
     setVisible(true);
   };
 
