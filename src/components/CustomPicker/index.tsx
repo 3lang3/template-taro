@@ -210,7 +210,7 @@ function getPickerRange(
 
   // 多选
   const rs = [] as any[];
-  let pValue = cascade ? pickerValue.filter(Boolean) : pickerValue;
+  let pValue = pickerValue.filter(Boolean);
   // 保证value格式符合data长度
   if (!pValue.length) {
     // 联级取cascade值 非联级取data(二维数组)长度
