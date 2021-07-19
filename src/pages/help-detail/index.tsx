@@ -28,7 +28,7 @@ export default () => {
       </View>
       <Flex align="start">
         <Text className="before">答：</Text>
-        <View dangerouslySetInnerHTML={{ __html: data.answer }} />
+        <View style={{ textAlign: 'justify' }} dangerouslySetInnerHTML={{ __html: data.answer }} />
       </Flex>
       <KefuBtn />
     </View>

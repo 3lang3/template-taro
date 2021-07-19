@@ -4,7 +4,7 @@ import Typography from '@/components/Typography';
 import { Image, View } from '@tarojs/components';
 import { navigateTo } from '@tarojs/taro';
 import { AtList, AtListItem, AtIcon } from 'taro-ui';
-import { getMusicsongmakeList, Node, editInfo } from '@/services/profile';
+import { getEditInfo, Node, editInfo } from '@/services/profile';
 import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import { useRequest } from 'ahooks';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
@@ -12,7 +12,7 @@ import './index.less';
 
 export default () => {
   const [memberInfo, setMemberInfo] = useState<Node>({} as any);
-  const { loading, error, refresh } = useRequest(getMusicsongmakeList, {
+  const { loading, error, refresh } = useRequest(getEditInfo, {
     onSuccess: ({ data, type, msg }) => {
       if (type === 1) throw Error(msg);
       setMemberInfo(data);
