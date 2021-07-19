@@ -9,9 +9,14 @@ export type P = {
   title: string;
   content: string | React.ReactNode;
   children: React.ReactElement; // 是否显示
+  /**
+   * 是否显示底部按钮
+   * @todo 支持自定义按钮
+   */
+  footer?: boolean;
 };
 
-export default ({ title, content, children }) => {
+export default ({ title, content, children, footer = true }) => {
   const [visible, setVisible] = useState(false);
   return (
     <>
@@ -29,12 +34,12 @@ export default ({ title, content, children }) => {
           <View className="select-pop">
             <Flex className="content" direction="column" justify="between">
               <Text className="select-pop-title">{title}</Text>
-              <Flex align="start" justify="start" className="select-pop-content">
-                <Text>{content}</Text>
-              </Flex>
-              <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
-                知道了
-              </AtButton>
+              <View className="select-pop-content">{content}</View>
+              {footer && (
+                <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
+                  知道了
+                </AtButton>
+              )}
             </Flex>
           </View>
         </Pop>

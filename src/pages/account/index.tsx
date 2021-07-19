@@ -20,6 +20,7 @@ import {
   showLoading,
   useRouter,
 } from '@tarojs/taro';
+import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
@@ -125,7 +126,17 @@ export default () => {
               value={payload.id_card_image}
               onChange={(value) => set((v) => ({ ...v, id_card_image: value }))}
             />
-            <Typography.Link className="ml20">例图查看</Typography.Link>
+            <ContentPop
+              title="例图查看"
+              footer={false}
+              content={
+                <View className="idcard-simple">
+                  <Image className="idcard-simple__img" src="idcard-uploader__simple" />
+                </View>
+              }
+            >
+              <Typography.Link className="ml20">例图查看</Typography.Link>
+            </ContentPop>
           </Flex>
         </>
       )}

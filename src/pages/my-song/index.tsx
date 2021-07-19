@@ -5,6 +5,7 @@ import { FullPageLoader, FullPageError, LibSongItem, Empty } from '@/components/
 import { getWantSongList } from '@/services/my-song';
 import { setList } from '@/state/my-song';
 import { useDispatch, useSelector } from 'react-redux';
+import Typography from '@/components/Typography';
 import { useRequest } from 'ahooks';
 import ContentPop from '@/components/ContentPop';
 import './index.less';
@@ -40,7 +41,10 @@ export default () => {
                     <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
                   ) : null}
                   <>
-                    <ContentPop title="歌词查看" content={song.lyricist_content}>
+                    <ContentPop
+                      title="歌词查看"
+                      content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
+                    >
                       <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
                     </ContentPop>
                     <Icon

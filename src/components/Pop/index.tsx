@@ -1,4 +1,5 @@
 import { View } from '@tarojs/components';
+import Flex from '../Flex';
 import './index.less';
 
 export type P = {
@@ -9,7 +10,9 @@ export default ({ children }: P) => {
   return (
     <View className="pop">
       <View className="pop-overlay" />
-      <View className="pop-container">{children}</View>
+      <Flex direction="column" justify="center" className="pop-container">
+        {children}
+      </Flex>
     </View>
   );
 };
