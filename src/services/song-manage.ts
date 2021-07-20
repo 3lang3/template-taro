@@ -32,3 +32,20 @@ export function createSchemeUrl(data: CreateSchemeUrlParams) {
     data,
   });
 }
+
+type DescribeFlowBriefsParams = {
+  /** 流程ids, 从`createSchemeUrl`接口获取 */
+  flow_id: string;
+  /** 词曲ids */
+  ids: string;
+};
+export function describeFlowBriefs(data: DescribeFlowBriefsParams) {
+  return request(
+    '/ess/DescribeFlowBriefs',
+    {
+      method: 'POST',
+      data,
+    },
+    false,
+  );
+}
