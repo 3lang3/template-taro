@@ -29,12 +29,14 @@ export default () => {
   const onDeleteClick = async (record) => {
     const { confirm } = await showModal({
       title: '提示',
-      content: '这是一个模态弹窗',
+      content: '确认删除',
     });
     if (!confirm) return;
     showToast({ icon: 'loading', title: '删除中' });
     const { msg } = await delMusicSong({ ids: record.ids });
     showToast({ icon: 'success', title: msg });
+    actionRef.current?.reload();
+    counterOfferRef.current?.close();
   };
 
   const onCounterOfferClick = (record) => {
