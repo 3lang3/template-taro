@@ -19,10 +19,11 @@ import {
   navigateToMiniProgram,
   showLoading,
   useRouter,
+  useDidShow,
 } from '@tarojs/taro';
 import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
 import './index.less';
 
@@ -79,11 +80,21 @@ export default () => {
     onSuccess: ({ data }) => {
       set((v) => ({
         ...v,
-        bank_name: data.bank_name,
+        bank_name: data.bank_name || undefined,
         bank_card: data.bank_card,
         bank_branch_name: data.bank_branch_name,
       }));
     },
+  });
+
+  const firstRenderRef = useRef(false);
+
+  useDidShow(() => {
+    if (!firstRenderRef.current) {
+      firstRenderRef.current = true;
+      return;
+    }
+    // 签署回来刷新页面
   });
 
   // 签约

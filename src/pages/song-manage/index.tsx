@@ -3,7 +3,7 @@ import { ManageSongItem } from '@/components/Chore';
 import Typography from '@/components/Typography';
 import { operationMusicSongPrice } from '@/services/song';
 import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
-import { navigateTo, showModal, showToast, useDidShow } from '@tarojs/taro';
+import { navigateTo, showModal, showToast } from '@tarojs/taro';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
@@ -14,16 +14,6 @@ export default () => {
   const actionRef = useRef<ActionType>();
   const selectRecordRef = useRef<any>(null);
   const counterOfferRef = useRef<ChangePriceModalType>(null);
-  const firstRenderRef = useRef(false);
-
-  useDidShow(() => {
-    if (!firstRenderRef.current) {
-      firstRenderRef.current = true;
-      return;
-    }
-    // 签署回来刷新页面
-    actionRef.current?.reload();
-  });
 
   // 删除
   const onDeleteClick = async (record) => {
