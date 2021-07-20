@@ -149,8 +149,8 @@ export default () => {
           title="选择银行"
           arrow
           data={[
-            { name: '建设银行', id: 0 },
-            { name: '招商银行', id: 1 },
+            { name: '建设银行', id: 1 },
+            { name: '招商银行', id: 2 },
           ]}
           mode="selector"
           value={payload.bank_name}

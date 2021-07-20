@@ -5,7 +5,7 @@ import InputSelect from '@/components/InputSelect';
 import { useState } from 'react';
 import { useRequest } from 'ahooks';
 import { getBuySongList, getSingerByName, appointMusicSong } from '@/services/company-bought';
-import { FullPageLoader, FullPageError, ManageSongItem } from '@/components/Chore';
+import { FullPageLoader, FullPageError, ManageSongItem, Empty } from '@/components/Chore';
 import './index.less';
 
 export default () => {
@@ -29,6 +29,7 @@ export default () => {
   });
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+  if (!songsData.length) return <Empty className="mt60" message="暂无数据" />;
   function onSubmit(node, members) {
     if (!members.length) {
       showToast({
