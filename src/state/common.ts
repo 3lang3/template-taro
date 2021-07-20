@@ -142,9 +142,22 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         languageVersion: payload[1].data,
         songStyle: payload[2].data,
         musicSiteList: payload[3].data,
-        bankList: payload[4].data,
+        bankList: processBankList(payload[4].data),
       };
     default:
       return state;
   }
+}
+
+// process bank list data
+function processBankList(data: BankItem[]) {
+  return data.reduce((a: any, v: BankItem) => {
+    const idx = a.findIndex((el: any) => el.key === v.name_initial);
+    if (idx > -1) {
+      a[idx].items.push({ name: v.bank_name, ...v });
+    } else {
+      a.push({ title: v.name_initial, key: v.name_initial, items: [] });
+    }
+    return a;
+  }, []);
 }

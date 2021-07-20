@@ -54,5 +54,5 @@ export type BankItem = {
   ids: string | number;
   bank_code: string;
   bank_name: string;
-  bank_initial: string;
+  name_initial: string;
 };

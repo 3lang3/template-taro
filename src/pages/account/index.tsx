@@ -1,13 +1,8 @@
-// 仅开发用 实际已经在me页面中渲染了
 import { useSelector } from 'react-redux';
 import Button from '@/components/Button';
-import CustomPicker from '@/components/CustomPicker';
 import Flex from '@/components/Flex';
-import Icon from '@/components/Icon';
 import Image from '@/components/Image';
 import Typography from '@/components/Typography';
-import { BaseUploadProps } from '@/components/Uploader/PropsType';
-import { UploaderWrapper } from '@/components/Uploader/wrapper';
 import { MP_E_SIGN_APPID } from '@/config/constant';
 import { getSingerBankInfo } from '@/services/common';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
@@ -28,41 +23,8 @@ import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
 import { useRef, useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
+import { IDCardUploader, BankPicker } from './components';
 import './index.less';
-
-// 身份证上传
-const IDCardUploader = (props: BaseUploadProps) => {
-  return (
-    <UploaderWrapper type="image" {...props}>
-      {({ filePath, remove, upload }) => {
-        return (
-          <View className="idcard-uploader">
-            {filePath ? (
-              <Image
-                mode="aspectFit"
-                onClick={remove}
-                src={filePath}
-                className="idcard-uploader__image"
-              />
-            ) : (
-              <Flex
-                className="idcard-uploader__btn"
-                direction="column"
-                justify="center"
-                onClick={upload}
-              >
-                <Icon icon="icon-tab_wode" className="idcard-uploader__icon" />
-                <Typography.Text type="secondary" size="sm">
-                  身份证正反面（附带签字）
-                </Typography.Text>
-              </Flex>
-            )}
-          </View>
-        );
-      }}
-    </UploaderWrapper>
-  );
-};
 
 export default () => {
   const { params } = useRouter<{ ids: string }>();
@@ -82,6 +44,7 @@ export default () => {
   } = useRequest(getSingerBankInfo, {
     defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
+      // 写入默认值
       set((v) => ({
         ...v,
         bank_name: data.bank_name || undefined,
@@ -181,15 +144,7 @@ export default () => {
         <View className="bg-white p-default">
           <Typography.Text type="primary">{detail.show_price}</Typography.Text>
         </View>
-
-        <CustomPicker
-          title="选择银行"
-          arrow
-          data={[
-            { name: '建设银行', id: 1 },
-            { name: '招商银行', id: 2 },
-          ]}
-          mode="selector"
+        <BankPicker
           value={payload.bank_name}
           onChange={(value) => set((v) => ({ ...v, bank_name: value }))}
         />
