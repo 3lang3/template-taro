@@ -232,7 +232,7 @@ export default () => {
         <AtModalContent>
           <View className="board bg-white">
             <AtTextarea
-              disabled
+              customStyle={{ wordBreak: 'break-all' }}
               className="border--bolder"
               height="268"
               value={simpleText}

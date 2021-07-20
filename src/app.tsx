@@ -1,19 +1,12 @@
+/* eslint-disable import/first */
 import { Provider } from 'react-redux';
-import { showModal } from '@tarojs/taro';
 import { Component } from 'react';
 import store from '@/state/config/store';
 import { silentLogin } from './utils/login';
 import { getCustomNavigationInfo } from './components/CustomNavigation/helper';
-import './style/taro.theme.scss';
+// taro-ui 组件样式
+import 'taro-ui/dist/style/index.scss';
 import './style/global.less';
-
-// const App = ({ children }) => {
-//   useEffect(() => {
-//     silentLogin();
-//     getCustomNavigationInfo();
-//   }, []);
-//   return <Provider store={store}>{children}</Provider>;
-// };
 
 class App extends Component<any, any> {
   componentDidMount() {
