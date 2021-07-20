@@ -22,7 +22,7 @@ type PlayCoreProps = {
 } & Omit<UseCustomAudioParams, 'lyric'>;
 
 // 歌曲播放
-export default ({ cover = '', src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
+export const PlayCore = ({ cover = '', src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
   const { paused, state, movableViewProps, audioInstance } = useCustomAudio({
     src,
     lyric: lyricData.length

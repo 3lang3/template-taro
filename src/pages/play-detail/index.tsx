@@ -11,7 +11,6 @@ import { View, Text } from '@tarojs/components';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
 import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
 import Icon from '@/components/Icon';
-import PlayCore from '@/components/PlayCore';
 import { IDENTITY } from '@/config/constant';
 import { useRequest } from 'ahooks';
 import {
@@ -28,7 +27,8 @@ import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
-import { processLyricData } from '@/components/PlayCore/helper';
+import { processLyricData } from './components/helper';
+import { PlayCore } from './components';
 
 import './index.less';
 
