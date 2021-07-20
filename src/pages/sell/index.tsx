@@ -152,7 +152,6 @@ export default () => {
     };
   }, [payload.tag]);
 
-  console.log(langData);
   return (
     <>
       <SellSteps />
