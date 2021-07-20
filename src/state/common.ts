@@ -7,10 +7,17 @@ import {
   getLanguageList,
   getSongStyleList,
   getWebsiteType,
+  getBankList,
 } from '@/services/common';
 import { getUnreadMessage } from '@/services/message';
 import type { CurrentUserType } from '@/services/common';
-import type { TagType, LanguageVersion, SongStyle, MusicSiteItem } from '@/services/common.d';
+import type {
+  TagType,
+  LanguageVersion,
+  SongStyle,
+  MusicSiteItem,
+  BankItem,
+} from '@/services/common.d';
 import { getStorageSync, removeStorageSync } from '@tarojs/taro';
 import type { UserInfo } from '@tarojs/taro';
 
@@ -59,19 +66,17 @@ export function getUser(localUserInfo?): any {
 }
 
 export const initCommonReducer = () => {
-  return (dispath, state) => {
-    const { common: commonReducer } = state();
-    if (!commonReducer.tagType.length) {
-      Promise.all([
-        getTagType(),
-        getLanguageList(),
-        getSongStyleList(),
-        getWebsiteType(),
-        getUnreadMessage(),
-      ]).then((res) => {
-        dispath({ type: INIT, payload: res });
-      });
-    }
+  return (dispath) => {
+    Promise.all([
+      getTagType(),
+      getLanguageList(),
+      getSongStyleList(),
+      getWebsiteType(),
+      getUnreadMessage(),
+      getBankList(),
+    ]).then((res) => {
+      dispath({ type: INIT, payload: res });
+    });
   };
 };
 
@@ -86,6 +91,7 @@ export type CommonStateType = {
   languageVersion: LanguageVersion[];
   songStyle: SongStyle[];
   musicSiteList: MusicSiteItem[];
+  bankList: BankItem[];
   token?: string;
   isReadAll: boolean;
 };
@@ -103,6 +109,7 @@ const INITIAL_STATE: CommonStateType = {
   languageVersion: [],
   songStyle: [],
   musicSiteList: [],
+  bankList: [],
   isReadAll: false,
 };
 
@@ -147,6 +154,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         isReadAll: payload,
       };
     case INIT:
+      console.log(payload);
       return {
         ...state,
         tagType: payload[0].data,
@@ -154,6 +162,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         songStyle: payload[2].data,
         musicSiteList: payload[3].data,
         isReadAll: !!payload[4].data.is_show,
+        bankList: payload[5].data,
       };
     default:
       return state;

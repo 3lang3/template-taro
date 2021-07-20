@@ -48,3 +48,11 @@ export type MusicSiteItem = {
   website_type: number | string;
   name: string;
 };
+
+// 银行列表
+export type BankItem = {
+  ids: string | number;
+  bank_code: string;
+  bank_name: string;
+  bank_initial: string;
+};

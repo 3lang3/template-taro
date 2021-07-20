@@ -76,8 +76,7 @@ export type State = {
 
 export default () => {
   const [visible, setVisible] = useState(false);
-  const store = useSelector(({ common }) => common);
-
+  const store = useSelector((state) => state.common);
   const pickerData = useMemo(() => {
     return () => {
       return store.tagType.map((item) => ({
@@ -92,16 +91,14 @@ export default () => {
       }));
     };
   }, [store.tagType]);
-  const langData = useMemo(() => {
-    return () => {
-      return store.languageVersion.map(({ name, language }) => ({ name, id: language }));
-    };
-  }, [store.languageVersion]);
-  const songStyle = useMemo(() => {
-    return () => {
-      return store.songStyle.map(({ name, song_style }) => ({ name, id: song_style }));
-    };
-  }, [store.songStyle]);
+  const langData = useMemo(
+    () => store.languageVersion.map(({ name, language }) => ({ name, id: language })),
+    [store.languageVersion],
+  );
+  const songStyle = useMemo(
+    () => store.songStyle.map(({ name, song_style }) => ({ name, id: song_style })),
+    [store.songStyle],
+  );
   const [payload, set] = useState<State>({
     song_name: '',
     sect: 0,
@@ -155,6 +152,7 @@ export default () => {
     };
   }, [payload.tag]);
 
+  console.log(langData);
   return (
     <>
       <SellSteps />
@@ -170,7 +168,7 @@ export default () => {
         <CustomPicker
           title={fields.sect.label}
           arrow
-          data={songStyle()}
+          data={songStyle}
           mode="selector"
           value={payload.sect}
           onChange={(value) => set((v: State) => ({ ...v, sect: value }))}
@@ -178,7 +176,7 @@ export default () => {
         <CustomPicker
           title={fields.language.label}
           arrow
-          data={langData()}
+          data={langData}
           mode="selector"
           value={payload.language}
           onChange={(value) => set((v: State) => ({ ...v, language: value }))}
