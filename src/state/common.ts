@@ -9,7 +9,6 @@ import {
   getWebsiteType,
   getBankList,
 } from '@/services/common';
-import { getUnreadMessage } from '@/services/message';
 import type { CurrentUserType } from '@/services/common';
 import type {
   TagType,
@@ -28,7 +27,6 @@ export const ERROR = 'COMMON/ERROR';
 export const LOGOUT = 'COMMON/LOGOUT';
 export const UPDATE_USER_DATA = 'COMMON/UPDATE_USER_DATA';
 export const INIT = 'COMMON/INIT';
-export const ISREADALL = 'COMMON/ISREADALL';
 
 // actions
 export const logout = () => {
@@ -43,14 +41,6 @@ export const updateUserData = (payload) => {
     payload,
   };
 };
-
-// 获取消息已读
-export function setIsReadAll() {
-  return async (dispatch) => {
-    const result = await getUnreadMessage();
-    dispatch({ type: ISREADALL, payload: result.data.is_show });
-  };
-}
 
 export function getUser(localUserInfo?): any {
   return async (dispatch) => {
@@ -72,7 +62,6 @@ export const initCommonReducer = () => {
       getLanguageList(),
       getSongStyleList(),
       getWebsiteType(),
-      getUnreadMessage(),
       getBankList(),
     ]).then((res) => {
       dispath({ type: INIT, payload: res });
@@ -93,7 +82,6 @@ export type CommonStateType = {
   musicSiteList: MusicSiteItem[];
   bankList: BankItem[];
   token?: string;
-  isReadAll: boolean;
 };
 
 const INITIAL_STATE: CommonStateType = {
@@ -110,7 +98,6 @@ const INITIAL_STATE: CommonStateType = {
   songStyle: [],
   musicSiteList: [],
   bankList: [],
-  isReadAll: false,
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {
@@ -148,21 +135,14 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         done: true,
         data: payload,
       };
-    case ISREADALL:
-      return {
-        ...state,
-        isReadAll: payload,
-      };
     case INIT:
-      console.log(payload);
       return {
         ...state,
         tagType: payload[0].data,
         languageVersion: payload[1].data,
         songStyle: payload[2].data,
         musicSiteList: payload[3].data,
-        isReadAll: !!payload[4].data.is_show,
-        bankList: payload[5].data,
+        bankList: payload[4].data,
       };
     default:
       return state;

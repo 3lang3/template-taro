@@ -103,7 +103,7 @@ const CustomNavigation = ({
 };
 
 export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) => {
-  const commonReducer = useSelector(({ common }) => common);
+  const messageReducer = useSelector(({ message }) => message);
   return (
     <CustomNavigation title={title} titleColor="#fff">
       <View className="message-box">
@@ -112,7 +112,7 @@ export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) =
           className="message-box__icon"
           onClick={() => navigateTo({ url: '/pages/message/index' })}
         />
-        {commonReducer.isReadAll ? <View className="message-box__dot" /> : ''}
+        {messageReducer.isReadAll ? <View className="message-box__dot" /> : ''}
       </View>
     </CustomNavigation>
   );

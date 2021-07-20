@@ -1,10 +1,11 @@
-import type { MessageListResType } from '@/services/message';
+import { getUnreadMessage, MessageListResType } from '@/services/message';
 import type { MessageStateType } from '@/state/message.d';
 
 // const
 const SETMESSAGELIST = 'SETMESSAGELIST';
 const MESSAGEINITREFRESH = 'MESSAGEINITREFRESH';
 const MESSAGETOTALPAGE = 'MESSAGETOTALPAGE';
+const ISREADALL = 'MESSAGE/ISREADALL';
 
 // action
 export const setList = (payload: MessageListResType['_list']) => {
@@ -13,6 +14,14 @@ export const setList = (payload: MessageListResType['_list']) => {
     payload,
   };
 };
+
+// 获取消息已读
+export function setIsReadAll() {
+  return async (dispatch) => {
+    const result = await getUnreadMessage();
+    dispatch({ type: ISREADALL, payload: result.data.is_show });
+  };
+}
 
 // 下拉刷新
 export const msgRefresh = (payload: MessageListResType['_list']) => {
@@ -33,6 +42,7 @@ const INITIAL_STATE: MessageStateType = {
   page: 1,
   pageSize: 10,
   totalCount: 0,
+  isReadAll: false,
 };
 
 // reducers
@@ -51,6 +61,11 @@ export default function messageReducer(state = INITIAL_STATE, { type, payload })
         page: 1,
         pageSize: 10,
         list: payload,
+      };
+    case ISREADALL:
+      return {
+        ...state,
+        isReadAll: payload,
       };
     default:
       return state;

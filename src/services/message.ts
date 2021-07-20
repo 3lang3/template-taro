@@ -1,5 +1,5 @@
 import { PromiseResponseType, msgRequest } from '@/utils/request';
-import type { listParams, ListResType, SuccessResType } from './common.d';
+import type { listParams, ListResType } from './common.d';
 
 export type MessageListResType = ListResType<
   {

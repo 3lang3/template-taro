@@ -5,4 +5,5 @@ export interface MessageStateType {
   page: number;
   pageSize: number;
   totalCount: number;
+  isReadAll: boolean;
 }

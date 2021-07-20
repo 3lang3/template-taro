@@ -4,6 +4,7 @@ import { Component } from 'react';
 import store from '@/state/config/store';
 import { silentLogin } from './utils/login';
 import { getCustomNavigationInfo } from './components/CustomNavigation/helper';
+import { setIsReadAll } from '@/state/message';
 
 /**
  * taro-ui 组件依赖的样式文件
@@ -26,6 +27,7 @@ class App extends Component<any, any> {
   componentDidMount() {
     silentLogin();
     getCustomNavigationInfo();
+    store.dispatch(setIsReadAll() as any);
   }
   // 获取场景值
   onLaunch(opts) {

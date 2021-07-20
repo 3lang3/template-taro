@@ -1,6 +1,6 @@
 ## 娱当家小程序
 
-基于taro 3.x构建
+基于 taro 3.x 构建
 
 [taro docs](https://taro-docs.jd.com/taro/docs/README)
 
@@ -11,5 +11,10 @@ yarn
 yarn dev:weapp
 ```
 
-### icon方案
-采用iconfont, [项目地址](https://www.iconfont.cn/manage/index?manage_type=myprojects&projectId=2629008&keyword=&project_type=&page=)
+```bash
+taro build --type weapp --watch --env myEnv  # 允许build
+```
+
+### icon 方案
+
+采用 iconfont, [项目地址](https://www.iconfont.cn/manage/index?manage_type=myprojects&projectId=2629008&keyword=&project_type=&page=)

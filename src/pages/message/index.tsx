@@ -6,8 +6,7 @@ import { navigateTo, usePullDownRefresh, useReachBottom, stopPullDownRefresh } f
 import { useDispatch, useSelector } from 'react-redux';
 import { useRequest, useUpdate } from 'ahooks';
 import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message';
-import { setList, msgRefresh, setTotalCount } from '@/state/message';
-import { setIsReadAll } from '@/state/common';
+import { setList, msgRefresh, setTotalCount, setIsReadAll } from '@/state/message';
 import { useEffect, useState } from 'react';
 import './index.less';
 
@@ -35,7 +34,7 @@ export default function Index() {
     onError: () => setLoading(false),
   });
   useEffect(() => {
-    if (!list.length) {
+    if (list && !list.length) {
       run({ page: 1, pageSize: 10 });
     } else {
       setLoading(false);
