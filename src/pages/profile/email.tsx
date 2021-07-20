@@ -97,7 +97,7 @@ export default () => {
           value={payload.code}
           onChange={(value) => set((v: any) => ({ ...v, code: value }))}
         >
-          <CaptchaBtn onNodeClick={onCode} num={4} />
+          <CaptchaBtn onNodeClick={onCode} />
         </AtInput>
         <View className="p-default">
           <Button className="mt50" onClick={onSubmit} circle type="primary" size="lg">
