@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Picker } from '@tarojs/components';
 import { AtListItem } from 'taro-ui';
+import { isDef } from '@/utils/utils';
 
 type ChildrenFuncPramas = {
   /** 选中的`nameKey`数组 */
@@ -177,7 +178,7 @@ export default function CustomPicker({
             disabled={disabled}
             title={title}
             extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
-            arrow={arrow && !value ? 'right' : undefined}
+            arrow={arrow && !isDef(value) ? 'right' : undefined}
           />
         );
       })()}

@@ -11,7 +11,7 @@ import { UploaderWrapper } from '@/components/Uploader/wrapper';
 import { MP_E_SIGN_APPID } from '@/config/constant';
 import { getSingerBankInfo } from '@/services/common';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { createSchemeUrl } from '@/services/song-manage';
+import { createSchemeUrl, describeFlowBriefs } from '@/services/song-manage';
 import { View } from '@tarojs/components';
 import {
   showToast,
@@ -19,13 +19,18 @@ import {
   navigateToMiniProgram,
   showLoading,
   useRouter,
+  useDidShow,
+  showModal,
+  navigateBack,
+  hideToast,
 } from '@tarojs/taro';
 import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AtForm, AtInput } from 'taro-ui';
 import './index.less';
 
+// 身份证上传
 const IDCardUploader = (props: BaseUploadProps) => {
   return (
     <UploaderWrapper type="image" {...props}>
@@ -79,11 +84,41 @@ export default () => {
     onSuccess: ({ data }) => {
       set((v) => ({
         ...v,
-        bank_name: data.bank_name,
+        bank_name: data.bank_name || undefined,
         bank_card: data.bank_card,
         bank_branch_name: data.bank_branch_name,
       }));
     },
+  });
+  const resultReq = useRequest(describeFlowBriefs, {
+    manual: true,
+    onSuccess: ({ data, type }) => {
+      if (type === 1) return;
+      showModal({
+        title: '签约结果',
+        content: `${+data.status ? '签署成功' : '签署失败'}`,
+        success: ({ confirm }) => {
+          if (confirm) navigateBack();
+        },
+      });
+    },
+  });
+
+  const firstRenderRef = useRef(false);
+  const schemaDataRef = useRef<any>({});
+
+  useDidShow(() => {
+    if (!firstRenderRef.current) {
+      firstRenderRef.current = true;
+      return;
+    }
+    // 获取签署结果
+    const getResult = async () => {
+      showToast({ icon: 'loading', title: '签约结果查询中' });
+      await resultReq.run({ ids: params.ids, flow_id: schemaDataRef.current.flow_id });
+      hideToast();
+    };
+    getResult();
   });
 
   // 签约
@@ -96,11 +131,13 @@ export default () => {
     try {
       showLoading({ title: '请稍后...' });
       const { data } = await createSchemeUrl({ ids: params.ids, ...payload });
+      schemaDataRef.current = data;
       hideLoading();
       navigateToMiniProgram({
         appId: MP_E_SIGN_APPID,
         path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
         extraData: { name: userData.real_name, phone: userData.mobile },
+        success: () => {},
       });
     } catch (e) {
       hideLoading();
