@@ -27,7 +27,7 @@ import { validateFields } from '@/utils/form';
 import { Text, View } from '@tarojs/components';
 import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
-import ImagePicker from '@/components/image-picker';
+import ImagePicker from '@/components/ImagePicker';
 import Button from '@/components/Button';
 import { CircleIndexList } from '@/components/Chore';
 import Icon from '@/components/Icon';

@@ -16,7 +16,7 @@ export default ({ data, onLeft, onRight }: P) => {
     <>
       <Flex className="sort-list">
         <Flex align="center" justify="center" className="sort-list-left" direction="column">
-          <MyImage className="icon-hot" src={data.icon} />
+          <MyImage className="sort-list__icon" src={data.icon} />
           <Flex onClick={() => onLeft(data)} align="center">
             <Text>{data.title}</Text>
             <Icon className="emptybox__icon" icon="icon-icon_jinru" />

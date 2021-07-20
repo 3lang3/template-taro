@@ -94,7 +94,7 @@ export default () => {
       firstRenderRef.current = true;
       return;
     }
-    // 签署回来刷新页面
+    // 获取签署结果
   });
 
   // 签约
@@ -112,6 +112,7 @@ export default () => {
         appId: MP_E_SIGN_APPID,
         path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
         extraData: { name: userData.real_name, phone: userData.mobile },
+        success: () => {},
       });
     } catch (e) {
       hideLoading();
@@ -160,8 +161,8 @@ export default () => {
           title="选择银行"
           arrow
           data={[
-            { name: '建设银行', id: 0 },
-            { name: '招商银行', id: 1 },
+            { name: '建设银行', id: 1 },
+            { name: '招商银行', id: 2 },
           ]}
           mode="selector"
           value={payload.bank_name}
