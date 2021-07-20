@@ -29,7 +29,7 @@ class App extends Component<any, any> {
   }
   // 获取场景值
   onLaunch(opts) {
-    console.log(opts.scence);
+    console.log(`launch scence: ${opts.scence}`);
     // showModal({ title: '场景值', content: `value: ${opts.scence}` });
   }
   render() {

@@ -103,6 +103,11 @@ export function getWebsiteType() {
   return request('/other/getWebsiteType');
 }
 
+// 银行列表
+export function getBankList() {
+  return request('/other/getBankList');
+}
+
 // 获取大文件上传信息
 export function getPcSongUrl(data: { memberIds: string | number }) {
   return request(

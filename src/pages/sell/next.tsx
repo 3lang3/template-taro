@@ -170,7 +170,7 @@ export default () => {
       const tmplIds = userData.template.map((el) => el.template_id);
       if (!tmplIds.length) throw new Error('no tmplIds... ignore action: requestSubscribeMessage');
       const { errMsg } = await requestSubscribeMessage({
-        tmplIds: userData.template.map((el) => el.template_id),
+        tmplIds: ['XqmdIj4ua1oVdRXYljZYS7ZLcrHAjtteyn0f-3xiVHo'],
       });
       if (errMsg !== 'requestSubscribeMessage:ok')
         throw new Error('requestSubscribeMessage: failed.');

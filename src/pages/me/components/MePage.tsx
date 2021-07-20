@@ -328,7 +328,13 @@ export default () => {
             <Button onClick={goToSellPage} className="mb20" circle type="primary">
               继续
             </Button>
-            <Typography.Text center onClick={() => closeModal(true)}>
+            <Typography.Text
+              center
+              onClick={() => {
+                closeModal(true);
+                goToSellPage();
+              }}
+            >
               不再提示
             </Typography.Text>
           </View>
