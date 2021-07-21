@@ -1,13 +1,13 @@
 import { View } from '@tarojs/components';
-import SortList from '@/components/SortList';
 import { getCategoryList, Node, ListNode, getList } from '@/services/help';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
-import Search from '@/components/Search';
 import KefuBtn from '@/components/KefuBtn';
 import { AtList, AtListItem } from 'taro-ui';
 import { navigateTo } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useState } from 'react';
+import SortList from './components/SortList';
+import Search from './components/Search';
 import './index.less';
 
 export default () => {

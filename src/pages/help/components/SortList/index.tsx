@@ -2,7 +2,7 @@ import { View, Text } from '@tarojs/components';
 import Icon from '@/components/Icon';
 import Flex from '@/components/Flex';
 import { Node } from '@/services/help';
-import MyImage from '../Image';
+import MyImage from '@/components/Image';
 import './index.less';
 
 export type P = {
