@@ -55,7 +55,7 @@ const HotSongItem = (props) => {
       className="hot-song-item"
       onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${props.song_ids}` })}
     >
-      <View className="hot-song-item__rank">{rankRender(props.sort)}</View>
+      <View className="hot-song-item__rank">{rankRender(props.sort + 1)}</View>
       <View className="hot-song-item__content">
         <Typography.Text className="hot-song-item__title" ellipsis>
           {props.song_name}
