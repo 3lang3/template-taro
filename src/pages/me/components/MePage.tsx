@@ -307,15 +307,27 @@ export default () => {
                   <Icon icon="icon-icon_jinru" className="me-card-item__action" />
                 </Flex>
               </View>
-              <Typography.Link className="me-bottom__link">为什么入驻娱当家?</Typography.Link>
+              <Typography.Link
+                className="me-bottom__link"
+                onClick={() => {
+                  // 内容待定
+                  navigateTo({
+                    url: `/pages/webview/custom?src=${encodeURIComponent(
+                      'https://devplugin.xiushengapp.com/doc/content?type=4',
+                    )}`,
+                  });
+                }}
+              >
+                为什么入驻娱当家?
+              </Typography.Link>
             </>
           )}
         </View>
         <View className="me-bottom">
           <Flex className="me-bottom__action" justify="center">
             <Typography.Link>联系客服</Typography.Link>
-            <View style={{ margin: '0 5px' }}>|</View>
-            <Typography.Link>投诉侵权</Typography.Link>
+            {/* <View style={{ margin: '0 5px' }}>|</View>
+            <Typography.Link>投诉侵权</Typography.Link> */}
           </Flex>
         </View>
       </Flex>
