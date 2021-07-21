@@ -135,7 +135,7 @@ const IndexPageContent = () => {
             data={data.banner}
             itemRender={(item) => (
               <View className="index-swiper__main-item">
-                <Image className="index-swiper__main-img" src={item.url} />
+                <Image className="index-swiper__main-img" src={item.image} />
               </View>
             )}
           />
