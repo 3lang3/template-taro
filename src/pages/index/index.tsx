@@ -55,7 +55,7 @@ const HotSongItem = (props) => {
       className="hot-song-item"
       onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${props.song_ids}` })}
     >
-      <View className="hot-song-item__rank">{rankRender(props.sort + 1)}</View>
+      <View className="hot-song-item__rank">{rankRender(props.idx + 1)}</View>
       <View className="hot-song-item__content">
         <Typography.Text className="hot-song-item__title" ellipsis>
           {props.song_name}
@@ -72,7 +72,7 @@ const HotSong = ({ data = [] }: { data: any[] }) => {
   return (
     <View className="hot-song">
       {data.map((item, i) => (
-        <HotSongItem key={i} {...item} />
+        <HotSongItem key={i} {...{ idx: i, ...item }} />
       ))}
     </View>
   );
