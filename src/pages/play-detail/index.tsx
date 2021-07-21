@@ -21,6 +21,7 @@ import {
   applyWantSong,
   delWantSong,
 } from '@/services/song';
+import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
 import { getHttpPath } from '@/utils/utils';
 import type { UserIdentityType } from '@/services/common';
@@ -31,8 +32,7 @@ import { processLyricData } from './components/helper';
 import { PlayCore } from './components';
 
 import './index.less';
-// 临时cdn地址
-const CDN_PATH = 'https://ydj-1256871193.cos.ap-shanghai.myqcloud.com/';
+
 const AUDIO_DEMO_URL = 'http://music.163.com/song/media/outer/url?id=1847422867.mp3';
 
 type PageContentProps = {
@@ -136,7 +136,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
           )}
         </View>
         <PlayCore
-          src={detail.url ? `${CDN_PATH}/${detail.url}` : AUDIO_DEMO_URL}
+          src={detail.url ? `${config.cdn}/${detail.url}` : AUDIO_DEMO_URL}
           cover={detail.background_image}
           lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
           lyricAutoScroll={routerParams.type !== 'score'}
