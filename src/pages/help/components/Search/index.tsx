@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, Input } from '@tarojs/components';
-import Icon from '../Icon';
-import Flex from '../Flex';
+import Icon from '@/components/Icon';
+import Flex from '@/components/Flex';
 import './index.less';
 
 export type P = {
