@@ -86,13 +86,15 @@ export type CommonStateType = {
 
 const INITIAL_STATE: CommonStateType = {
   token: getStorageSync(config.storage.tokenKey),
-  loading: true,
+  loading: false,
   error: false,
   done: false,
   // wx.getUserProfile获取到的用户数据
   userInfo: {} as UserInfo,
   // 服务端返回的用户数据
-  data: {} as CurrentUserType,
+  data: {
+    config: {},
+  } as CurrentUserType,
   tagType: [],
   languageVersion: [],
   songStyle: [],

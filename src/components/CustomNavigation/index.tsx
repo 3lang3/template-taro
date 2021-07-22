@@ -1,6 +1,8 @@
 import { View } from '@tarojs/components';
-import { navigateBack, navigateTo, switchTab } from '@tarojs/taro';
-import { useSelector } from 'react-redux';
+import { navigateBack, navigateTo, switchTab, useDidShow, getStorageSync } from '@tarojs/taro';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsReadAll } from '@/state/message';
+import config from '@/config';
 import './index.less';
 import Icon from '../Icon';
 
@@ -103,7 +105,16 @@ const CustomNavigation = ({
 };
 
 export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) => {
+  const dispatch = useDispatch();
   const messageReducer = useSelector(({ message }) => message);
+
+  useDidShow(() => {
+    // 用户登录且无未读消息时
+    if (getStorageSync(config.storage.tokenKey) && !messageReducer.isReadAll) {
+      dispatch(setIsReadAll());
+    }
+  });
+
   return (
     <CustomNavigation title={title} titleColor="#fff">
       <View className="message-box">

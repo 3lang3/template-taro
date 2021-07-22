@@ -213,7 +213,7 @@ type PlayDetailParams = {
 
 export default () => {
   const { params } = useRouter<PlayDetailParams>();
-  const { loading: commonLoading, data: commonData } = useSelector((state) => state.common);
+  const { data: commonData } = useSelector((state) => state.common);
 
   const {
     loading,
@@ -223,7 +223,7 @@ export default () => {
   } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
     defaultParams: [{ ids: params.ids }],
   });
-  if (loading || commonLoading) return <FullPageLoader />;
+  if (loading) return <FullPageLoader />;
   if (error || !data) return <FullPageError refresh={refresh} />;
   const identity = commonData.identity;
   return <PageContent detail={data} routerParams={params} identity={identity} />;
