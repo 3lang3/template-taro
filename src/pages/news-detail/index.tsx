@@ -3,9 +3,9 @@ import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { useRouter } from '@tarojs/taro';
 import { getTrendsDetail } from '@/services/home';
+import EditorRender from '@/components/EditorRender';
 import { useRequest } from 'ahooks';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import Image from '@/components/Image';
 import Icon from '@/components/Icon';
 
 import './index.less';
@@ -43,8 +43,7 @@ export default () => {
             </Typography.Text>
           </Flex>
         </Flex>
-        <Image style={{ width: '100%' }} src={data.image} />
-        <View dangerouslySetInnerHTML={{ __html: data.content }} />
+        <EditorRender content={data.content} />
       </View>
     </>
   );

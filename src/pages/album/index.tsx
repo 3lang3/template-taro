@@ -5,6 +5,7 @@ import CustomNavigation from '@/components/CustomNavigation';
 import Image from '@/components/Image';
 import { navigateTo, useRouter, useShareAppMessage } from '@tarojs/taro';
 import { View } from '@tarojs/components';
+import config from '@/config';
 import Icon from '@/components/Icon';
 import { getHttpPath } from '@/utils/utils';
 import { Empty, FullPageError, FullPageLoader } from '@/components/Chore';
@@ -37,6 +38,8 @@ export default () => {
 };
 
 function PageContent({ data, params }) {
+  const configData = useSelector((state) => state.common.data.config);
+
   useShareAppMessage(() => {
     return {
       title: `${data.album_name}-${data.singer_name}`,
@@ -48,7 +51,14 @@ function PageContent({ data, params }) {
     <>
       <CustomNavigation home={false} title="专辑" titleColor="#fff" />
 
-      <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-header__bg">
+      <View
+        style={{
+          backgroundImage: `url(${config.cdn}/${
+            data.album_image || configData?.default_album_img
+          })`,
+        }}
+        className="album-header__bg"
+      >
         <Flex className="album-header" align="start">
           <Image className="album-header__cover" src={data.album_image} />
           <Flex

@@ -82,6 +82,9 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
       <CustomNavigation title={detail.song_name} />
 
       <View
+        style={{
+          backgroundImage: detail.background_image ? `url(${detail.background_image})` : undefined,
+        }}
         className={cls('play-detail', {
           'play-detail--score': isScorePage,
         })}

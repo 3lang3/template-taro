@@ -118,7 +118,10 @@ const IndexPageContent = () => {
       <TabNavigationBar />
       <View className="page-index">
         <View className="index-header__placeholder" />
-        <View className="index-header__bg" />
+        <View
+          className="index-header__bg"
+          style={{ backgroundImage: data?.back_images ? `url(${data.back_images})` : undefined }}
+        />
         {/* 首页轮播图 */}
         {Array.isArray(data.banner) && data.banner.length > 0 && (
           <CustomSwiper

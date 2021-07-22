@@ -1,8 +1,12 @@
 @import '../../style/var.less';
 
+page {
+  background-color: #fff;
+}
+
 .page-index {
-  flex-direction: column;
   width: 100%;
+  overflow: hidden;
 }
 
 .index-header {
@@ -17,7 +21,7 @@
     z-index: 0;
     z-index: -1;
     height: 504px;
-    background: @gradient-primary;
+    background-image: linear-gradient(to top, transparent, @primary);
   }
 }
 

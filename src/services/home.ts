@@ -7,6 +7,7 @@ export type HomeResType = {
   album: any[];
   hotSongList: any[];
   trends: any[];
+  back_images: string;
 };
 
 export function getHomeData(): Promise<PromiseResponseType<HomeResType>> {
