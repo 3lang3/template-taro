@@ -104,7 +104,7 @@ export const PlayCore = ({
 
       <View className="play-core__ctrl">
         <View className="play-core__ctrl-time">{state.currentFtm}</View>
-        <MovableArea className="play-core__ctrl-bar">
+        <MovableArea onClick={(e) => console.log(e)} className="play-core__ctrl-bar">
           <View className="play-core__ctrl-bar__line">
             <View
               className="play-core__ctrl-bar__progress"
