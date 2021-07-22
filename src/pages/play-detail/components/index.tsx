@@ -10,6 +10,10 @@ import './index.less';
 type PlayCoreProps = {
   /** 封面 */
   cover?: string;
+  /** 歌曲标题 */
+  title: Taro.BackgroundAudioManager['title'];
+  epname?: Taro.BackgroundAudioManager['epname'];
+  singer?: string | string[];
   /**
    * 服务端歌词数据
    */
@@ -19,12 +23,24 @@ type PlayCoreProps = {
    * @default true
    */
   lyricAutoScroll?: boolean;
-} & Omit<UseCustomAudioParams, 'lyric'>;
+} & Omit<UseCustomAudioParams, 'lyric' | 'info'>;
 
 // 歌曲播放
-export const PlayCore = ({ cover = '', src, lyricData, lyricAutoScroll = true }: PlayCoreProps) => {
+export const PlayCore = ({
+  cover = '',
+  src,
+  lyricData,
+  lyricAutoScroll = true,
+  ...props
+}: PlayCoreProps) => {
   const { paused, state, movableViewProps, audioInstance } = useCustomAudio({
     src,
+    info: {
+      title: props.title,
+      coverImgUrl: cover,
+      epname: props.epname,
+      singer: Array.isArray(props.singer) ? props.singer.join(',') : props.singer,
+    },
     lyric: lyricData.length
       ? {
           autoScroll: lyricAutoScroll,

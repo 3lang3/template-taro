@@ -1,6 +1,8 @@
-import { createInnerAudioContext, createSelectorQuery } from '@tarojs/taro';
+import { getBackgroundAudioManager, createSelectorQuery } from '@tarojs/taro';
 import type { MovableViewProps } from '@tarojs/components/types/MovableView';
 import { useEffect, useRef, useState } from 'react';
+
+const backgroundAudioManager = getBackgroundAudioManager();
 
 type AudioStateProps = {
   current: number;
@@ -33,6 +35,13 @@ export type UseCustomAudioParams = {
    * 音频地址
    */
   src: string;
+  /** 音频信息 `BackgroundAudioManager`需要*/
+  info: {
+    title: Taro.BackgroundAudioManager['title'];
+    coverImgUrl?: Taro.BackgroundAudioManager['coverImgUrl'];
+    epname?: Taro.BackgroundAudioManager['epname'];
+    singer?: Taro.BackgroundAudioManager['singer'];
+  };
   /**
    * 歌词功能
    */
@@ -55,7 +64,7 @@ type UseCustomAudioReturn = {
   /**
    * InnerAudioContext实例
    */
-  audioInstance: Taro.InnerAudioContext;
+  audioInstance: Taro.BackgroundAudioManager;
   /**
    * 组装好的movable-view属性
    */
@@ -65,7 +74,7 @@ type UseCustomAudioReturn = {
 /**
  * @name 定制audio-hook
  */
-export function useCustomAudio({ src, lyric }: UseCustomAudioParams): UseCustomAudioReturn {
+export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseCustomAudioReturn {
   // 音频是否暂停
   const [paused, setPaused] = useState(true);
   const [state, set] = useState<AudioStateProps>(audioInitialState);
@@ -73,7 +82,7 @@ export function useCustomAudio({ src, lyric }: UseCustomAudioParams): UseCustomA
   const dragging = useRef(false);
   // 拖拽区域信息
   const movable = useRef<MovableStateProps>({ width: 0, x: 0 });
-  const audio = useRef<Taro.InnerAudioContext>(createInnerAudioContext());
+  const audio = useRef<Taro.BackgroundAudioManager>(backgroundAudioManager);
   // 歌词相关
   const lyricRef = useRef<any>({
     lyricNodesHeight: [],
@@ -81,8 +90,11 @@ export function useCustomAudio({ src, lyric }: UseCustomAudioParams): UseCustomA
   });
 
   useEffect(() => {
+    audio.current.title = info.title;
+    Object.entries(info).forEach(([k, v]) => {
+      if (v) audio.current[k] = v;
+    });
     audio.current.src = src;
-    audio.current.autoplay = false;
     audio.current.onPlay(() => setPaused(false));
     audio.current.onPause(() => setPaused(true));
     // @hack
@@ -151,8 +163,6 @@ export function useCustomAudio({ src, lyric }: UseCustomAudioParams): UseCustomA
           .exec();
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => audio.current.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

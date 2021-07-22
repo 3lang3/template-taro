@@ -143,6 +143,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
         </View>
         <PlayCore
           src={detail.url ? `${config.cdn}/${detail.url}` : AUDIO_DEMO_URL}
+          title={detail.song_name}
           cover={bgImg}
           lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
           lyricAutoScroll={routerParams.type !== 'score'}
