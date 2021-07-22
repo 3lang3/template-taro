@@ -1,8 +1,7 @@
 import { View } from '@tarojs/components';
-import { navigateBack, navigateTo, switchTab, useDidShow, getStorageSync } from '@tarojs/taro';
+import { navigateBack, navigateTo, showModal, switchTab, useDidShow } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsReadAll } from '@/state/message';
-import config from '@/config';
 import './index.less';
 import Icon from '../Icon';
 
@@ -106,23 +105,36 @@ const CustomNavigation = ({
 
 export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) => {
   const dispatch = useDispatch();
+  const userData = useSelector((state) => state.common.data);
   const messageReducer = useSelector(({ message }) => message);
 
   useDidShow(() => {
     // 用户登录且无未读消息时
-    if (getStorageSync(config.storage.tokenKey) && !messageReducer.isReadAll) {
+    if (userData.ids && !messageReducer.isReadAll) {
       dispatch(setIsReadAll());
     }
   });
 
+  const handleClick = () => {
+    if (!userData.ids) {
+      showModal({
+        title: '提示',
+        content: '请先登录娱当家',
+        confirmText: '去登录',
+        confirmColor: '#6236ff',
+        success: ({ confirm }) => {
+          if (confirm) switchTab({ url: '/pages/me/index' });
+        },
+      });
+      return;
+    }
+    navigateTo({ url: '/pages/message/index' });
+  };
+
   return (
     <CustomNavigation title={title} titleColor="#fff">
       <View className="message-box">
-        <Icon
-          icon="icon-nav_xiaoxi"
-          className="message-box__icon"
-          onClick={() => navigateTo({ url: '/pages/message/index' })}
-        />
+        <Icon icon="icon-nav_xiaoxi" className="message-box__icon" onClick={handleClick} />
         {messageReducer.isReadAll ? <View className="message-box__dot" /> : ''}
       </View>
     </CustomNavigation>

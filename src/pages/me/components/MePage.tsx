@@ -312,11 +312,8 @@ export default () => {
               <Typography.Link
                 className="me-bottom__link"
                 onClick={() => {
-                  // 内容待定
                   navigateTo({
-                    url: `/pages/webview/custom?src=${encodeURIComponent(
-                      'https://devplugin.xiushengapp.com/doc/content?type=4',
-                    )}`,
+                    url: '/pages/settlein/why',
                   });
                 }}
               >

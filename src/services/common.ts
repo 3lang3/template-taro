@@ -139,3 +139,13 @@ export function getSingerBankInfo(data: { ids: string | number }) {
     false,
   );
 }
+// 获取入驻娱当家文案设置
+export function getCopyWriting() {
+  return request(
+    '/other/getCopyWriting',
+    {
+      method: 'GET',
+    },
+    false,
+  );
+}

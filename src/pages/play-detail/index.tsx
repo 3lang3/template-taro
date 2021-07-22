@@ -11,6 +11,7 @@ import { View, Text } from '@tarojs/components';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
 import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
 import Icon from '@/components/Icon';
+import AuthWrapper from '@/components/AuthWrapper';
 import { IDENTITY } from '@/config/constant';
 import { useRequest } from 'ahooks';
 import {
@@ -24,7 +25,6 @@ import {
 import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
 import { getHttpPath } from '@/utils/utils';
-import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
@@ -38,10 +38,11 @@ const AUDIO_DEMO_URL = 'http://music.163.com/song/media/outer/url?id=1847422867.
 type PageContentProps = {
   detail: Record<string, any>;
   routerParams: PlayDetailParams;
-} & UserIdentityType;
+};
 
-const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
-  const configData = useSelector((state) => state.common.data.config);
+const PageContent = ({ detail, routerParams }: PageContentProps) => {
+  const userData = useSelector((state) => state.common.data);
+  const { identity, config: configData } = userData;
   // 还价modal ref
   const counterOfferRef = useRef<ChangePriceModalType>(null);
   // 背景图
@@ -211,10 +212,8 @@ type PlayDetailParams = {
   ids: string;
 };
 
-export default () => {
+const PageContentWrapper = () => {
   const { params } = useRouter<PlayDetailParams>();
-  const { data: commonData } = useSelector((state) => state.common);
-
   const {
     loading,
     error,
@@ -225,9 +224,14 @@ export default () => {
   });
   if (loading) return <FullPageLoader />;
   if (error || !data) return <FullPageError refresh={refresh} />;
-  const identity = commonData.identity;
-  return <PageContent detail={data} routerParams={params} identity={identity} />;
+  return <PageContent detail={data} routerParams={params} />;
 };
+
+export default () => (
+  <AuthWrapper>
+    <PageContentWrapper />
+  </AuthWrapper>
+);
 
 // 曲谱按钮 modal
 function ScoreButton({ detail }) {

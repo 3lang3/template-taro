@@ -22,6 +22,8 @@ export default {
     'pages/settlein/index',
     // 入驻申请第二步
     'pages/settlein/next',
+    // 为什么入驻娱当家
+    'pages/settlein/why',
     // 机构 已购词曲
     'pages/company-bought/index',
     // 专辑
