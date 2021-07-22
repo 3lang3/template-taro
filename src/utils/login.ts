@@ -48,7 +48,7 @@ export async function userLogin(opts: getUserProfile.Option) {
   showToast({ icon: 'loading', title: toastTitle });
   const code = await generateCode();
   payload.code = code;
-  const { data } = await wxMiniProgramLogin({ ...payload, mobile: '123' });
+  const { data } = await wxMiniProgramLogin({ ...payload });
   // token写入本地缓存
   setStorageSync(config.storage.tokenKey, data.token);
   store.dispatch(getUser(payload.userInfo));
