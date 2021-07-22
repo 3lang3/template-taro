@@ -44,12 +44,14 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   const configData = useSelector((state) => state.common.data.config);
   // 还价modal ref
   const counterOfferRef = useRef<ChangePriceModalType>(null);
+  // 背景图
+  const bgImg = detail.album_image || configData.default_music_img;
 
   useShareAppMessage(({ from }) => {
     if (from === 'button') {
       return {
         title: `${detail.song_name}-${detail.singer}`,
-        imageUrl: getHttpPath(detail.song_image),
+        imageUrl: getHttpPath(bgImg),
       };
     }
     return {};
@@ -79,15 +81,16 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   /** 是否机构身份 */
   const isCompanyIdentity = +identity === IDENTITY.COMPANY;
 
-  const bgImg = detail.album_image || configData.default_music_img;
   return (
     <>
       <CustomNavigation title={detail.song_name} />
-
       <View
+        className="play-detail--bg"
         style={{
-          backgroundImage: bgImg ? `url(${bgImg})` : undefined,
+          backgroundImage: bgImg ? `url(${config.cdn}/${bgImg})` : undefined,
         }}
+      />
+      <View
         className={cls('play-detail', {
           'play-detail--score': isScorePage,
         })}

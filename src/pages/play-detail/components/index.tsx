@@ -1,6 +1,7 @@
 import cls from 'classnames';
 import Image from '@/components/Image';
 import { View, Image as TaroImage, MovableArea, MovableView } from '@tarojs/components';
+import { getHttpPath } from '@/utils/utils';
 import Flex from '@/components/Flex';
 import { useCustomAudio } from './helper';
 import type { UseCustomAudioParams } from './helper';
@@ -37,7 +38,7 @@ export const PlayCore = ({
     src,
     info: {
       title: props.title,
-      coverImgUrl: cover,
+      coverImgUrl: getHttpPath(cover),
       epname: props.epname,
       singer: Array.isArray(props.singer) ? props.singer.join(',') : props.singer,
     },

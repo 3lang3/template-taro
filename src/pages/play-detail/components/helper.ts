@@ -92,6 +92,7 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
   useEffect(() => {
     audio.current.title = info.title;
     Object.entries(info).forEach(([k, v]) => {
+      console.log(k, v);
       if (v) audio.current[k] = v;
     });
     audio.current.src = src;
