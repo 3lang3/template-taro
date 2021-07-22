@@ -41,6 +41,7 @@ type PageContentProps = {
 } & UserIdentityType;
 
 const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+  const configData = useSelector((state) => state.common.data.config);
   // 还价modal ref
   const counterOfferRef = useRef<ChangePriceModalType>(null);
 
@@ -77,13 +78,15 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
   const isScorePage = routerParams.type === 'score';
   /** 是否机构身份 */
   const isCompanyIdentity = +identity === IDENTITY.COMPANY;
+
+  const bgImg = detail.album_image || configData.default_music_img;
   return (
     <>
       <CustomNavigation title={detail.song_name} />
 
       <View
         style={{
-          backgroundImage: detail.background_image ? `url(${detail.background_image})` : undefined,
+          backgroundImage: bgImg ? `url(${bgImg})` : undefined,
         }}
         className={cls('play-detail', {
           'play-detail--score': isScorePage,
@@ -140,7 +143,7 @@ const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
         </View>
         <PlayCore
           src={detail.url ? `${config.cdn}/${detail.url}` : AUDIO_DEMO_URL}
-          cover={detail.background_image}
+          cover={bgImg}
           lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
           lyricAutoScroll={routerParams.type !== 'score'}
         />

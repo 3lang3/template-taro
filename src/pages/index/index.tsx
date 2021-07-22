@@ -2,9 +2,10 @@ import { View } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
-import { navigateTo } from '@tarojs/taro';
+import { navigateTo, showToast } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
+import Flex from '@/components/Flex';
 import { useRequest } from 'ahooks';
 import { getHomeData } from '@/services/home';
 import { FullPageLoader, FullPageError, rankRender } from '@/components/Chore';
@@ -129,8 +130,13 @@ const IndexPageContent = () => {
             swiperClassName="index-swiper__main"
             data={data.banner}
             itemRender={(item) => (
-              <View className="index-swiper__main-item">
-                <Image className="index-swiper__main-img" src={item.image} />
+              <View
+                onClick={() => {
+                  if (item.link_url) showToast({ icon: 'none', title: `打开: ${item.link_url}` });
+                }}
+                className="index-swiper__main-item"
+              >
+                <Image className="index-swiper__main-img" src={item.url} />
               </View>
             )}
           />
@@ -145,19 +151,19 @@ const IndexPageContent = () => {
         {Array.isArray(data.hotSongList) && data.hotSongList.length > 0 && (
           <>
             <View className="index-hot-song">
-              <View className="index-hot-song__title">
+              <Flex className="index-hot-song__title" justify="between">
                 <Typography.Title style={{ marginBottom: 0 }} level={2}>
                   热门歌曲
                 </Typography.Title>
-                <Typography.Text
-                  onClick={() => navigateTo({ url: '/pages/hot-board/index' })}
-                  type="secondary"
-                  size="sm"
-                >
-                  更多
-                  <Icon icon="icon-icon_jinru" size="24" />
-                </Typography.Text>
-              </View>
+                <Flex onClick={() => navigateTo({ url: '/pages/hot-board/index' })}>
+                  <Typography.Text type="secondary" size="sm">
+                    更多
+                  </Typography.Text>
+                  <Typography.Text type="secondary" size="sm">
+                    <Icon icon="icon-icon_jinru" size="24" />
+                  </Typography.Text>
+                </Flex>
+              </Flex>
               <HotSong data={data.hotSongList} />
             </View>
           </>
