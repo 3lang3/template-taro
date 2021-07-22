@@ -2,7 +2,7 @@ import { View } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
-import { navigateTo, showToast } from '@tarojs/taro';
+import { navigateTo } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import Flex from '@/components/Flex';
@@ -132,7 +132,11 @@ const IndexPageContent = () => {
             itemRender={(item) => (
               <View
                 onClick={() => {
-                  if (item.link_url) showToast({ icon: 'none', title: `打开: ${item.link_url}` });
+                  if (item.link_url) {
+                    navigateTo({
+                      url: `/pages/webview/custom?src=${encodeURIComponent(item.link_url)}`,
+                    });
+                  }
                 }}
                 className="index-swiper__main-item"
               >
