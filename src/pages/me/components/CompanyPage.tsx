@@ -5,14 +5,33 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { getMechanismInfo } from '@/services/me';
 import { View } from '@tarojs/components';
-import { navigateTo } from '@tarojs/taro';
+import { navigateTo, requestSubscribeMessage } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
+import { useSelector } from 'react-redux';
 import './company.less';
 
 export default () => {
+  const userData = useSelector((state) => state.common.data);
   const { data: { data } = { data: {} }, loading, error, refresh } = useRequest(getMechanismInfo);
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+
+  const handleClick = async () => {
+    // 消息通知订阅
+    try {
+      const tmplIds = userData.template.map((el) => el.template_id);
+      if (!tmplIds.length) throw new Error('no tmplIds... ignore action: requestSubscribeMessage');
+      const { errMsg } = await requestSubscribeMessage({
+        tmplIds,
+      });
+      if (errMsg !== 'requestSubscribeMessage:ok')
+        throw new Error('requestSubscribeMessage: failed.');
+    } catch (err) {
+      // requestSubscribeMessage error
+      console.log(error);
+    }
+    navigateTo({ url: '/pages/company-bought/index' });
+  };
 
   return (
     <View className="page-company">
@@ -24,11 +43,7 @@ export default () => {
         <Typography.Text className="company-header__name" type="light" size="xl" ellipsis>
           {data.company}
         </Typography.Text>
-        <Button
-          circle
-          type="light"
-          onClick={() => navigateTo({ url: '/pages/company-bought/index' })}
-        >
+        <Button circle type="light" onClick={handleClick}>
           已购词曲
         </Button>
       </Flex>

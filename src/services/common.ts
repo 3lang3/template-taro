@@ -36,6 +36,15 @@ export type CurrentUserType = {
    * 微信推送模版数据
    */
   template: { template_id: string; template_name: string }[];
+  /** 静态资源信息 */
+  config: {
+    /** 默认专辑图 */
+    default_album_img: string;
+    /** 默认音乐播放图 */
+    default_music_img: string;
+    /** 热门歌曲排行榜背景图 */
+    popular_board_bg: string;
+  };
 } & UserIdentityType &
   Record<string, any>;
 // 根据token获取用户信息

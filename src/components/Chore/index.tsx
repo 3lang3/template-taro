@@ -4,7 +4,7 @@
  * 放置部分页面可复用的ui组件
  */
 
-import { View } from '@tarojs/components';
+import { Image as TaroImage, View } from '@tarojs/components';
 import { memo } from 'react';
 import { AtInput, AtActivityIndicator } from 'taro-ui';
 import Button from '../Button';
@@ -193,5 +193,16 @@ export const Empty = ({ message = '暂无数据', ...props }: EmptyProps) => {
       </Flex>
       <Typography.Text className="emptybox__text">{message}</Typography.Text>
     </Flex>
+  );
+};
+
+export const rankRender = (rank) => {
+  if (+rank > 3) return <Typography.Text type="secondary">{rank}</Typography.Text>;
+  return (
+    <TaroImage
+      mode="aspectFit"
+      className="item-rank__img"
+      src={require(`@/assets/home/rank_${rank}.png`)}
+    />
   );
 };

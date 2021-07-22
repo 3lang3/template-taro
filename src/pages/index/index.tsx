@@ -1,4 +1,4 @@
-import { View, Image as TaroImage } from '@tarojs/components';
+import { View } from '@tarojs/components';
 import CustomTabBar from '@/components/CustomTabBar';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomSwiper from '@/components/CustomSwiper';
@@ -7,7 +7,7 @@ import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import { useRequest } from 'ahooks';
 import { getHomeData } from '@/services/home';
-import { FullPageLoader, FullPageError } from '@/components/Chore';
+import { FullPageLoader, FullPageError, rankRender } from '@/components/Chore';
 import Icon from '@/components/Icon';
 
 import './index.less';
@@ -35,21 +35,13 @@ const RcAlbum = ({ data = [] }: { data: any[] }) => {
       {data.map((item, i) => (
         <RcAlbumItem key={i} {...item} />
       ))}
+      <View className="rc-album--fake" />
+      <View className="rc-album--fake" />
     </View>
   );
 };
 
 const HotSongItem = (props) => {
-  const rankRender = (rank) => {
-    if (+rank > 3) return <Typography.Text type="secondary">{rank}</Typography.Text>;
-    return (
-      <TaroImage
-        mode="aspectFit"
-        className="hot-song-item__img"
-        src={require(`@/assets/home/rank_${rank}.png`)}
-      />
-    );
-  };
   return (
     <View
       className="hot-song-item"
