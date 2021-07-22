@@ -102,6 +102,14 @@ export default () => {
     }
     setVisible(true);
   };
+  // 歌手认证按钮
+  const onSingerAuth = () => {
+    if (page.audit_info && +page.audit_info.identity === IDENTITY.SINGER) {
+      showToast({ title: '当前正在审核中', icon: 'none' });
+      return;
+    }
+    navigateTo({ url: `/pages/settlein/index?identity=${IDENTITY.SINGER}` });
+  };
 
   const goToSellPage = () => {
     navigateTo({ url: '/pages/sell/index' });
@@ -175,13 +183,7 @@ export default () => {
                 <Flex className="me-service__header">我的服务</Flex>
                 <Flex justify="around" wrap="wrap" className="me-service__body">
                   {+userData.identity === IDENTITY.AUTHOR && (
-                    <Flex
-                      onClick={() =>
-                        navigateTo({ url: `/pages/settlein/index?identity=${IDENTITY.SINGER}` })
-                      }
-                      className="me-service__item"
-                      direction="column"
-                    >
+                    <Flex onClick={onSingerAuth} className="me-service__item" direction="column">
                       <Icon
                         icon="icon-wode_icon_renzheng"
                         className="me-service__item__img"
