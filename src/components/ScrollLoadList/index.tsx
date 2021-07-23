@@ -9,6 +9,8 @@ import Typography from '../Typography';
 
 export type ActionType<T = {}> = {
   reload: () => void;
+  /** 更改行数据 */
+  rowMutate: ({ index, data }: { index: number; data: any }) => void;
 } & T;
 
 type ScrollLoadListProps<T = {}> = {
@@ -55,6 +57,12 @@ const ScrollLoadList: <T extends Record<string, any>>(
     run(params);
   };
 
+  const rowMutate = ({ index, data }) => {
+    const newList = JSON.parse(JSON.stringify(list));
+    newList.splice(index, 1, data);
+    setList(newList);
+  };
+
   // params变动 列表刷新
   useEffect(() => {
     reload();
@@ -65,6 +73,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
     if (actionRef && !actionRef.current) {
       actionRef.current = {
         reload,
+        rowMutate,
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,7 +91,12 @@ const ScrollLoadList: <T extends Record<string, any>>(
     <>
       {(() => {
         if (error && !loading) return <Flex justify="center">加载失败</Flex>;
-        if (nomoreRef.current && !list.length && !loading) return emptyRender();
+        if (nomoreRef.current && !list.length && !loading)
+          return (
+            <Flex className="mt50" justify="center" direction="column">
+              {emptyRender()}
+            </Flex>
+          );
         return list.map(props.row);
       })()}
       {loading && (
