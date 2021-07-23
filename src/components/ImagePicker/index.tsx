@@ -1,4 +1,5 @@
 import { View, Text, Image } from '@tarojs/components';
+import MyImage from '@/components/Image';
 import { chooseImage, showToast } from '@tarojs/taro';
 import removePng from '@/assets/icon/icon_shanchu.png';
 import { uploadSingleFile } from '@/utils/upload';
@@ -36,7 +37,7 @@ export default ({ files, onChange, onRemove }) => {
         {files.map((item: string, idx: number) => (
           <View key={'img-' + idx} className="image-picker--select">
             <Image src={removePng} onClick={() => onRemove(idx)} className="remove" />
-            <Image mode="aspectFit" className="image-picker--img" src={item} />
+            <MyImage mode="aspectFit" className="image-picker--img" src={item} />
           </View>
         ))}
         {files.length < 3 && (
