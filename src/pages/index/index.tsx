@@ -10,6 +10,7 @@ import { useRequest } from 'ahooks';
 import { getHomeData } from '@/services/home';
 import { FullPageLoader, FullPageError, rankRender } from '@/components/Chore';
 import Icon from '@/components/Icon';
+import config from '@/config';
 
 import './index.less';
 
@@ -121,7 +122,11 @@ const IndexPageContent = () => {
         <View className="index-header__placeholder" />
         <View
           className="index-header__bg"
-          style={{ backgroundImage: data?.back_images ? `url(${data.back_images})` : undefined }}
+          style={{
+            backgroundImage: data?.back_images
+              ? `url(${config.cdn}/${data.back_images})`
+              : undefined,
+          }}
         />
         {/* 首页轮播图 */}
         {Array.isArray(data.banner) && data.banner.length > 0 && (
