@@ -77,6 +77,10 @@ export default () => {
   };
   // 绑定手机号
   const onGetPhoneNumber = async ({ detail }, identity) => {
+    if (detail.errMsg !== 'getPhoneNumber:ok') {
+      showToast({ icon: 'none', title: '授权手机号方能入驻' });
+      return;
+    }
     showToast({ icon: 'loading', title: '请稍后...' });
     const code = await generateCode();
     try {
@@ -85,7 +89,7 @@ export default () => {
         iv: detail.iv,
         encryptedData: detail.encryptedData,
       });
-      dispatch(updateUserData({ ...userData, mobile: data.purePhoneNumber }));
+      dispatch(updateUserData({ is_authentication: 1, mobile: data.purePhoneNumber }));
       await showToast({ icon: 'success', title: '绑定成功' });
       onApply(identity, true);
     } catch (error) {

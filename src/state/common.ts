@@ -48,7 +48,7 @@ export function getUser(localUserInfo?): any {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
       const userInfo = { ...localUserInfo, avatarUrl: data.avatar, nickName: data.nickname };
-      dispatch({ type: DONE, payload: { data, userInfo } });
+      dispatch({ type: DONE, payload: { data: { ...data, mobile: undefined }, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
     }
@@ -135,7 +135,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         loading: false,
         error: false,
         done: true,
-        data: payload,
+        data: { ...state.data, ...payload },
       };
     case INIT:
       return {
