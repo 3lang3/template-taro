@@ -1,6 +1,6 @@
 {
 	"name": "ydj-h5-client",
-	"version": "0.0.0-beta",
+	"version": "0.0.0-beta1",
 	"private": true,
 	"description": "this is ydj miniprogram client",
 	"templateInfo": {

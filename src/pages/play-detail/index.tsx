@@ -101,7 +101,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
         }}
       />
       {/* 主视图 */}
-      <View style={{ height: `calc(100vh - ${navigation.navBarHeight}px)`, overflowY: 'auto' }}>
+      <View className="play-detail__page" style={{ top: navigation.navBarHeight }}>
         <View
           className={cls('play-detail', {
             'play-detail--score': isScorePage,
