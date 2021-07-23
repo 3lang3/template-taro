@@ -5,13 +5,15 @@ const dotenvExpand = require('dotenv-expand');
 const myEnv = dotenv.config();
 dotenvExpand(myEnv);
 
+const env = Object.keys(myEnv.parsed).reduce((a, v) => {
+  a[v] = JSON.stringify(myEnv.parsed[v]);
+  return a;
+}, {});
+
+console.log(env);
+
 const config = {
-  env: {
-    CURRENT_API_HOST: process.env.CURRENT_API_HOST,
-    MSG_API_HOST: process.env.MSG_API_HOST,
-    STATIC_PATH: process.env.STATIC_PATH,
-    BOSS_PATH: process.env.BOSS_PATH,
-  },
+  env,
   projectName: 'ydj-h5-client',
   date: '2021-6-15',
   alias: {
