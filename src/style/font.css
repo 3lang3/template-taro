@@ -1,18 +1,49 @@
 /* stylelint-disable */
 @font-face {
   font-family: "iconfont"; /* Project id 2629008 */
-  src: url('//at.alicdn.com/t/font_2629008_nmgzugevij.woff2?t=1624512263421') format('woff2'),
-       url('//at.alicdn.com/t/font_2629008_nmgzugevij.woff?t=1624512263421') format('woff'),
-       url('//at.alicdn.com/t/font_2629008_nmgzugevij.ttf?t=1624512263421') format('truetype');
+  src: url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.woff2?t=1626068403760') format('woff2'),
+       url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.woff?t=1626068403760') format('woff'),
+       url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.ttf?t=1626068403760') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
   font-size: 32px;
-  vertical-align: middle;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-logo:before {
+  content: "\e6a4";
+}
+
+.icon-add:before {
+  content: "\e664";
+}
+
+.icon-add-circle:before {
+  content: "\e665";
+}
+
+.icon-ashbin:before {
+  content: "\e666";
+}
+
+.icon-close:before {
+  content: "\e668";
+}
+
+.icon-space:before {
+  content: "\e8c3";
+}
+
+.icon-icon_qupu:before {
+  content: "\e68c";
+}
+
+.icon-quku-geci:before {
+  content: "\e685";
 }
 
 .icon-help-filling:before {
@@ -123,7 +154,7 @@
   content: "\e67a";
 }
 
-.icon-tab_shouye_select:before {
+.icon-tab_shouye:before {
   content: "\e67b";
 }
 
@@ -131,11 +162,11 @@
   content: "\e67c";
 }
 
-.icon-tab_quku_select:before {
+.icon-tab_quku:before {
   content: "\e67d";
 }
 
-.icon-tab_wode_select:before {
+.icon-tab_wode:before {
   content: "\e67e";
 }
 
@@ -147,26 +178,7 @@
   content: "\e680";
 }
 
-.icon-tab_wode_default:before {
-  content: "\e681";
-}
-
-.icon-tab_shouye_default:before {
-  content: "\e682";
-}
-
-.icon-shouye_bofang:before {
-  content: "\e683";
-}
-
-.icon-tab_quku_default:before {
-  content: "\e684";
-}
-
-.icon-quku_qupu:before {
-  content: "\e676";
-}
-
 .icon-quku_bofang:before {
   content: "\e677";
 }
+

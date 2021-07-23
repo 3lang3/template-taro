@@ -1,30 +1,55 @@
+import { useRef } from 'react';
 import cls from 'classnames';
-import { View, Text, Image } from '@tarojs/components';
-import { chooseMessageFile, setClipboardData } from '@tarojs/taro';
+import { View, Text } from '@tarojs/components';
+import Button from '@/components/Button';
+import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
+import { uploadSingleFile } from '@/utils/upload';
 import { AtInput } from 'taro-ui';
 import Flex from '../Flex';
 import Typography from '../Typography';
 import './index.less';
+import Icon from '../Icon';
 
 type SongUploaderProps = {
+  value?: any;
   className?: string;
   webActionUrl?: string;
   name?: string;
-  onChange?: (v: any) => void;
+  onChange?: (v: string | undefined, file?: chooseMessageFile.ChooseFile, response?: any) => void;
+  chooseMessageFileType?: chooseMessageFile.Option['type'];
+  disabled?: boolean;
 };
 
-export default (props: SongUploaderProps) => {
-  const copy = async () => {
-    if (!props.webActionUrl) return;
-    setClipboardData({ data: props.webActionUrl });
+export default ({ webActionUrl = 'test.html', ...props }: SongUploaderProps) => {
+  const chooseFileRef = useRef<chooseMessageFile.ChooseFile>();
+
+  const onDelete = () => {
+    if (props.disabled) return;
+    chooseFileRef.current = undefined;
+    if (props.onChange) props.onChange(undefined);
   };
+
   const onUploadClick = async () => {
-    // @todo upload file pipe
-    const { errMsg, tempFiles } = await chooseMessageFile({ count: 1 });
+    if (props.disabled) return;
+    // 选择聊天文件
+    const { errMsg, tempFiles } = await chooseMessageFile({
+      count: 1,
+      type: props.chooseMessageFileType || 'file',
+    });
+    // 选择失败 退出
     if (errMsg !== 'chooseMessageFile:ok') throw Error(errMsg);
+    // 获取文件
     const [file] = tempFiles;
-    if (props.onChange) props.onChange(file);
+    chooseFileRef.current = file;
+    try {
+      const { data, msg } = await uploadSingleFile({ filePath: file.path });
+      showToast({ icon: 'success', title: msg });
+      if (props.onChange) props.onChange(data.path, file, data);
+    } catch (error) {
+      showToast({ icon: 'none', title: error.message });
+    }
   };
+
   return (
     <View className={cls('settlein-list', props.className)}>
       <Flex className="settlein-list__item border">
@@ -45,25 +70,55 @@ export default (props: SongUploaderProps) => {
             name="webActionUrl"
             type="text"
             disabled
-            placeholder={props.webActionUrl}
+            value={webActionUrl}
             onChange={() => false}
           />
-          <Typography.Link onClick={copy}>复制</Typography.Link>
+          <Button
+            disabled={props.disabled}
+            className="settlein-list-share"
+            circle
+            size="sm"
+            onClick={() => setClipboardData({ data: webActionUrl })}
+          >
+            复制
+          </Button>
         </Flex>
       </View>
       <View className="p-default">
-        <View onClick={onUploadClick} className="border--bolder p-default">
-          <Flex justify="center">
-            <Typography.Text type="secondary">添加歌曲</Typography.Text>
-            <Image
-              className="settlein-uploader__icon"
-              src={require('@/assets/icon/play_thin_outline.svg')}
-            />
+        {props.value ? (
+          <Flex
+            direction="column"
+            justify="center"
+            className={cls('settlein-uploader__status', 'settlein-uploader__status--success', {
+              'settlein-uploader__status--disabled': props.disabled,
+            })}
+          >
+            {!props.disabled && (
+              <Icon onClick={onDelete} className="settlein-uploader__delete" icon="icon-ashbin" />
+            )}
+            <Flex justify="center">
+              <Icon className="settlein-uploader__icon mr10" icon="icon-icon_qupu" />
+              <Typography.Title style={{ margin: 0 }} level={3} type="light">
+                歌曲添加成功!
+              </Typography.Title>
+            </Flex>
+            {chooseFileRef.current ? (
+              <Typography.Text center type="light" size="sm">
+                {chooseFileRef.current.name}
+              </Typography.Text>
+            ) : null}
           </Flex>
-          <Typography.Text center type="secondary" size="sm">
-            选择一个上传音频的聊天对话窗口
-          </Typography.Text>
-        </View>
+        ) : (
+          <View onClick={onUploadClick} className="border--bolder p-default">
+            <Flex justify="center">
+              <Typography.Text type="secondary">添加歌曲</Typography.Text>
+              <Icon className="settlein-uploader__icon" icon="icon-quku_bofang" />
+            </Flex>
+            <Typography.Text center type="secondary" size="sm">
+              选择一个上传音频的聊天对话窗口
+            </Typography.Text>
+          </View>
+        )}
       </View>
     </View>
   );

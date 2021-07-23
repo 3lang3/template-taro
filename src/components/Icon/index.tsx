@@ -7,6 +7,8 @@
 
 import cls from 'classnames';
 import { Text } from '@tarojs/components';
+import { AtButtonProps } from 'taro-ui/types/button';
+import Button from '../Button';
 
 type CustomIconProps = {
   className?: string;
@@ -14,13 +16,21 @@ type CustomIconProps = {
   size?: string | number;
   icon: string;
   onClick?: () => void;
+  openType?: AtButtonProps['openType'];
 };
 
-export default ({ icon, color, size, className, ...props }: CustomIconProps) => {
-  return (
+export default ({ icon, color, size, className, openType, ...props }: CustomIconProps) => {
+  return openType ? (
+    <Button
+      openType={openType}
+      className={cls(className, 'iconfont--button', 'iconfont', 'icon--center', icon)}
+      style={{ color, fontSize: size ? `${size}rpx` : undefined }}
+      {...props}
+    />
+  ) : (
     <Text
-      className={cls(className, 'iconfont', icon)}
-      style={{ color, fontSize: size }}
+      className={cls(className, 'iconfont', 'icon--center', icon)}
+      style={{ color, fontSize: size ? `${size}rpx` : undefined }}
       {...props}
     />
   );

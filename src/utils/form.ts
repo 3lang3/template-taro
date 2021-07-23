@@ -15,6 +15,7 @@ export type FieldItem = {
 export function validateFields(values: Record<string, any>, fields: Record<string, FieldItem>) {
   return Object.entries(values).some(([key, value]: [string, any]) => {
     const field = fields[key];
+    if (!field) return false;
     // 规则校验
     if (field.rules && Array.isArray(field.rules)) {
       const { rules } = field;

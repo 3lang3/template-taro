@@ -1,5 +1,5 @@
-import development from "./env/development";
-import production from "./env/production";
+import development from './env/development';
+import production from './env/production';
 
 export type ConfigType = {
   api: {
@@ -8,16 +8,25 @@ export type ConfigType = {
     msg: string;
   };
   cdn: string;
+  uploadFile: string;
   plugin: string;
-  tokenKey: string;
+  storage: Record<string, string>;
 };
 
-const config: ConfigType = {
+const config = {
   development,
   production,
-}[process.env.NODE_ENV];
+}[process.env.NODE_ENV as string] as ConfigType;
 
 export default {
   ...config,
-  tokenKey: 'authorization'
+  uploadFile: config.api.current + '/other/UploadFile',
+  storage: {
+    // token
+    tokenKey: 'authorization',
+    // getUserProfile local storage key
+    userInfo: 'userInfo',
+    // wx.login return code value local storage key
+    code: 'code',
+  },
 };

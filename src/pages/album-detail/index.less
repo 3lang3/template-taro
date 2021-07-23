@@ -4,12 +4,23 @@ page {
   background: @gradient-primary;
 }
 
+.album-detail__bg {
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 200%;
+}
+
 .album-detail {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding-top: 168px;
+  backdrop-filter: blur(80px);
   &__cover {
     display: block;
     width: 304px;
     height: 304px;
-    margin: 168px auto 60px;
+    margin: 0 auto 60px;
     border-radius: 10px;
   }
   &__wrapper {

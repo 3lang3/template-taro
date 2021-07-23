@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Picker } from '@tarojs/components';
 import { AtListItem } from 'taro-ui';
 
+type ChildrenFuncPramas = {
+  /** 选中的`nameKey`数组 */
+  titleArr: string[];
+};
+
 type CustomPickerProps = {
   /**
    * picker模式
@@ -14,13 +19,13 @@ type CustomPickerProps = {
   /**
    * label标题
    */
-  title: string;
+  title?: string;
   /**
    * picker展示数据
    * 如果是二维数组根据数组长度生成column列数
    */
   data: any[];
-  onChange: (value: any) => void;
+  onChange: (value: any, valueStr: string[]) => void;
   value: any;
   /**
    * 展示字段key
@@ -32,14 +37,18 @@ type CustomPickerProps = {
    * @default 'id'
    */
   valueKey?: string;
+  childrenKey?: string;
   /**
    * 是否展示右侧箭头
    */
   arrow?: boolean;
   /**
    * 是否联级模式
+   * 数值代表联级层数
    */
-  cascade?: boolean;
+  cascade?: number;
+  disabled?: boolean;
+  children?: React.ReactNode | ((params: ChildrenFuncPramas) => React.ReactNode);
 };
 
 export default function CustomPicker({
@@ -49,17 +58,32 @@ export default function CustomPicker({
   value,
   nameKey = 'name',
   valueKey = 'id',
+  childrenKey = 'child',
   mode = 'multiSelector',
   arrow,
   cascade,
+  disabled,
+  children,
   ...props
 }: CustomPickerProps) {
   const [range, setRange] = useState(() =>
-    getPickerData(data, value, { mode, nameKey, valueKey, cascade }),
+    getPickerRange(data, value, { mode, nameKey, childrenKey, valueKey, cascade }),
   );
-  const [pickerValue, setPickerValue] = useState(() => getInitialValue(data, mode) as any);
-  const [titleStr, setTitleStr] = useState('');
+  const [pickerValue, setPickerValue] = useState(
+    () => value || (getInitialValue(mode, cascade) as any),
+  );
+  const [titleArr, setTitleArr] = useState<string[]>([]);
+  const initRef = useRef(false);
   const innerEffect = useRef(false);
+
+  useEffect(() => {
+    if (!initRef.current) {
+      initRef.current = true;
+      return;
+    }
+    setRange(getPickerRange(data, value, { mode, nameKey, childrenKey, valueKey, cascade }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   useEffect(() => {
     // innerEffect.current为true代表内部更新value
@@ -70,14 +94,15 @@ export default function CustomPicker({
     }
     if (!value) {
       // 重置组件内部状态
-      setPickerValue(getInitialValue(data, mode));
-      setTitleStr('');
+      setPickerValue(getInitialValue(mode, cascade));
+      setTitleArr([]);
       return;
     }
     const pickerValueFromOuter = getPickerValueFromRes(data, value, {
       mode,
       nameKey,
       valueKey,
+      childrenKey,
       cascade,
     });
     setInnerState(pickerValueFromOuter);
@@ -85,32 +110,56 @@ export default function CustomPicker({
   }, [value]);
 
   const _change = ({ detail }) => {
+    if (disabled) return;
     innerEffect.current = true;
     setInnerState(detail.value);
     if (onChange) {
-      const payload = getValueFromPicker(data, detail.value, { mode, nameKey, valueKey, cascade });
-      if (onChange) onChange(payload);
+      const payload = getValueFromPicker(data, detail.value, {
+        mode,
+        nameKey,
+        childrenKey,
+        valueKey,
+        cascade,
+      });
+      onChange(payload, titleArr);
     }
   };
   const _columnChange = ({ detail }) => {
+    if (disabled) return;
     if (mode !== 'multiSelector' || !cascade) return;
     if (detail.column === range.length - 1) return;
     let newValue = JSON.parse(JSON.stringify(pickerValue)) as any[];
     newValue[detail.column] = detail.value;
     newValue.fill(0, detail.column + 1);
-    const newRange = getPickerData(data, newValue, { mode, nameKey, valueKey, cascade });
-    setRange(newRange);
+    if (cascade) {
+      // 联级重置range值
+      const newRange = getPickerRange(data, newValue, {
+        mode,
+        nameKey,
+        childrenKey,
+        valueKey,
+        cascade,
+      });
+      setRange(newRange);
+    }
     setPickerValue(newValue);
   };
 
   const setInnerState = (pv) => {
     setPickerValue(pv);
-    const titleArr = getTitleFromPicker(data, pv, { mode, nameKey, valueKey, cascade });
-    setTitleStr(Array.isArray(titleArr) ? titleArr.join(' ') : titleArr);
+    const newTitleArr = getTitleFromPicker(data, pv, {
+      mode,
+      nameKey,
+      childrenKey,
+      valueKey,
+      cascade,
+    });
+    setTitleArr(newTitleArr);
   };
 
   return (
     <Picker
+      disabled={disabled}
       value={pickerValue}
       mode={mode as any}
       range={range}
@@ -118,18 +167,27 @@ export default function CustomPicker({
       onColumnChange={_columnChange}
       {...props}
     >
-      <AtListItem
-        title={title}
-        extraText={titleStr}
-        arrow={arrow && !value ? 'right' : undefined}
-      />
+      {(() => {
+        if (children && typeof children === 'function') {
+          return children({ titleArr });
+        }
+        if (children) return children;
+        return (
+          <AtListItem
+            disabled={disabled}
+            title={title}
+            extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
+            arrow={arrow && !value ? 'right' : undefined}
+          />
+        );
+      })()}
     </Picker>
   );
 }
 
 // 获取初始值
-function getInitialValue(data: any[], mode?) {
-  return mode === 'multiSelector' ? Array.from({ length: data.length }, () => 0) : 0;
+function getInitialValue(mode, cascade?) {
+  return mode === 'multiSelector' ? Array.from({ length: cascade }, () => 0) : 0;
 }
 
 // 区域数据项
@@ -139,24 +197,41 @@ type RegionItemType = {
   children?: RegionItemType[];
 };
 
-function getPickerData(
+function getPickerRange(
   data: RegionItemType[],
   pickerValue: number[] = [],
   opts?: Record<string, any>,
 ) {
+  // data数据非预期
+  if (!Array.isArray(data) || !data.length) return [];
   const { mode, childrenKey = 'children', nameKey = 'name', cascade } = opts || {};
+  // 非多选
   if (mode !== 'multiSelector') return data.map((el) => el[nameKey]);
+
+  // 多选
   const rs = [] as any[];
   let pValue = pickerValue;
+  // 保证value格式符合data长度
   if (!pValue.length) {
-    pValue = Array.from({ length: data.length }, () => 0);
+    // 联级取cascade值 非联级取data(二维数组)长度
+    pValue = Array.from({ length: cascade || data.length }, () => 0);
   }
+
+  // 根据当前值获取 picker range数据(联级情况下需要重置range)
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;
     if (cascade) {
-      column = i === 0 ? data : a[pValue[i - 1]][childrenKey];
+      if (i > 0) {
+        const currentParent = a.find((el) => +el.id === +pValue[i - 1]);
+        column = currentParent ? currentParent[childrenKey] : a[pValue[i - 1]][childrenKey];
+      } else {
+        column = data;
+      }
     }
-    rs.push(!column ? [] : column.map((el) => el[nameKey]));
+    if (column[childrenKey]) {
+      column = column[childrenKey];
+    }
+    rs.push(column.map((el) => el[nameKey]));
     return column;
   }, []);
   return rs;
@@ -216,14 +291,13 @@ function getPickerValueFromRes(
   serverValue: number | number[],
   opts?: Record<string, any>,
 ): number | number[] {
-  const { mode, childrenKey = 'children', valueKey = 'id', cascade } = opts || {};
+  const { mode, childrenKey, valueKey = 'id', cascade } = opts || {};
   if (mode !== 'multiSelector') {
     const singleColumnValue = data.findIndex((el) => +el[valueKey] === +serverValue);
     return singleColumnValue < 0 ? 0 : singleColumnValue;
   }
 
   const rs = [] as any[];
-
   (serverValue as []).reduce((a: any, v, i) => {
     let column = data[i] as any;
     if (cascade) {

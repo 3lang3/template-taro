@@ -1,0 +1,13 @@
+import { makeUpApi } from "./helper";
+
+const DOMAIN = "gygmall.com";
+
+export default {
+  api: {
+    current: makeUpApi("testydjshopapi", DOMAIN),
+    trade: makeUpApi("testydjtradeapi", DOMAIN),
+    msg: makeUpApi("testydjmsgapi", DOMAIN),
+  },
+  cdn: makeUpApi("imgs", DOMAIN),
+  plugin: makeUpApi("devplugin", DOMAIN),
+};

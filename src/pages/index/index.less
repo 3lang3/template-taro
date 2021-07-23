@@ -1,21 +1,29 @@
+@import '../../style/var.less';
+
 .page-index {
   flex-direction: column;
   width: 100%;
 }
 
-.index-swiper {
-  margin-bottom: 60px;
-  padding-top: 332px;
+.index-header {
+  &__placeholder {
+    padding-top: 332px;
+  }
   &__bg {
     position: absolute;
     top: 0;
     right: 0;
     left: 0;
     z-index: 0;
+    z-index: -1;
     height: 504px;
-    background: #aaa;
+    background: @gradient-primary;
   }
+}
+
+.index-swiper {
   &__wrapper {
+    margin-bottom: 60px;
     padding: 0 24px;
   }
   &__main {
@@ -23,6 +31,13 @@
     height: 270px;
     background: #ccc;
     border-radius: 10px;
+
+    &-item,
+    &-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 
@@ -139,7 +154,9 @@
     &__icon {
       width: 32px;
       height: 32px;
-      margin-right: 14px;
+      margin-right: 10px;
+      color: #888;
+      font-size: 28px;
     }
   }
 }

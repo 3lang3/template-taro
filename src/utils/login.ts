@@ -1,52 +1,72 @@
 import config from '@/config';
-import { login, getUserProfile, checkSession, getStorageSync, setStorageSync } from '@tarojs/taro';
+import {
+  login,
+  getUserProfile,
+  checkSession,
+  getStorageSync,
+  setStorageSync,
+  showToast,
+} from '@tarojs/taro';
 import store from '@/state/config/store';
-import { getProfile, getUser } from '@/state/user';
+import { wxMiniProgramLogin } from '@/services/common';
+import { initCommonReducer, getUser } from '@/state/common';
 
 // 静默登录
 export async function silentLogin() {
   try {
-    // 获取缓存token
-    let token = getStorageSync(config.tokenKey);
-    // 获取缓存code
-    let code = getStorageSync('code') as string;
-    if (code) {
-      // 检查缓存code是否过期
-      const { errMsg } = await checkSession();
-      // 缓存code过期
-      // 重新调用login获取新code
-      // 缓存token失效
-      if (errMsg !== 'checkSession:ok') {
-        token = undefined;
-        code = await getCode();
-      }
-    } else {
-      // 本地没有缓存code 重新获取code
-      // 缓存token失效
-      token = undefined;
-      code = await getCode();
-    }
-
-    if (!token) throw new Error('需用调用getUserProfile获取用户的个人信息');
-    store.dispatch(getUser());
+    const storageToken = getStorageSync(config.storage.tokenKey);
+    // 本地未缓存token 退出静默登录
+    if (!storageToken) throw new Error('本地未缓存token 退出静默登录');
+    // 检查wx.login登录态
+    const available = await checkCodeSession();
+    if (!available) throw new Error('wx.login登录态过期, 需重新登录');
+    const localUserInfo = getStorageSync(config.storage.userInfo);
+    store.dispatch(getUser(localUserInfo));
+    store.dispatch(initCommonReducer() as any);
   } catch (error) {
-    console.warn('静默登录失败:', error.message);
+    console.warn('静默登录失败:', error);
   }
 }
 
-// 主动登录(用户授权)
+/**
+ * 主动登录(用户授权)
+ * @summary 调用`getUserProfile`前不能有**异步**操作
+ * @param {getUserProfile.Option} opts
+ */
 export async function userLogin(opts: getUserProfile.Option) {
+  const payload = {} as any;
+  const localUserInfo = getStorageSync(config.storage.userInfo);
+  // 复用本地userInfo 避免调用getUserProfile接口
+  let toastTitle = '登录中...';
+  if (localUserInfo) {
+    payload.userInfo = localUserInfo;
+  } else {
+    const { userInfo } = await getUserProfile(opts);
+    setStorageSync(config.storage.userInfo, userInfo);
+    payload.userInfo = userInfo;
+  }
+  showToast({ icon: 'loading', title: toastTitle });
+  const code = await generateCode();
+  payload.code = code;
+  const { data } = await wxMiniProgramLogin({ ...payload, mobile: '123' });
+  // token写入本地缓存
+  setStorageSync(config.storage.tokenKey, data.token);
+  store.dispatch(getUser(payload.userInfo));
+  store.dispatch(initCommonReducer() as any);
+}
+
+// 检查用户登录状态
+async function checkCodeSession() {
   try {
-    const { userInfo, ...res } = await getUserProfile(opts);
-    console.log(res);
-    store.dispatch(getProfile(userInfo));
+    await checkSession();
+    return true;
   } catch (error) {
-    console.log(error);
+    return false;
   }
 }
 
-// 获取微信用户code
-async function getCode(): Promise<string> {
+// wx.login 获取微信用户code
+export async function generateCode(): Promise<string> {
   const res = await login();
   const { code, errMsg } = res;
   if (!code) throw new Error(`wx.login调用失败${errMsg}`);

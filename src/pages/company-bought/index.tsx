@@ -1,22 +1,33 @@
 import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { ManageSongItem } from '@/components/Chore';
 import { AtInput, AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 import { useState } from 'react';
+import { useRequest } from 'ahooks';
+import { getBuySongList, appointMusicSong } from '@/services/company-bought';
+import { FullPageLoader, FullPageError, ManageSongItem } from '@/components/Chore';
 import './index.less';
 
-const songsData = [
-  { title: '告白气球', price1: 2000, price2: 3000 },
-  { title: '手心里的蔷薇', price1: 2000, price2: 3000 },
-  { title: '原来如此', price1: 2000, price2: 3000 },
-  { title: '我们都一样', price1: 2000, price2: 3000 },
-];
-
 export default () => {
-  const [singer, setSinger] = useState<any>('');
+  const [singer, setSinger] = useState<string | number>('');
+  const [songsData, setSongsData] = useState([] as any);
+  const [localNode, setLocalNode] = useState({} as any);
   const [visible, setVisible] = useState(false);
-  const onSingerClick = () => {
+  const { loading, error, refresh } = useRequest(getBuySongList, {
+    defaultParams: [{ page: 1, pageSize: 10 }],
+    onSuccess: (res) => {
+      setSongsData(
+        res.data._list.map((item) => ({
+          title: item.song_name,
+          price1: item.composer_final_price,
+          price2: item.lyricist_final_price,
+          ...item,
+        })),
+      );
+    },
+  });
+  const onSingerClick = (node) => {
+    setLocalNode(node);
     setVisible(true);
   };
   const closeModal = () => {
@@ -24,9 +35,13 @@ export default () => {
     setSinger('');
   };
   const onModalConfirm = () => {
-    console.log(singer);
-    closeModal();
+    appointMusicSong({ ids: localNode.ids, memberIds: [singer as string] }).then(({ type }) => {
+      if (type === 1) return;
+      closeModal();
+    });
   };
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
   return (
     <>
       {songsData.map((song, i) => (
@@ -35,11 +50,11 @@ export default () => {
           {...song}
           actionRender={() =>
             i === 0 ? (
-              <Button onClick={onSingerClick} circle size="xs" type="primary">
+              <Button onClick={() => onSingerClick(song)} circle size="xs" type="primary">
                 指定歌手
               </Button>
             ) : (
-              <Typography.Text type="primary">林俊杰</Typography.Text>
+              <Typography.Text type="primary">{song.singer[0]}</Typography.Text>
             )
           }
         />
@@ -49,12 +64,12 @@ export default () => {
         <AtModalContent>
           <Flex className="input--border">
             <AtInput
-              placeholder="请选择歌手"
-              value={singer}
+              placeholder="请输入歌手"
+              value={singer as any}
               name="singer"
               onChange={(v) => setSinger(v)}
             />
-            <Typography.Text>林俊杰</Typography.Text>
+            <Typography.Text>{localNode.singer && localNode.singer[0]}</Typography.Text>
           </Flex>
           <Flex className="mt50" justify="between">
             <Button onClick={closeModal} outline circle>

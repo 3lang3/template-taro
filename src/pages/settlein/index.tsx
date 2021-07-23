@@ -1,15 +1,20 @@
+import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { IDENTITY } from '@/config/constant';
 import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import CaptchaBtn from '@/components/CaptchaBtn';
+import Button from '@/components/Button';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { showToast } from '@tarojs/taro';
-import { useState } from 'react';
-import { AtInput, AtForm, AtButton, AtCheckbox } from 'taro-ui';
+import { eventCenter, navigateTo, reLaunch, showToast, useRouter } from '@tarojs/taro';
+import { useRequest } from 'ahooks';
+import { AtInput, AtForm, AtCheckbox } from 'taro-ui';
+import { singerApply, applyDetail, sendSettleCodeSms } from '@/services/settlein';
 import { validateFields } from '@/utils/form';
 import './index.less';
 
 const fields = {
-  name: {
+  real_name: {
     label: '真实姓名',
     rules: [{ required: true }],
   },
@@ -50,9 +55,32 @@ const fields = {
   },
 };
 
+type SettleInPageParams = {
+  /**
+   * 认证身份
+   *  - 1 作曲作者
+   *  - 2 歌手
+   */
+  identity: '1' | '2';
+  /**
+   * 审核中
+   */
+  status: 'audit';
+};
+
 export default () => {
+  const { data: userData } = useSelector((state) => state.common);
+  const { params } = useRouter<SettleInPageParams>();
+  // 区域文本值
+  const areaRef = useRef<string[]>([]);
+  // 
+  // 审核状态
+  const isAudit = params.status === 'audit';
+  // 歌手认证
+  const isSinger = +params.identity === IDENTITY.SINGER;
+
   const [payload, set] = useState({
-    name: '',
+    real_name: '',
     idcard: '',
     email: '',
     area: undefined,
@@ -61,38 +89,117 @@ export default () => {
     checked: [],
   });
 
-  const onSubmit = () => {
-    const { checked, ...params } = payload;
-    const hasInvalidField = validateFields(params, fields);
+  // 认证信息详情
+  const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(applyDetail, {
+    manual: true,
+  });
+
+  useEffect(() => {
+    // 审核状态填入初始值
+    const getDetail = async () => {
+      showToast({ icon: 'loading', title: '数据获取中...' });
+      const { data } = await detailReq.run();
+      const { province, city, district, idcard, real_name, email, mobile } = data;
+      set(
+        (v) =>
+          ({ ...v, area: [province, city, district], mobile, idcard, real_name, email } as any),
+      );
+    };
+    if (isAudit) {
+      getDetail();
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (userData.is_authentication) {
+      set((v) => ({ ...v, mobile: userData.mobile }));
+    }
+  }, [userData]);
+
+  // 发送验证码
+  const onCodeClick = async () => {
+    try {
+      showToast({ icon: 'loading', title: '发送中...', mask: true });
+      const { msg } = await sendSettleCodeSms({ mobile: userData.mobile });
+      showToast({ icon: 'none', title: msg });
+      return Promise.resolve();
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  };
+
+  const onSubmit = async () => {
+    // 词曲申请审核状态
+    if (isAudit && !isSinger) return;
+    const { checked, code, ...values } = payload;
+    const hasInvalidField = validateFields(isAudit ? values : { ...values, code }, fields);
     if (hasInvalidField) return;
     // 协议勾选
-    if (!checked.length) {
+    if ((!checked || !checked.length) && !isAudit && !isSinger) {
       showToast({ title: '请勾选平台协议', icon: 'none' });
-      return true;
+      return;
     }
-    console.log(params);
+    const { area, ...restValues } = values;
+    const [province, city, district] = area as unknown as any[];
+    const postValues = {
+      province,
+      city,
+      district,
+      province_name: areaRef.current[0],
+      city_name: areaRef.current[1],
+      district_name: areaRef.current[2],
+      identity: params.identity,
+      ...restValues,
+    };
+    if (isSinger) {
+      // 歌手入驻 进入下一步
+      navigateTo({
+        url: `/pages/settlein/next${isAudit ? '?status=audit' : ''}`,
+        success: () => {
+          // 通过eventCenter向被打开页面传送数据
+          // @hack
+          eventCenter.once('page:init:settle', () => {
+            eventCenter.trigger('page:message:settle-next', { detail, payload: postValues });
+          });
+        },
+      });
+      return;
+    }
+    showToast({ icon: 'loading', title: '请求中...' });
+    const { msg } = await singerApply(postValues);
+    await showToast({ title: msg, icon: 'success' });
+    // 词曲作者 返回个人中心
+    // @summry 需要刷新个人中心页面 不能用back只能relaunch
+    reLaunch({ url: '/pages/me/index' });
+    return;
   };
 
   return (
     <>
-      <Flex className="settlein-reason" align="start">
-        <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
-        <Typography.Text type="danger">该身份已被占用，如有疑问请联系客服解决！</Typography.Text>
-      </Flex>
+      {detail.reason && (
+        <Flex className="settlein-reason" align="start">
+          <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
+          <Typography.Text type="danger">{detail.reason}</Typography.Text>
+        </Flex>
+      )}
 
       <Typography.Text className="settlein-title">申请入驻词曲作者</Typography.Text>
       <AtForm className="custom-form settlein-form">
         <AtInput
-          name="name"
+          name="real_name"
           title="真实姓名"
           type="text"
-          value={payload.name}
-          onChange={(value) => set((v: any) => ({ ...v, name: value }))}
+          disabled={isAudit}
+          value={payload.real_name}
+          onChange={(value) => set((v: any) => ({ ...v, real_name: value }))}
         />
         <AtInput
           name="idcard"
           title="身份证号码"
           type="idcard"
+          disabled={isAudit}
           value={payload.idcard}
           onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
         />
@@ -101,49 +208,71 @@ export default () => {
           title="邮箱"
           type="text"
           value={payload.email}
+          disabled={isAudit}
           onChange={(value) => set((v: any) => ({ ...v, email: value }))}
         />
         <AreaPicker
           value={payload.area}
-          onChange={(value) => set((v: any) => ({ ...v, area: value }))}
+          disabled={isAudit}
+          onChange={(value, titleStr) => {
+            set((v: any) => ({ ...v, area: value }));
+            areaRef.current = titleStr;
+          }}
         />
         <AtInput
           name="mobile"
           title="手机号"
           type="phone"
+          disabled
           value={payload.mobile}
           onChange={(value) => set((v: any) => ({ ...v, mobile: value }))}
         />
-        <AtInput
-          name="code"
-          title="验证码"
-          type="number"
-          className="captcha-input"
-          value={payload.code}
-          onChange={(value) => set((v: any) => ({ ...v, code: value }))}
+        {!isAudit && (
+          <AtInput
+            name="code"
+            title="验证码"
+            type="number"
+            className="captcha-input"
+            value={payload.code}
+            onChange={(value) => set((v: any) => ({ ...v, code: value }))}
+          >
+            <CaptchaBtn onNodeClick={onCodeClick} />
+          </AtInput>
+        )}
+        {!isAudit && !isSinger && (
+          <AtCheckbox
+            onChange={(value) => set((v: any) => ({ ...v, checked: value }))}
+            selectedList={payload.checked}
+            options={[
+              {
+                value: 'checked',
+                label: (
+                  <Flex>
+                    <Typography.Text size="sm" type="secondary">
+                      我已阅读
+                    </Typography.Text>
+                    <Typography.Link size="sm">《平台协议》</Typography.Link>
+                  </Flex>
+                ) as unknown as string,
+              },
+            ]}
+          />
+        )}
+
+        <Button
+          className="settlein-form__submit settlein-form__submit--fixed"
+          onClick={onSubmit}
+          circle
+          type={isAudit && !isSinger ? 'disabled' : 'primary'}
+          size="lg"
+          disabled={isAudit && !isSinger}
         >
-          <CaptchaBtn num={3} />
-        </AtInput>
-        <AtCheckbox
-          onChange={(value) => set((v: any) => ({ ...v, checked: value }))}
-          selectedList={payload.checked}
-          options={[
-            {
-              value: 'checked',
-              label: (
-                <Flex>
-                  <Typography.Text size="sm" type="secondary">
-                    我已阅读
-                  </Typography.Text>
-                  <Typography.Link size="sm">《平台协议》</Typography.Link>
-                </Flex>
-              ) as unknown as string,
-            },
-          ]}
-        />
-        <AtButton className="settlein-form__submit settlein-form__submit--fixed" onClick={onSubmit} circle type="primary">
-          提交审核
-        </AtButton>
+          {(() => {
+            if (isSinger) return '下一步';
+            if (isAudit) return '审核中';
+            return '提交审核';
+          })()}
+        </Button>
       </AtForm>
     </>
   );

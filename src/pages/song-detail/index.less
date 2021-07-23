@@ -1,0 +1,53 @@
+@import '../../style/var.less';
+
+page {
+  background: #fff;
+}
+
+@make-step-bar-h: 64px;
+.make {
+  &-steps {
+    padding: 24px 50px;
+    background: #fff;
+  }
+  &-step {
+    margin-bottom: 64px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    &:first-child {
+      .make-step__idx::before {
+        display: none;
+      }
+    }
+    &__idx {
+      position: relative;
+      z-index: 2;
+      width: 44px;
+      height: 44px;
+      margin-right: 24px;
+      color: #fff;
+      font-size: 26px;
+      background-color: #b3b3b3;
+      border-radius: 50%;
+
+      &--active {
+        background-color: @primary;
+        &::before {
+          background-color: @primary !important;
+        }
+      }
+      &::before {
+        position: absolute;
+        top: -@make-step-bar-h;
+        left: 50%;
+        z-index: 1;
+        width: 8px;
+        height: @make-step-bar-h;
+        background: #b3b3b3;
+        transform: translateX(-50%);
+        content: ' ';
+      }
+    }
+  }
+}
