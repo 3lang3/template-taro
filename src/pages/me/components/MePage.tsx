@@ -77,6 +77,10 @@ export default () => {
   };
   // 绑定手机号
   const onGetPhoneNumber = async ({ detail }, identity) => {
+    if (detail.errMsg !== 'getPhoneNumber:ok') {
+      showToast({ icon: 'none', title: '授权手机号方能入驻' });
+      return;
+    }
     showToast({ icon: 'loading', title: '请稍后...' });
     const code = await generateCode();
     try {
@@ -85,7 +89,7 @@ export default () => {
         iv: detail.iv,
         encryptedData: detail.encryptedData,
       });
-      dispatch(updateUserData({ ...userData, mobile: data.purePhoneNumber }));
+      dispatch(updateUserData({ is_authentication: 1, mobile: data.purePhoneNumber }));
       await showToast({ icon: 'success', title: '绑定成功' });
       onApply(identity, true);
     } catch (error) {
@@ -101,6 +105,14 @@ export default () => {
       return;
     }
     setVisible(true);
+  };
+  // 歌手认证按钮
+  const onSingerAuth = () => {
+    if (page.audit_info && +page.audit_info.identity === IDENTITY.SINGER) {
+      showToast({ title: '当前正在审核中', icon: 'none' });
+      return;
+    }
+    navigateTo({ url: `/pages/settlein/index?identity=${IDENTITY.SINGER}` });
   };
 
   const goToSellPage = () => {
@@ -175,13 +187,7 @@ export default () => {
                 <Flex className="me-service__header">我的服务</Flex>
                 <Flex justify="around" wrap="wrap" className="me-service__body">
                   {+userData.identity === IDENTITY.AUTHOR && (
-                    <Flex
-                      onClick={() =>
-                        navigateTo({ url: `/pages/settlein/index?identity=${IDENTITY.SINGER}` })
-                      }
-                      className="me-service__item"
-                      direction="column"
-                    >
+                    <Flex onClick={onSingerAuth} className="me-service__item" direction="column">
                       <Icon
                         icon="icon-wode_icon_renzheng"
                         className="me-service__item__img"
@@ -218,7 +224,11 @@ export default () => {
                       </Flex>
                     </>
                   )}
-                  <Flex className="me-service__item" direction="column">
+                  <Flex
+                    className="me-service__item"
+                    onClick={() => navigateTo({ url: '/pages/help/index' })}
+                    direction="column"
+                  >
                     <Icon
                       icon="icon-wode_icon_bangzhu"
                       className="me-service__item__img"
@@ -303,15 +313,24 @@ export default () => {
                   <Icon icon="icon-icon_jinru" className="me-card-item__action" />
                 </Flex>
               </View>
-              <Typography.Link className="me-bottom__link">为什么入驻娱当家?</Typography.Link>
+              <Typography.Link
+                className="me-bottom__link"
+                onClick={() => {
+                  navigateTo({
+                    url: '/pages/settlein/why',
+                  });
+                }}
+              >
+                为什么入驻娱当家?
+              </Typography.Link>
             </>
           )}
         </View>
         <View className="me-bottom">
           <Flex className="me-bottom__action" justify="center">
             <Typography.Link>联系客服</Typography.Link>
-            <View style={{ margin: '0 5px' }}>|</View>
-            <Typography.Link>投诉侵权</Typography.Link>
+            {/* <View style={{ margin: '0 5px' }}>|</View>
+            <Typography.Link>投诉侵权</Typography.Link> */}
           </Flex>
         </View>
       </Flex>
@@ -324,7 +343,13 @@ export default () => {
             <Button onClick={goToSellPage} className="mb20" circle type="primary">
               继续
             </Button>
-            <Typography.Text center onClick={() => closeModal(true)}>
+            <Typography.Text
+              center
+              onClick={() => {
+                closeModal(true);
+                goToSellPage();
+              }}
+            >
               不再提示
             </Typography.Text>
           </View>

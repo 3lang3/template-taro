@@ -1,0 +1,78 @@
+@import '../../../style/var.less';
+
+.settlein-list {
+  overflow: hidden;
+  background-color: @white;
+  &__wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 24px 20px;
+    .input--border {
+      padding-right: 0;
+    }
+  }
+
+  &-share {
+    color: #40a9ff !important;
+    background-color: #fff !important;
+    border: 0;
+  }
+
+  &__item {
+    position: relative;
+    padding: 24px;
+    font-size: 28px;
+    &.border {
+      &::before {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 24px;
+        height: 1px;
+        background-color: @gray-2;
+        content: ' ';
+      }
+    }
+
+    &-icon {
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+.settlein-uploader {
+  &__icon {
+    width: 32px;
+    height: 32px;
+    margin-left: 4px;
+    color: @gray-7;
+  }
+
+  &__status {
+    position: relative;
+    min-height: 120px;
+    border-radius: 8px;
+    &--success {
+      color: @white;
+      background-color: @primary;
+      border-color: @primary !important;
+      .settlein-uploader__icon {
+        color: @white;
+        font-size: 48px;
+      }
+    }
+    &--disabled {
+      background-color: @gray-5;
+      border-color: @gray-5 !important;
+    }
+  }
+
+  &__delete {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: @orange;
+    font-size: 38px;
+  }
+}

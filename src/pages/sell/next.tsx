@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import Typography from '@/components/Typography';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   AtInput,
   AtForm,
@@ -12,17 +12,28 @@ import {
   AtModalAction,
 } from 'taro-ui';
 import Flex from '@/components/Flex';
-import { getCurrentInstance, switchTab, useShareAppMessage } from '@tarojs/taro';
+import {
+  hideLoading,
+  hideToast,
+  reLaunch,
+  requestSubscribeMessage,
+  setNavigationBarTitle,
+  showLoading,
+  showToast,
+  useRouter,
+  useShareAppMessage,
+} from '@tarojs/taro';
 import { validateFields } from '@/utils/form';
-import { View } from '@tarojs/components';
-import SongUploader from '@/components/SongUploader';
+import { Text, View } from '@tarojs/components';
+import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
-import ImagePicker from '@/components/image-picker';
+import ImagePicker from '@/components/ImagePicker';
 import Button from '@/components/Button';
 import { CircleIndexList } from '@/components/Chore';
 import Icon from '@/components/Icon';
 import Radio from '@/components/Radio';
-import { songSale } from '@/services/sell';
+import { claimMusicSong, songSale } from '@/services/sell';
+import { getSaleSongDetail } from '@/services/song';
 import { SellSteps } from './components';
 
 import './index.less';
@@ -34,21 +45,17 @@ const inviteStepsData = [
 ];
 
 const priceData = [
-  { name: '1000元', id: 1 },
-  { name: '2000元', id: 2 },
-  { name: '3000元', id: 3 },
-  { name: '4000元', id: 4 },
-  { name: '5000元', id: 5 },
-  { name: '5000元以上', id: 6 },
+  { name: '1000元', id: 1000 },
+  { name: '2000元', id: 2000 },
+  { name: '3000元', id: 3000 },
+  { name: '4000元', id: 4000 },
+  { name: '5000元', id: 5000 },
+  { name: '5000元以上', id: -1 },
 ];
 
 const fields = {
   composer: {
     label: '作曲人姓名',
-    rules: [{ required: true }],
-  },
-  lyricist_original_price: {
-    label: '歌词期望价格',
     rules: [{ required: true }],
   },
   composer_original_price: {
@@ -57,6 +64,11 @@ const fields = {
   },
   composer_url: {
     label: '曲连接',
+    rules: [{ required: true }],
+  },
+  lyricist_original_price: {
+    label: '歌词期望价格',
+    rules: [{ required: true }],
   },
   lyricist_content: {
     label: '歌词',
@@ -70,14 +82,24 @@ export type MyState = {
   composer_original_price: number; // 曲期望价格
   is_lyricist: boolean; // 是否作词人
   lyricist: string | number; // 作词人
-  lyricist_original_price: 0; // 词期望价格
+  lyricist_original_price: number; // 词期望价格
   idcard: string | number; // 身份证
   lyricist_content: string; // 歌词
   composer_content: string[]; // 曲谱照片
   composer_url: string;
 };
 
+type RouterParams = {
+  /** 认领模式 */
+  pageType: 'claim';
+  /** 歌曲ids */
+  ids: string;
+} & Record<string, any>;
+
 export default () => {
+  const { params } = useRouter<RouterParams>();
+  const isClaimType = params.pageType === 'claim';
+  const [detail, setDetail] = useState<any>({});
   const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
   const radioDisabledRef = useRef({ composer: false, lyricist: false });
@@ -94,23 +116,79 @@ export default () => {
     composer_url: '',
   });
 
-  useShareAppMessage((res) => {
-    if (res.from === 'button') {
-      // 来自页面内转发按钮
-      console.log(res.target);
+  useEffect(() => {
+    // 动态设置标题
+    setNavigationBarTitle({ title: isClaimType ? '词曲认领' : '出售词曲' });
+    // 认领状态 获取词曲详情
+    if (params.ids && isClaimType) {
+      const getDetail = async () => {
+        showLoading({ title: '加载中...' });
+        const { data } = await getSaleSongDetail({ ids: params.ids });
+        hideLoading();
+        // 写入默认值
+        set((v) => ({
+          ...v,
+          composer: data.composer,
+          is_composer: Boolean(data.is_composer),
+          composer_original_price: +data.composer_original_price,
+          lyricist: data.lyricist,
+          is_lyricist: Boolean(data.is_lyricist),
+          lyricist_original_price: +data.lyricist_original_price,
+          idcard: data.idcard,
+          lyricist_content: data.lyricist_content,
+          composer_content: data.composer_content,
+          composer_url: data.url,
+        }));
+        setDetail(data);
+      };
+      getDetail();
     }
+  }, [params.ids, isClaimType]);
+
+  useShareAppMessage(() => {
+    if (isClaimType) return {};
     return {
-      title: '自定义转发标题',
-      path: 'pages/index/index',
+      title: '邀请您入驻平台',
+      path: 'pages/me/index',
     };
   });
 
   const onSubmit = async () => {
+    if (isClaimType) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
-    const { router } = getCurrentInstance();
-    const { params } = (router as any).params;
-    await songSale({ ...payload, ...JSON.parse(params) });
+    const { is_composer, is_lyricist, ...rest } = payload;
+    if (!is_composer || !is_lyricist) {
+      if (!rest.idcard) {
+        showToast({ icon: 'none', title: '请输入作者身份证' });
+        return;
+      }
+    }
+
+    // 消息通知订阅
+    try {
+      const tmplIds = userData.template.map((el) => el.template_id);
+      if (!tmplIds.length) throw new Error('no tmplIds... ignore action: requestSubscribeMessage');
+      const { errMsg } = await requestSubscribeMessage({
+        tmplIds,
+      });
+      if (errMsg !== 'requestSubscribeMessage:ok')
+        throw new Error('requestSubscribeMessage: failed.');
+    } catch (error) {
+      // requestSubscribeMessage error
+      console.log(error);
+    }
+
+    showToast({ icon: 'loading', title: '出售中...', mask: true });
+    await songSale({
+      ...rest,
+      is_composer: Number(is_composer),
+      is_lyricist: Number(is_lyricist),
+      ...JSON.parse(params.params),
+    });
+    hideToast();
+
+    // 出售确认弹窗
     setVisible(true);
   };
 
@@ -147,6 +225,9 @@ export default () => {
     set(_payload);
   };
 
+  // 不是原创
+  const isNotOriginal = !payload.is_composer || !payload.is_lyricist;
+
   return (
     <>
       <SellSteps current={1} />
@@ -156,13 +237,14 @@ export default () => {
             name="composer"
             title={fields.composer.label}
             type="text"
-            disabled={radioDisabledRef.current.composer}
+            disabled={radioDisabledRef.current.composer || isClaimType}
             value={payload.composer as string}
             onChange={(value) => set((v: MyState) => ({ ...v, composer: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
             className="px24"
+            disabled={isClaimType}
             value={payload.is_composer}
             onChange={(v) => radioClick(v, 'composer')}
             label="我是作曲人"
@@ -174,13 +256,14 @@ export default () => {
           arrow
           data={priceData}
           mode="selector"
+          disabled={isClaimType}
           value={payload.composer_original_price}
           onChange={(value) => set((v: MyState) => ({ ...v, composer_original_price: value }))}
         />
         <SongUploader
+          disabled={isClaimType}
           value={payload.composer_url}
           onChange={onSongUploader}
-          webActionUrl="测试地址啦啦"
         />
         <ImagePicker
           onRemove={onImgRemove}
@@ -194,10 +277,11 @@ export default () => {
             title="作词人姓名"
             type="text"
             value={payload.lyricist as string}
-            disabled={radioDisabledRef.current.lyricist}
+            disabled={radioDisabledRef.current.lyricist || isClaimType}
             onChange={(value) => set((v: MyState) => ({ ...v, lyricist: value }))}
           />
           <Radio
+            disabled={isClaimType}
             style={{ flex: '1 0 auto' }}
             className="px24"
             value={payload.is_lyricist}
@@ -205,25 +289,8 @@ export default () => {
             label="我是作词人"
           />
         </Flex>
-        <Flex justify="between" className="cell-item bg-white">
-          <Flex style={{ flex: 1 }}>
-            <Typography.Text type="secondary">该词或曲作者尚未入驻，作者需认证</Typography.Text>
-            <InviteHelpIcon />
-          </Flex>
-          <InviteButton />
-        </Flex>
-        <View className="px24 bg-white">
-          <View className="input--border">
-            <AtInput
-              name="idcard"
-              type="text"
-              placeholder="请输入该作者身份证号"
-              value={payload.idcard as string}
-              onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
-            />
-          </View>
-        </View>
         <CustomPicker
+          disabled={isClaimType}
           title="请选择期望的词价格（最终以实际成功为准）"
           arrow
           data={priceData}
@@ -234,6 +301,7 @@ export default () => {
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
           <AtTextarea
+            disabled={isClaimType}
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
@@ -242,6 +310,47 @@ export default () => {
           />
         </View>
         <View className="h24 bg-light" />
+        {isClaimType && (
+          <Flex justify="between" className="cell-item bg-white">
+            <Flex style={{ flex: 1 }}>
+              <Typography.Text type="secondary">
+                该词或曲作者
+                <Text className={detail.is_claim ? 'text-success' : 'text-danger'}>
+                  {detail.is_claim ? '已' : '未'}认领
+                </Text>
+              </Typography.Text>
+              <InviteHelpIcon />
+            </Flex>
+            <ClaimButton detail={detail} />
+          </Flex>
+        )}
+
+        {/* 出售模式下 作词作曲不是本人需要邀请作者 */}
+        {!isClaimType && isNotOriginal && (
+          <>
+            <Flex justify="between" className="cell-item bg-white">
+              <Flex style={{ flex: 1 }}>
+                <Typography.Text type="secondary">该词或曲作者尚未入驻，作者需认证</Typography.Text>
+                <InviteHelpIcon />
+              </Flex>
+              <Button openType="share" type="primary" circle size="sm">
+                邀请作者
+              </Button>
+            </Flex>
+            <View className="px24 bg-white pb20">
+              <View className="input--border">
+                <AtInput
+                  name="idcard"
+                  type="text"
+                  placeholder="请输入该作者身份证号"
+                  value={payload.idcard as string}
+                  onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
+                />
+              </View>
+            </View>
+          </>
+        )}
+        <View className="h24 bg-light" />
         <View className="p-default bg-white">
           <Typography.Text size="sm">1、目前仅支持上传未发行的词曲作品</Typography.Text>
           <Typography.Text size="sm">2、词曲只会上架词曲交易平台进行交易</Typography.Text>
@@ -249,11 +358,19 @@ export default () => {
             3、上传者本人需拥有词曲的完整权利。禁止盗用他人作品，一经发现娱当家将严厉追究相关法律责任，且永久冻结违规账号
           </Typography.Text>
         </View>
-        <View className="p-default">
-          <Button className="mt50 mb50" onClick={onSubmit} circle type="primary" size="lg">
-            提交
-          </Button>
-        </View>
+        {/* 认领模式没有提交按钮 */}
+        {!isClaimType && (
+          <View className="p-default">
+            <Button className="mt50 mb50" onClick={onSubmit} circle type="primary" size="lg">
+              {(() => {
+                if (+detail.status === 0) return '审核中';
+                if (+detail.status === 1) return '已通过';
+                if (+detail.status === 3) return '交易完成';
+                return '提交';
+              })()}
+            </Button>
+          </View>
+        )}
       </AtForm>
       <AtModal isOpened={visible} onClose={closeModal}>
         <AtModalContent>
@@ -270,7 +387,7 @@ export default () => {
             <Button
               onClick={() => {
                 closeModal();
-                switchTab({ url: '/pages/song-manage/index' });
+                reLaunch({ url: '/pages/me/index' });
               }}
               circle
               className="mt40"
@@ -286,7 +403,7 @@ export default () => {
   );
 };
 
-//
+// 邀请作者认证提示modal
 function InviteHelpIcon() {
   const [visible, setVisible] = useState(false);
   const onContinue = () => {
@@ -308,15 +425,24 @@ function InviteHelpIcon() {
   );
 }
 
-function InviteButton() {
+// 认领按钮
+function ClaimButton({ detail }) {
   const [visible, setVisible] = useState(false);
-  const onConfirm = () => {
+  const onConfirm = async () => {
+    showToast({ icon: 'loading', title: '认领中...', mask: true });
+    const { msg } = await claimMusicSong({ ids: detail.ids });
+    showToast({ icon: 'success', title: msg });
     setVisible(false);
+    setTimeout(() => {
+      reLaunch({ url: '/pages/me/index' });
+    }, 1500);
   };
+
+  if (detail.is_claim) return null;
   return (
     <>
-      <Button openType="share" onClick={() => setVisible(true)} type="primary" circle size="sm">
-        邀请作者
+      <Button onClick={() => setVisible(true)} type="primary" circle size="sm">
+        确认认领
       </Button>
       <AtModal isOpened={visible} onClose={() => setVisible(false)}>
         <AtModalHeader>确认认领该词或曲为您原创</AtModalHeader>

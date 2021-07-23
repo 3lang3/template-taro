@@ -2,6 +2,12 @@ export default {
   pages: [
     // 首页
     'pages/index/index',
+    // 帮助
+    'pages/help/index',
+    // 帮助列表
+    'pages/help-list/index',
+    // 帮助详情
+    'pages/help-detail/index',
     // 我要唱
     'pages/my-song/index',
     // 消息通知
@@ -16,8 +22,8 @@ export default {
     'pages/settlein/index',
     // 入驻申请第二步
     'pages/settlein/next',
-    // 机构页
-    'pages/company/index',
+    // 为什么入驻娱当家
+    'pages/settlein/why',
     // 机构 已购词曲
     'pages/company-bought/index',
     // 专辑
@@ -46,6 +52,9 @@ export default {
     'pages/song-detail/index',
     // 词曲管理
     'pages/song-manage/index',
+    // 账户信息
+    'pages/account/index',
+    'pages/webview/custom',
   ],
   tabBar: {
     custom: true,
@@ -80,4 +89,5 @@ export default {
     navigationBarTitleText: 'WeChat',
     navigationBarTextStyle: 'black',
   },
+  requiredBackgroundModes: ['audio'],
 };

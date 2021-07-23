@@ -45,7 +45,7 @@ export function operationMusicSongPrice(data: OperationMusicSongPriceParams) {
 }
 // 放弃收购词曲
 export function abandonMusicSong(data: { ids: string | number }) {
-  return request(`/songe/abandonMusicSong?${stringify(data)}`);
+  return request(`/song/abandonMusicSong?${stringify(data)}`);
 }
 // 我要唱
 export function applyWantSong(data: { ids: string | number }) {

@@ -9,11 +9,12 @@ type CustomRadioType = {
   label: string;
   className?: string;
   style?: React.CSSProperties;
+  disabled?: boolean;
 };
 
-export default ({ value, onChange, label, className, ...props }: CustomRadioType) => {
+export default ({ value, onChange, label, disabled, className, ...props }: CustomRadioType) => {
   return (
-    <Flex {...props} className={className} onClick={() => (onChange ? onChange(!value) : null)}>
+    <Flex {...props} className={className} onClick={() => (!disabled ? onChange?.(!value) : null)}>
       <Icon
         className={cls('mr10', { 'text-primary': value, 'text-secondary': !value })}
         icon={value ? 'icon-chushouciqu_icon_xuanzhong' : 'icon-shenqing_icon_weigouxuan'}

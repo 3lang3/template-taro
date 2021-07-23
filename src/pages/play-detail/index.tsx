@@ -3,22 +3,15 @@ import { useSelector } from 'react-redux';
 import Flex from '@/components/Flex';
 import Button from '@/components/Button';
 import Image from '@/components/Image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AtModal, AtModalAction, AtModalContent, AtModalHeader } from 'taro-ui';
 import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
-import { CounterOfferInput, FullPageError, FullPageLoader } from '@/components/Chore';
-import {
-  hideToast,
-  navigateBack,
-  showModal,
-  showToast,
-  useRouter,
-  useShareAppMessage,
-} from '@tarojs/taro';
+import { FullPageError, FullPageLoader } from '@/components/Chore';
+import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
 import Icon from '@/components/Icon';
-import PlayCore from '@/components/PlayCore';
+import AuthWrapper from '@/components/AuthWrapper';
 import { IDENTITY } from '@/config/constant';
 import { useRequest } from 'ahooks';
 import {
@@ -29,11 +22,14 @@ import {
   applyWantSong,
   delWantSong,
 } from '@/services/song';
+import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
 import { getHttpPath } from '@/utils/utils';
-import type { UserIdentityType } from '@/services/common';
 import Tag from '@/components/Tag';
-import { processLyricData } from '@/components/PlayCore/helper';
+import ChangePriceModal from '@/components/ChangePriceModal';
+import type { ChangePriceModalType } from '@/components/ChangePriceModal';
+import { processLyricData } from './components/helper';
+import { PlayCore } from './components';
 
 import './index.less';
 
@@ -42,123 +38,182 @@ const AUDIO_DEMO_URL = 'http://music.163.com/song/media/outer/url?id=1847422867.
 type PageContentProps = {
   detail: Record<string, any>;
   routerParams: PlayDetailParams;
-} & UserIdentityType;
+};
 
-const PageContent = ({ detail, identity, routerParams }: PageContentProps) => {
+const PageContent = ({ detail, routerParams }: PageContentProps) => {
+  const userData = useSelector((state) => state.common.data);
+  const navigation = useSelector((state: any) => state.navigation);
+  const { identity, config: configData } = userData;
+  // 还价modal ref
+  const counterOfferRef = useRef<ChangePriceModalType>(null);
+  // 背景图
+  const bgImg = detail.album_image || configData.default_music_img;
+
   useShareAppMessage(({ from }) => {
     if (from === 'button') {
       return {
         title: `${detail.song_name}-${detail.singer}`,
-        imageUrl: getHttpPath(detail.song_image),
+        imageUrl: getHttpPath(bgImg),
       };
     }
     return {};
   });
 
+  // 还价
+  const onCounterOfferClick = () => {
+    counterOfferRef.current?.show({
+      composer_price: detail.composer_price,
+      lyricist_price: detail.lyricist_price,
+    });
+  };
+  // 还价提交
+  const onCounterOfferConfirm = async (values) => {
+    showToast({ icon: 'loading', title: '提交中' });
+    const { msg } = await operationMusicSongPrice({
+      ids: detail.ids,
+      ...values,
+      operation_type: 2,
+    });
+    showToast({ icon: 'success', title: msg });
+    counterOfferRef.current?.close();
+  };
+
   /** 词曲制作详情页面 */
   const isScorePage = routerParams.type === 'score';
   /** 是否机构身份 */
   const isCompanyIdentity = +identity === IDENTITY.COMPANY;
+  /** 主视图高度 */
+  const mainViewHeight = `calc(100vh - 148rpx - ${isScorePage ? navigation.navBarHeight : 0}px)`;
+
   return (
     <>
+      {/* 自定义navigation */}
       <CustomNavigation title={detail.song_name} />
-
+      {/* navigation占位符 */}
+      <View style={{ height: navigation.navBarHeight }} />
+      {/* blur效果层 */}
+      <View className="play-detail--blur" />
+      {/* 背景图片层 */}
       <View
-        className={cls('play-detail', {
-          'play-detail--score': isScorePage,
-        })}
-      >
+        className="play-detail--bg"
+        style={{
+          backgroundImage: bgImg ? `url(${config.cdn}/${bgImg})` : undefined,
+        }}
+      />
+      {/* 主视图 */}
+      <View style={{ height: `calc(100vh - ${navigation.navBarHeight}px)`, overflowY: 'auto' }}>
         <View
-          className={cls('play-detail__header', {
-            'play-detail__header--music': isCompanyIdentity || !isScorePage,
-            'play-detail__header--score': isScorePage && !isCompanyIdentity,
+          className={cls('play-detail', {
+            'play-detail--score': isScorePage,
           })}
+          style={{
+            height: mainViewHeight,
+          }}
         >
-          {isCompanyIdentity && isScorePage && (
-            <Flex className="p-default bg-white mb30" justify="center">
-              {+detail.composer_final_price ? (
-                <>
-                  <Typography.Text>
-                    原: 曲 {detail.composer_original_price}元 | 词{detail.lyricist_original_price}元
-                  </Typography.Text>
+          <View
+            className={cls('play-detail__header', {
+              'play-detail__header--music': isCompanyIdentity || !isScorePage,
+              'play-detail__header--score': isScorePage && !isCompanyIdentity,
+            })}
+          >
+            {isCompanyIdentity && isScorePage && (
+              <Flex className="p-default bg-white mb30" justify="center">
+                {+detail.composer_final_price ? (
+                  <>
+                    <Typography.Text>
+                      原: 曲 {detail.composer_original_price}元 | 词{detail.lyricist_original_price}
+                      元
+                    </Typography.Text>
+                    <Typography.Text type="primary">
+                      新: 曲 {detail.composer_final_price}元 | 词{detail.lyricist_final_price}元
+                    </Typography.Text>
+                  </>
+                ) : (
                   <Typography.Text type="primary">
-                    新: 曲 {detail.composer_final_price}元 | 词{detail.lyricist_final_price}元
+                    曲{detail.composer_original_price}元 | 词{detail.lyricist_original_price}元
                   </Typography.Text>
-                </>
-              ) : (
-                <Typography.Text type="primary">
-                  曲{detail.composer_original_price}元 | 词{detail.lyricist_original_price}元
-                </Typography.Text>
-              )}
-            </Flex>
-          )}
-          {isScorePage ? (
-            <>
-              {Array.isArray(detail.tag) && detail.tag.length > 0 && (
-                <View className="play-detail__tags">
-                  {detail.tag.map((el, i) => (
-                    <Tag key={i} type="light">
-                      {el}
-                    </Tag>
-                  ))}
-                </View>
-              )}
-            </>
-          ) : (
-            <>
-              <Typography.Text type="light" className="play-detail__author">
-                {detail.singer}
-              </Typography.Text>
-              <Icon
-                openType="share"
-                icon="icon-shouye_zhaunji_fenxiang"
-                className="play-detail__share"
-              />
-            </>
-          )}
-        </View>
-        <PlayCore
-          src={AUDIO_DEMO_URL || detail.url}
-          cover={detail.background_image}
-          lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
-          lyricAutoScroll={routerParams.type !== 'score'}
-        />
-      </View>
-      {isScorePage && (
-        <>
-          <View className="play-detail-desc">
-            <Flex justify="between" className="play-detail-desc__title">
-              <Typography.Title level={3} style={{ marginBottom: 0 }}>
-                词曲说明
-              </Typography.Title>
-              <ScoreButton detail={detail} />
-            </Flex>
-            <View className="play-detail-desc__content">
-              <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">作品简介:</Text>
-                <Text>{detail.introduce}</Text>
-              </View>
-              <View className="play-detail-desc__content-item">
-                <Text className="play-detail-desc__content-title">创作说明:</Text>
-                <Text>{detail.explain}</Text>
-              </View>
-            </View>
-          </View>
-          <Flex justify="center" className="play-detail-action">
-            {isCompanyIdentity ? (
+                )}
+              </Flex>
+            )}
+            {isScorePage ? (
               <>
-                <GiveUpButton routerParams={routerParams} />
-                {+detail.is_change_price ? (
-                  <CounterOfferButton routerParams={routerParams} />
-                ) : null}
+                {Array.isArray(detail.tag) && detail.tag.length > 0 && (
+                  <View className="play-detail__tags">
+                    {detail.tag.map((el, i) => (
+                      <Tag key={i} type="light">
+                        {el}
+                      </Tag>
+                    ))}
+                  </View>
+                )}
               </>
             ) : (
-              <ApplySingButton detail={detail} />
+              <>
+                <Typography.Text type="light" className="play-detail__author">
+                  {detail.singer}
+                </Typography.Text>
+                <Icon
+                  openType="share"
+                  icon="icon-shouye_zhaunji_fenxiang"
+                  className="play-detail__share"
+                />
+              </>
             )}
-          </Flex>
-          <View className="play-detail-action--placeholder" />
-        </>
-      )}
+          </View>
+          <PlayCore
+            src={detail.url ? `${config.cdn}/${detail.url}` : AUDIO_DEMO_URL}
+            title={detail.song_name}
+            cover={bgImg}
+            lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
+            lyricAutoScroll={routerParams.type !== 'score'}
+          />
+        </View>
+        {isScorePage && (
+          <>
+            <View className="play-detail-desc">
+              <Flex justify="between" className="play-detail-desc__title">
+                <Typography.Title level={3} style={{ marginBottom: 0 }}>
+                  词曲说明
+                </Typography.Title>
+                <ScoreButton detail={detail} />
+              </Flex>
+              <View className="play-detail-desc__content">
+                <View className="play-detail-desc__content-item">
+                  <Text className="play-detail-desc__content-title">作品简介:</Text>
+                  <Text>{detail.introduce}</Text>
+                </View>
+                <View className="play-detail-desc__content-item">
+                  <Text className="play-detail-desc__content-title">创作说明:</Text>
+                  <Text>{detail.explain}</Text>
+                </View>
+              </View>
+            </View>
+            <Flex justify="center" className="play-detail-action">
+              {isCompanyIdentity ? (
+                <>
+                  <GiveUpButton routerParams={routerParams} />
+                  {+detail.is_change_price ? (
+                    <Button
+                      onClick={() => onCounterOfferClick()}
+                      className="play-detail-action__btn"
+                      full
+                      type="primary"
+                      size="lg"
+                      circle
+                    >
+                      还价
+                    </Button>
+                  ) : null}
+                </>
+              ) : (
+                <ApplySingButton detail={detail} />
+              )}
+            </Flex>
+            <View className="play-detail-action--placeholder" />
+          </>
+        )}
+      </View>
+      <ChangePriceModal ref={counterOfferRef} onConfirm={onCounterOfferConfirm} />
     </>
   );
 };
@@ -173,10 +228,8 @@ type PlayDetailParams = {
   ids: string;
 };
 
-export default () => {
+const PageContentWrapper = () => {
   const { params } = useRouter<PlayDetailParams>();
-  const { loading: commonLoading, data: commonData } = useSelector((state) => state.common);
-
   const {
     loading,
     error,
@@ -185,11 +238,16 @@ export default () => {
   } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
     defaultParams: [{ ids: params.ids }],
   });
-  if (loading || commonLoading) return <FullPageLoader />;
-  if (error || !data) return <FullPageError refresh={refresh} />;
-  const identity = commonData.identity;
-  return <PageContent detail={data} routerParams={params} identity={identity} />;
+  if (loading) return <FullPageLoader />;
+  if (error) return <FullPageError refresh={refresh} />;
+  return <PageContent detail={data} routerParams={params} />;
 };
+
+export default () => (
+  <AuthWrapper>
+    <PageContentWrapper />
+  </AuthWrapper>
+);
 
 // 曲谱按钮 modal
 function ScoreButton({ detail }) {
@@ -288,78 +346,6 @@ function GiveUpButton({ routerParams }) {
               取消
             </Button>
             <Button type="primary" circle onClick={() => onConfirm()}>
-              确定
-            </Button>
-          </Flex>
-        </AtModalAction>
-      </AtModal>
-    </>
-  );
-}
-
-// 还价按钮 modal
-function CounterOfferButton({ routerParams }) {
-  const [state, change] = useState({
-    lyricist_price: '',
-    composer_price: '',
-  });
-  const [visible, set] = useState(false);
-  const onConfirm = async () => {
-    if (!state.composer_price || !state.lyricist_price) {
-      showToast({ icon: 'none', title: '请输入词曲价格' });
-      return;
-    }
-    const payload = {
-      ...state,
-      ids: routerParams.ids,
-      operation_type: 2,
-    };
-    try {
-      showToast({ icon: 'loading', title: '确认中...', mask: true });
-      const { msg } = await operationMusicSongPrice(payload);
-      showToast({ icon: 'success', title: msg });
-    } catch (error) {
-      hideToast();
-    }
-  };
-  return (
-    <>
-      <Button
-        onClick={() => set(true)}
-        className="play-detail-action__btn"
-        full
-        type="primary"
-        size="lg"
-        circle
-      >
-        还价
-      </Button>
-      <AtModal isOpened={visible} onClose={() => set(false)}>
-        <AtModalHeader>还价</AtModalHeader>
-        <AtModalContent>
-          <CounterOfferInput
-            title="曲"
-            price={2000}
-            name="n1"
-            value={state.composer_price}
-            placeholder="还价价格"
-            onChange={(value) => change((v) => ({ ...v, composer_price: value }))}
-          />
-          <CounterOfferInput
-            title="词"
-            price={3000}
-            name="n2"
-            placeholder="还价价格"
-            value={state.lyricist_price}
-            onChange={(value) => change((v) => ({ ...v, lyricist_price: value }))}
-          />
-        </AtModalContent>
-        <AtModalAction>
-          <Flex justify="between" className="p-default pb40">
-            <Button onClick={() => set(false)} outline circle>
-              取消
-            </Button>
-            <Button onClick={() => onConfirm()} type="primary" circle>
               确定
             </Button>
           </Flex>

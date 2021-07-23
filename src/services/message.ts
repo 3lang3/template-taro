@@ -47,3 +47,14 @@ export function readMessageRemind(data: {
     false,
   );
 }
+
+// 是否有未读消息接口
+export function getUnreadMessage(): Promise<PromiseResponseType<{ is_show: 0 | 1 }>> {
+  return msgRequest(
+    '/message/getUnreadMessage',
+    {
+      method: 'GET',
+    },
+    false,
+  );
+}

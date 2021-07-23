@@ -1,10 +1,11 @@
-import type { MessageListResType } from '@/services/message';
+import { getUnreadMessage, MessageListResType } from '@/services/message';
 import type { MessageStateType } from '@/state/message.d';
 
 // const
 const SETMESSAGELIST = 'SETMESSAGELIST';
 const MESSAGEINITREFRESH = 'MESSAGEINITREFRESH';
 const MESSAGETOTALPAGE = 'MESSAGETOTALPAGE';
+const ISREADALL = 'MESSAGE/ISREADALL';
 
 // action
 export const setList = (payload: MessageListResType['_list']) => {
@@ -14,6 +15,14 @@ export const setList = (payload: MessageListResType['_list']) => {
   };
 };
 
+// 获取消息已读
+export function setIsReadAll() {
+  return async (dispatch) => {
+    const result = await getUnreadMessage();
+    dispatch({ type: ISREADALL, payload: result.data.is_show });
+  };
+}
+
 // 下拉刷新
 export const msgRefresh = (payload: MessageListResType['_list']) => {
   return {
@@ -22,12 +31,9 @@ export const msgRefresh = (payload: MessageListResType['_list']) => {
   };
 };
 
-export const setTotalPage = (payload: number) => {
-  return (dispath, state) => {
-    const { message } = state();
-    if (!message.totalPage) {
-      dispath({ type: MESSAGETOTALPAGE, payload });
-    }
+export const setTotalCount = (payload: number) => {
+  return (dispath) => {
+    dispath({ type: MESSAGETOTALPAGE, payload });
   };
 };
 
@@ -35,7 +41,8 @@ const INITIAL_STATE: MessageStateType = {
   list: [] as any,
   page: 1,
   pageSize: 10,
-  totalPage: 0,
+  totalCount: 0,
+  isReadAll: false,
 };
 
 // reducers
@@ -46,7 +53,7 @@ export default function messageReducer(state = INITIAL_STATE, { type, payload })
     case MESSAGETOTALPAGE:
       return {
         ...state,
-        totalPage: payload,
+        totalCount: payload,
       };
     case MESSAGEINITREFRESH:
       return {
@@ -54,7 +61,11 @@ export default function messageReducer(state = INITIAL_STATE, { type, payload })
         page: 1,
         pageSize: 10,
         list: payload,
-        totalPage: 0,
+      };
+    case ISREADALL:
+      return {
+        ...state,
+        isReadAll: payload,
       };
     default:
       return state;

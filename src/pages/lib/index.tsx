@@ -155,7 +155,10 @@ const LibPageContent = () => {
                 return (
                   <Flex justify="end">
                     {song.lyricist_content && (
-                      <ContentPop title="歌词查看" content={song.lyricist_content}>
+                      <ContentPop
+                        title="歌词查看"
+                        content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
+                      >
                         <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
                       </ContentPop>
                     )}

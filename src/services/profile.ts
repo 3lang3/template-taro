@@ -13,8 +13,8 @@ export type Node = {
   email: string;
 };
 
-// 歌曲制作列表
-export function getMusicsongmakeList(): Promise<PromiseResponseType<Node>> {
+// 编辑资料信息
+export function getEditInfo(): Promise<PromiseResponseType<Node>> {
   return request('/member/getEditInfo', {
     method: 'GET',
   });

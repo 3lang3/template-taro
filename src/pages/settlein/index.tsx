@@ -32,6 +32,10 @@ const fields = {
       },
     ],
   },
+  stage_name: {
+    label: '艺名',
+    rules: [{ required: true }],
+  },
   area: {
     label: '请选择所在地区',
     rules: [
@@ -83,6 +87,7 @@ export default () => {
     real_name: '',
     idcard: '',
     email: '',
+    stage_name: '',
     area: undefined,
     mobile: '',
     code: '',
@@ -99,10 +104,18 @@ export default () => {
     const getDetail = async () => {
       showToast({ icon: 'loading', title: '数据获取中...' });
       const { data } = await detailReq.run();
-      const { province, city, district, idcard, real_name, email, mobile } = data;
+      const { province, city, district, idcard, real_name, email, mobile, stage_name } = data;
       set(
         (v) =>
-          ({ ...v, area: [province, city, district], mobile, idcard, real_name, email } as any),
+          ({
+            ...v,
+            area: [province, city, district],
+            mobile,
+            stage_name,
+            idcard,
+            real_name,
+            email,
+          } as any),
       );
     };
     if (isAudit) {
@@ -168,7 +181,7 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请求中...' });
-    const { msg } = await singerApply(postValues);
+    const { msg } = await singerApply({ code, ...postValues });
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
     // @summry 需要刷新个人中心页面 不能用back只能relaunch
@@ -210,6 +223,14 @@ export default () => {
           value={payload.email}
           disabled={isAudit}
           onChange={(value) => set((v: any) => ({ ...v, email: value }))}
+        />
+        <AtInput
+          name="stage_name"
+          title="艺名"
+          type="text"
+          disabled={isAudit}
+          value={payload.stage_name}
+          onChange={(value) => set((v: any) => ({ ...v, stage_name: value }))}
         />
         <AreaPicker
           value={payload.area}

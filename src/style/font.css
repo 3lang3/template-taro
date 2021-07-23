@@ -1,9 +1,8 @@
-/* stylelint-disable */
 @font-face {
   font-family: "iconfont"; /* Project id 2629008 */
-  src: url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.woff2?t=1626068403760') format('woff2'),
-       url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.woff?t=1626068403760') format('woff'),
-       url('//at.alicdn.com/t/font_2629008_00pfdfj1crbni.ttf?t=1626068403760') format('truetype');
+  src: url('//at.alicdn.com/t/font_2629008_wtdn2duysb7.woff2?t=1626413191259') format('woff2'),
+       url('//at.alicdn.com/t/font_2629008_wtdn2duysb7.woff?t=1626413191259') format('woff'),
+       url('//at.alicdn.com/t/font_2629008_wtdn2duysb7.ttf?t=1626413191259') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +11,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-pop_icon_shanchu:before {
+  content: "\e607";
+}
+
+.icon-sousuo:before {
+  content: "\e683";
+}
+
+.icon-hot:before {
+  content: "\e603";
 }
 
 .icon-logo:before {
@@ -181,4 +192,3 @@
 .icon-quku_bofang:before {
   content: "\e677";
 }
-

@@ -4,7 +4,7 @@
  * 放置部分页面可复用的ui组件
  */
 
-import { View } from '@tarojs/components';
+import { Image as TaroImage, View } from '@tarojs/components';
 import { memo } from 'react';
 import { AtInput, AtActivityIndicator } from 'taro-ui';
 import Button from '../Button';
@@ -117,10 +117,14 @@ export const CounterOfferInput = memo<CounterOfferInputProps>(
   ({ title, placeholder, name, value, onChange, price }) => {
     return (
       <Flex className="offer-modal-item" justify="between">
-        <Typography.Text size="lg">{title}</Typography.Text>
-        <Typography.Text size="lg" type="secondary" className="mr20">
-          当前: {price}元
-        </Typography.Text>
+        <Flex>
+          <Typography.Text size="lg" className="mr10">
+            {title}
+          </Typography.Text>
+          <Typography.Text size="lg" type="secondary" className="mr20">
+            当前: {price}元
+          </Typography.Text>
+        </Flex>
         <Flex className="input--border">
           <AtInput
             type="number"
@@ -189,5 +193,16 @@ export const Empty = ({ message = '暂无数据', ...props }: EmptyProps) => {
       </Flex>
       <Typography.Text className="emptybox__text">{message}</Typography.Text>
     </Flex>
+  );
+};
+
+export const rankRender = (rank) => {
+  if (+rank > 3) return <Typography.Text type="secondary">{rank}</Typography.Text>;
+  return (
+    <TaroImage
+      mode="aspectFit"
+      className="item-rank__img"
+      src={require(`@/assets/home/rank_${rank}.png`)}
+    />
   );
 };

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Picker } from '@tarojs/components';
 import { AtListItem } from 'taro-ui';
+import { isDef } from '@/utils/utils';
 
 type ChildrenFuncPramas = {
   /** 选中的`nameKey`数组 */
@@ -177,7 +178,7 @@ export default function CustomPicker({
             disabled={disabled}
             title={title}
             extraText={Array.isArray(titleArr) ? titleArr.join(' ') : titleArr}
-            arrow={arrow && !value ? 'right' : undefined}
+            arrow={arrow && !isDef(value) ? 'right' : undefined}
           />
         );
       })()}
@@ -210,13 +211,12 @@ function getPickerRange(
 
   // 多选
   const rs = [] as any[];
-  let pValue = pickerValue;
+  let pValue = pickerValue.filter(Boolean);
   // 保证value格式符合data长度
   if (!pValue.length) {
     // 联级取cascade值 非联级取data(二维数组)长度
     pValue = Array.from({ length: cascade || data.length }, () => 0);
   }
-
   // 根据当前值获取 picker range数据(联级情况下需要重置range)
   pValue.reduce((a: any, _, i) => {
     let column = data[i] as any;

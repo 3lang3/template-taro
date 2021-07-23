@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
 import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
-import SongUploader from '@/components/SongUploader';
+import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
 import { singerApply } from '@/services/settlein';
 import './index.less';
@@ -23,7 +23,7 @@ type SettleNextPageParams = {
 
 export default () => {
   const { params } = useRouter<SettleNextPageParams>();
-  //
+  // 上一步提交信息
   const prevStepPayloadRef = useRef<any>();
   // 审核状态
   const isAudit = params.status === 'audit';
@@ -121,7 +121,7 @@ export default () => {
                 disabled={isAudit}
                 name="website_url"
                 type="text"
-                placeholder="https://www.tapd.cn/38927421/prong/stories11"
+                placeholder="请输入平台个人链接"
                 value={payload.website_url}
                 onChange={(value) => set((v: any) => ({ ...v, website_url: value }))}
               />
@@ -129,12 +129,7 @@ export default () => {
           </View>
         </View>
         <Typography.Text className="settlein-title">二、上传歌曲</Typography.Text>
-        <SongUploader
-          disabled={isAudit}
-          webActionUrl="https://www.tapd.cn/"
-          value={payload.song_url}
-          onChange={onSongUpload}
-        />
+        <SongUploader disabled={isAudit} value={payload.song_url} onChange={onSongUpload} />
         <View className="p-default bg-white">
           <Typography.Text type="secondary" size="sm">
             1、歌曲需是本人原创/翻唱作品，且不可借用他人歌曲元素，如经发现平台将追究相关责任。

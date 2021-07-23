@@ -2,9 +2,9 @@ import { useState } from 'react';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { Image, View } from '@tarojs/components';
-import { navigateTo } from '@tarojs/taro';
+import { navigateTo, showToast } from '@tarojs/taro';
 import { AtList, AtListItem, AtIcon } from 'taro-ui';
-import { getMusicsongmakeList, Node, editInfo } from '@/services/profile';
+import { getEditInfo, Node, editInfo } from '@/services/profile';
 import AreaPicker from '@/components/CustomPicker/AreaPicker';
 import { useRequest } from 'ahooks';
 import { FullPageLoader, FullPageError } from '@/components/Chore';
@@ -12,12 +12,17 @@ import './index.less';
 
 export default () => {
   const [memberInfo, setMemberInfo] = useState<Node>({} as any);
-  const { loading, error, refresh } = useRequest(getMusicsongmakeList, {
+  const { loading, error, refresh } = useRequest(getEditInfo, {
     onSuccess: ({ data, type, msg }) => {
       if (type === 1) throw Error(msg);
       setMemberInfo(data);
     },
   });
+
+  const onAreaChange = async (value) => {
+    const { msg } = await editInfo(value);
+    showToast({ icon: 'success', title: msg });
+  };
   if (loading) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
   return (
@@ -38,9 +43,7 @@ export default () => {
         <View className="custom-form-picker">
           <AreaPicker
             value={[memberInfo.province, memberInfo.city, memberInfo.district]}
-            onChange={(value) => {
-              editInfo(value);
-            }}
+            onChange={onAreaChange}
           />
           <AtIcon className="item-extra__icon" value="chevron-right" />
         </View>

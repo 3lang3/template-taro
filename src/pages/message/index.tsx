@@ -2,11 +2,11 @@ import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
 import { View } from '@tarojs/components';
-import Taro, { navigateTo, usePullDownRefresh, useReachBottom } from '@tarojs/taro';
+import { navigateTo, usePullDownRefresh, useReachBottom, stopPullDownRefresh } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRequest, useUpdate } from 'ahooks';
 import { getMessageList, readMessageRemind, clearMessageRemind } from '@/services/message';
-import { setList, msgRefresh, setTotalPage } from '@/state/message';
+import { setList, msgRefresh, setTotalCount, setIsReadAll } from '@/state/message';
 import { useEffect, useState } from 'react';
 import './index.less';
 
@@ -15,7 +15,7 @@ export default function Index() {
   const update = useUpdate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(true);
-  const { list, page, pageSize, totalPage } = useSelector((state) => {
+  const { list, page, pageSize, totalCount } = useSelector((state) => {
     return state.message;
   });
   const { refresh, run } = useRequest(getMessageList, {
@@ -26,7 +26,7 @@ export default function Index() {
       setLoading(false);
       if (type === 1) throw Error(msg);
       setError(false);
-      dispatch(setTotalPage(_page.totalPage));
+      dispatch(setTotalCount(_page.totalCount));
       if (_list.length) {
         dispatch(setList([...list, ..._list]));
       }
@@ -34,7 +34,7 @@ export default function Index() {
     onError: () => setLoading(false),
   });
   useEffect(() => {
-    if (!list.length) {
+    if (list && !list.length) {
       run({ page: 1, pageSize: 10 });
     } else {
       setLoading(false);
@@ -45,17 +45,18 @@ export default function Index() {
     run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
       if (type === 1) throw Error(msg);
       dispatch(msgRefresh(res._list));
-      Taro.stopPullDownRefresh();
+      stopPullDownRefresh();
     });
   });
   useReachBottom(() => {
-    if (list.length < totalPage) {
+    if (list.length < totalCount) {
       run({ page, pageSize });
     }
   });
   const onReadAll = () => {
     clearMessageRemind().then(({ type, msg }) => {
       if (type === 1) throw Error(msg);
+      dispatch(setIsReadAll());
       list.forEach((item) => {
         if (!item.is_read) {
           item.is_read = 1;
@@ -70,6 +71,7 @@ export default function Index() {
       // 未读
       readMessageRemind({ id }).then(({ type, msg }) => {
         if (type === 1) throw Error(msg);
+        dispatch(setIsReadAll());
         list.find((item) => {
           if (item.id === id) {
             item.is_read = 1;
@@ -111,6 +113,11 @@ export default function Index() {
             </Typography.Text>
           </View>
         ))}
+        {totalCount > 6 && totalCount === list.length && (
+          <Flex justify="center">
+            <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
+          </Flex>
+        )}
       </View>
     </>
   );

@@ -125,6 +125,12 @@
           "pathName": "pages/my-song/index",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "pages/account/index",
+          "pathName": "pages/account/index",
+          "query": "ids=523604468",
+          "scene": 1034
         }
       ]
     }

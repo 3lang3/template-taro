@@ -1,8 +1,12 @@
 @import '../../style/var.less';
 
+page {
+  background-color: #fff;
+}
+
 .page-index {
-  flex-direction: column;
   width: 100%;
+  overflow: hidden;
 }
 
 .index-header {
@@ -17,7 +21,7 @@
     z-index: 0;
     z-index: -1;
     height: 504px;
-    background: @gradient-primary;
+    background-image: linear-gradient(to top, transparent, @primary);
   }
 }
 
@@ -29,7 +33,6 @@
   &__main {
     width: 100%;
     height: 270px;
-    background: #ccc;
     border-radius: 10px;
 
     &-item,
@@ -66,14 +69,15 @@
       margin-bottom: 10px;
     }
   }
+  &--fake {
+    width: 224px;
+    height: 1px;
+  }
 }
 
 .index-hot-song {
   margin-bottom: 30px;
   &__title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     margin-bottom: 30px;
     padding: 0 24px;
   }
@@ -102,10 +106,6 @@
       width: 42px;
       height: 42px;
       margin-right: 20px;
-    }
-    &__img {
-      width: 100%;
-      height: 100%;
     }
 
     &__title {

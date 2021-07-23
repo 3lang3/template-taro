@@ -4,6 +4,7 @@ import Flex from '@/components/Flex';
 import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import Image from '@/components/Image';
+import config from '@/config';
 import { useRouter } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
@@ -14,6 +15,7 @@ export default () => {
   const { params } = useRouter();
   const dispatch = useDispatch();
   const { albumEunm } = useSelector((state) => state.album);
+  const configData = useSelector((state) => state.common.data.config);
   const { data, loading = true, error, done } = albumEunm[params.ids as string] || {};
 
   useEffect(() => {
@@ -34,7 +36,14 @@ export default () => {
   return (
     <>
       <CustomNavigation title="专辑" titleColor="#fff" />
-      <View style={{ backgroundImage: `url(${data.album_image})` }} className="album-detail__bg">
+      <View
+        style={{
+          backgroundImage: `url(${config.cdn}/${
+            data.album_image || configData?.default_album_img
+          })`,
+        }}
+        className="album-detail__bg"
+      >
         <View className="album-detail">
           <Image className="album-detail__cover" src={data.album_image} />
 

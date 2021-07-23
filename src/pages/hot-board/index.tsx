@@ -4,15 +4,17 @@ import { navigateTo } from '@tarojs/taro';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import CustomNavigation from '@/components/CustomNavigation';
-import { FullPageError, FullPageLoader, Empty } from '@/components/Chore';
+import { FullPageError, FullPageLoader, Empty, rankRender } from '@/components/Chore';
 import { View, Image as TaroImage } from '@tarojs/components';
 import { useDispatch, useSelector } from 'react-redux';
+import config from '@/config';
 import { set } from '@/state/hot-board';
 import './index.less';
 
 export default () => {
   const dispatch = useDispatch();
   const hotBoardData = useSelector((state) => state.hotBoard);
+  const confgData = useSelector((state) => state.common.data.config);
   const { loading, error, refresh } = useRequest(getHotSongList, {
     manual: !!hotBoardData.list.length,
     onSuccess: ({ data, type }) => {
@@ -27,7 +29,16 @@ export default () => {
     <>
       <CustomNavigation home={false} />
 
-      <Flex className="hot-board-header" align="end" justify="between">
+      <Flex
+        style={{
+          backgroundImage: confgData?.popular_board_bg
+            ? `url(${config.cdn}/${confgData.popular_board_bg})`
+            : undefined,
+        }}
+        className="hot-board-header"
+        align="end"
+        justify="between"
+      >
         <TaroImage
           src={require('@/assets/hot-board/hot_board_title.svg')}
           className="hot-board-header__title"
@@ -46,7 +57,7 @@ export default () => {
               className="hot-board-body__item"
               onClick={() => navigateTo({ url: `/pages/play-detail/index?ids=${item.song_ids}` })}
             >
-              <View className="hot-board-body__item-index">{i + 1}</View>
+              <View className="hot-board-body__item-index">{rankRender(i + 1)}</View>
               <View className="hot-board-body__item-content">
                 <Typography.Title level={3}>{item.song_name}</Typography.Title>
                 <Typography.Text size="sm" type="secondary">

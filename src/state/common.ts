@@ -7,9 +7,16 @@ import {
   getLanguageList,
   getSongStyleList,
   getWebsiteType,
+  getBankList,
 } from '@/services/common';
 import type { CurrentUserType } from '@/services/common';
-import type { TagType, LanguageVersion, SongStyle, MusicSiteItem } from '@/services/common.d';
+import type {
+  TagType,
+  LanguageVersion,
+  SongStyle,
+  MusicSiteItem,
+  BankItem,
+} from '@/services/common.d';
 import { getStorageSync, removeStorageSync } from '@tarojs/taro';
 import type { UserInfo } from '@tarojs/taro';
 
@@ -41,7 +48,7 @@ export function getUser(localUserInfo?): any {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
       const userInfo = { ...localUserInfo, avatarUrl: data.avatar, nickName: data.nickname };
-      dispatch({ type: DONE, payload: { data, userInfo } });
+      dispatch({ type: DONE, payload: { data: { ...data, mobile: undefined }, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
     }
@@ -49,15 +56,16 @@ export function getUser(localUserInfo?): any {
 }
 
 export const initCommonReducer = () => {
-  return (dispath, state) => {
-    const { common: commonReducer } = state();
-    if (!commonReducer.tagType.length) {
-      Promise.all([getTagType(), getLanguageList(), getSongStyleList(), getWebsiteType()]).then(
-        (res) => {
-          dispath({ type: INIT, payload: res });
-        },
-      );
-    }
+  return (dispath) => {
+    Promise.all([
+      getTagType(),
+      getLanguageList(),
+      getSongStyleList(),
+      getWebsiteType(),
+      getBankList(),
+    ]).then((res) => {
+      dispath({ type: INIT, payload: res });
+    });
   };
 };
 
@@ -72,22 +80,26 @@ export type CommonStateType = {
   languageVersion: LanguageVersion[];
   songStyle: SongStyle[];
   musicSiteList: MusicSiteItem[];
+  bankList: BankItem[];
   token?: string;
 };
 
 const INITIAL_STATE: CommonStateType = {
   token: getStorageSync(config.storage.tokenKey),
-  loading: true,
+  loading: false,
   error: false,
   done: false,
   // wx.getUserProfile获取到的用户数据
   userInfo: {} as UserInfo,
   // 服务端返回的用户数据
-  data: {} as CurrentUserType,
+  data: {
+    config: {},
+  } as CurrentUserType,
   tagType: [],
   languageVersion: [],
   songStyle: [],
   musicSiteList: [],
+  bankList: [],
 };
 
 export default function common(state = INITIAL_STATE, { type, payload }) {
@@ -123,7 +135,7 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         loading: false,
         error: false,
         done: true,
-        data: payload,
+        data: { ...state.data, ...payload },
       };
     case INIT:
       return {
@@ -132,8 +144,22 @@ export default function common(state = INITIAL_STATE, { type, payload }) {
         languageVersion: payload[1].data,
         songStyle: payload[2].data,
         musicSiteList: payload[3].data,
+        bankList: processBankList(payload[4].data),
       };
     default:
       return state;
   }
+}
+
+// process bank list data
+function processBankList(data: BankItem[]) {
+  return data.reduce((a: any, v: BankItem) => {
+    const idx = a.findIndex((el: any) => el.key === v.name_initial);
+    if (idx > -1) {
+      a[idx].items.push({ name: v.bank_name, ...v });
+    } else {
+      a.push({ title: v.name_initial, key: v.name_initial, items: [] });
+    }
+    return a;
+  }, []);
 }
