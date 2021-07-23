@@ -23,7 +23,7 @@ const project = new ci.Project({
 
 (async () => {
   try {
-    // await mpBuild()
+    await mpBuild();
 
     if (query.type === 'upload') {
       await mpUpload();
