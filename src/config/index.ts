@@ -1,10 +1,8 @@
-import development from './env/development';
-import production from './env/production';
+import envConfig from './env';
 
 export type ConfigType = {
   api: {
     current: string;
-    trade: string;
     msg: string;
   };
   /** boss后台地址 */
@@ -15,14 +13,9 @@ export type ConfigType = {
   storage: Record<string, string>;
 };
 
-const config = {
-  development,
-  production,
-}[process.env.NODE_ENV as string] as ConfigType;
-
 export default {
-  ...config,
-  uploadFile: config.api.current + '/other/UploadFile',
+  ...envConfig,
+  uploadFile: envConfig.api.current + '/other/UploadFile',
   storage: {
     // token
     tokenKey: 'authorization',
