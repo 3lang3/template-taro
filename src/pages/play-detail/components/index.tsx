@@ -50,7 +50,6 @@ export const PlayCore = ({
         }
       : undefined,
   });
-
   return (
     <Flex className="play-core" direction="column" justify="between">
       <View

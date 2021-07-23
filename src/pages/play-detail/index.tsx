@@ -239,7 +239,7 @@ const PageContentWrapper = () => {
     defaultParams: [{ ids: params.ids }],
   });
   if (loading) return <FullPageLoader />;
-  if (error || !data) return <FullPageError refresh={refresh} />;
+  if (error) return <FullPageError refresh={refresh} />;
   return <PageContent detail={data} routerParams={params} />;
 };
 

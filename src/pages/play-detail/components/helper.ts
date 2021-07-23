@@ -76,7 +76,7 @@ type UseCustomAudioReturn = {
  */
 export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseCustomAudioReturn {
   // 音频是否暂停
-  const [paused, setPaused] = useState(true);
+  const [paused, setPaused] = useState(() => backgroundAudioManager.paused);
   const [state, set] = useState<AudioStateProps>(audioInitialState);
   // 是否正在拖动进度条
   const dragging = useRef(false);
@@ -90,19 +90,16 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
   });
 
   useEffect(() => {
-    audio.current.title = info.title;
-    Object.entries(info).forEach(([k, v]) => {
-      if (v) audio.current[k] = v;
-    });
-    audio.current.src = src;
+    if (audio.current.src !== src) {
+      audio.current.title = info.title;
+      Object.entries(info).forEach(([k, v]) => {
+        if (v) audio.current[k] = v;
+      });
+      audio.current.src = src;
+    }
     audio.current.onPlay(() => setPaused(false));
     audio.current.onPause(() => setPaused(true));
-    // @hack
-    // seek完onTimeUpdate失效...
-    audio.current.onSeeked(() => {
-      audio.current.pause();
-      audio.current.play();
-    });
+
     /**
      * @todo
      * - 截流优化
