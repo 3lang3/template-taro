@@ -83,7 +83,9 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   /** 是否机构身份 */
   const isCompanyIdentity = +identity === IDENTITY.COMPANY;
   /** 主视图高度 */
-  const mainViewHeight = `calc(100vh - 148rpx - ${isScorePage ? navigation.navBarHeight : 0}px)`;
+  const mainViewHeight = isScorePage
+    ? `calc(100vh - 148rpx - ${navigation.navBarHeight}px)`
+    : '100%';
 
   return (
     <>
@@ -163,6 +165,8 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
           <PlayCore
             src={detail.url ? `${config.cdn}/${detail.url}` : AUDIO_DEMO_URL}
             title={detail.song_name}
+            singer={detail.singer}
+            epname={detail.album_name}
             cover={bgImg}
             lyricData={processLyricData(isScorePage ? detail.lyricist_content : detail.lrc_lyric)}
             lyricAutoScroll={routerParams.type !== 'score'}

@@ -220,6 +220,7 @@ export type ScrollLyricItem = {
  * @param lyrics 服务端返回的歌词数据
  */
 export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
+  if (!lyrics) return [];
   if (typeof lyrics === 'string') {
     return lyrics.split('\n').map((el) => ({ time: 0, text: el }));
   }
