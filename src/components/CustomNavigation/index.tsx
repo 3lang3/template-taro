@@ -1,3 +1,4 @@
+import cls from 'classnames';
 import { View } from '@tarojs/components';
 import { navigateBack, navigateTo, showModal, switchTab, useDidShow } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,6 +29,12 @@ type CustomTabBarProps = {
    * @default 1
    */
   delta?: number;
+  /**
+   * 主题模式
+   *  - light 白色背景
+   *  - dark 黑色背景 @todo
+   */
+  mode?: 'light' | 'default';
 };
 
 const CustomNavigation = ({
@@ -37,6 +44,7 @@ const CustomNavigation = ({
   titleColor,
   home = true,
   delta = 1,
+  mode,
   ...props
 }: CustomTabBarProps) => {
   const navigation = useSelector((state: any) => state.navigation);
@@ -49,7 +57,10 @@ const CustomNavigation = ({
 
   return (
     <>
-      <View className="custom-navi" style={{ height: navigation.navBarHeight }}>
+      <View
+        className={cls('custom-navi', `custom-navi--${mode}`)}
+        style={{ height: navigation.navBarHeight }}
+      >
         <View
           className="custom-navi__box"
           style={{
@@ -103,7 +114,7 @@ const CustomNavigation = ({
   );
 };
 
-export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) => {
+export const TabNavigationBar = ({ title = '娱当家', ...props }: CustomTabBarProps) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.common.data);
   const messageReducer = useSelector(({ message }) => message);
@@ -132,7 +143,7 @@ export const TabNavigationBar = ({ title = '娱当家' }: Record<string, any>) =
   };
 
   return (
-    <CustomNavigation title={title} titleColor="#fff">
+    <CustomNavigation title={title} {...props}>
       <View className="message-box">
         <Icon icon="icon-nav_xiaoxi" className="message-box__icon" onClick={handleClick} />
         {messageReducer.isReadAll ? <View className="message-box__dot" /> : ''}

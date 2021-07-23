@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { FullPageLoader } from '@/components/Chore';
 import { IDENTITY } from '@/config/constant';
+import { TabNavigationBar } from '@/components/CustomNavigation';
 import CustomTabBar from '@/components/CustomTabBar';
 import MePage from './components/MePage';
 import CompanyPage from './components/CompanyPage';
@@ -21,6 +22,7 @@ const PageContent = () => {
 export default () => {
   return (
     <>
+      <TabNavigationBar mode="light" fixedHeight />
       <PageContent />
       <CustomTabBar />
     </>
