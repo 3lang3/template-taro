@@ -10,8 +10,6 @@ const env = Object.keys(myEnv.parsed).reduce((a, v) => {
   return a;
 }, {});
 
-console.log(env);
-
 const config = {
   env,
   projectName: 'ydj-h5-client',
