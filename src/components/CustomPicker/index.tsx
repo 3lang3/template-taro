@@ -213,9 +213,9 @@ function getPickerRange(
   const rs = [] as any[];
   let pValue = pickerValue.filter(Boolean);
   // 保证value格式符合data长度
-  if (!pValue.length) {
+  if (!pValue.length || pValue.length !== cascade) {
     // 联级取cascade值 非联级取data(二维数组)长度
-    pValue = Array.from({ length: cascade || data.length }, () => 0);
+    pValue = Array.from({ length: cascade || data.length }, (_, i) => pValue[i] || 0);
   }
   // 根据当前值获取 picker range数据(联级情况下需要重置range)
   pValue.reduce((a: any, _, i) => {
