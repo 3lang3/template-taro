@@ -272,7 +272,12 @@ export default () => {
                     <Typography.Text size="sm" type="secondary">
                       我已阅读
                     </Typography.Text>
-                    <Typography.Link size="sm">《平台协议》</Typography.Link>
+                    <Typography.Link
+                      onClick={() => navigateTo({ url: '/pages/protocol/index' })}
+                      size="sm"
+                    >
+                      《平台协议》
+                    </Typography.Link>
                   </Flex>
                 ) as unknown as string,
               },
