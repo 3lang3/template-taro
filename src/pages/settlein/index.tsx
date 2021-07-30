@@ -118,10 +118,10 @@ export default () => {
           } as any),
       );
     };
-    if (isAudit) {
-      getDetail();
-      return;
-    }
+    // if (isAudit) {
+    getDetail();
+    // return;
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
