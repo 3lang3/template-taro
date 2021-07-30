@@ -56,7 +56,7 @@ export default {
     'pages/account/index',
     // webview
     'pages/webview/custom',
-    // 协议签署
+    // 平台协议
     'pages/protocol/index',
   ],
   tabBar: {

@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: '签署协议',
+  navigationBarTitleText: '平台协议',
 };
