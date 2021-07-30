@@ -113,6 +113,10 @@ export default () => {
       showToast({ icon: 'none', title: '请选择标签' });
       return;
     }
+    if (payload.song_name.length > 20) {
+      showToast({ icon: 'none', title: '作品名最多输20个字' });
+      return;
+    }
     navigateTo({ url: `/pages/sell/next?params=${JSON.stringify(payload)}` });
   };
 
@@ -161,6 +165,7 @@ export default () => {
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"
+          maxlength={20}
           title={fields.song_name.label}
           type="text"
           value={payload.song_name}
