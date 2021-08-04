@@ -123,9 +123,7 @@ export default () => {
           } as any),
       );
     };
-    // if (isAudit) {
     getDetail();
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

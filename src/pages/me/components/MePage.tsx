@@ -4,11 +4,12 @@ import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import Image from '@/components/Image';
 import Typography from '@/components/Typography';
+import config from '@/config';
 import { IDENTITY } from '@/config/constant';
 import { getDecryptedData } from '@/services/common';
 import { getHomePageDetail, MePageResType } from '@/services/me';
 import { updateUserData } from '@/state/common';
-import { generateCode, userLogin } from '@/utils/login';
+import { checkCodeSession, generateCode, userLogin } from '@/utils/login';
 import { View } from '@tarojs/components';
 import { getStorageSync, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
@@ -82,7 +83,8 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请稍后...' });
-    const code = await generateCode();
+    const localCodeAvailable = await checkCodeSession();
+    const code = localCodeAvailable ? getStorageSync(config.storage.code) : await generateCode();
     try {
       const { data } = await getDecryptedData({
         code,
