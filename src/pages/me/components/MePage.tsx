@@ -83,6 +83,11 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请稍后...' });
+
+    /**
+     * @see https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html
+     * @summary 在回调中调用 wx.login 登录，可能会刷新登录态。此时服务器使用 code 换取的 sessionKey 不是加密时使用的 sessionKey，导致解密失败。建议开发者提前进行 login；或者在回调中先使用 checkSession 进行登录态检查，避免 login 刷新登录态。
+     */
     const localCodeAvailable = await checkCodeSession();
     const code = localCodeAvailable ? getStorageSync(config.storage.code) : await generateCode();
     try {
