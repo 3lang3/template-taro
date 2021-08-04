@@ -119,37 +119,38 @@ const IndexPageContent = () => {
     <>
       <TabNavigationBar />
       <View className="page-index">
-        <View className="index-header__placeholder" />
-        <View
-          className="index-header__bg"
-          style={{
-            backgroundImage: data?.back_images
-              ? `url(${config.cdn}/${data.back_images})`
-              : undefined,
-          }}
-        />
-        {/* 首页轮播图 */}
-        {Array.isArray(data.banner) && data.banner.length > 0 && (
-          <CustomSwiper
-            className="index-swiper__wrapper"
-            swiperClassName="index-swiper__main"
-            data={data.banner}
-            itemRender={(item) => (
-              <View
-                onClick={() => {
-                  if (item.link_url) {
-                    navigateTo({
-                      url: `/pages/webview/custom?src=${encodeURIComponent(item.link_url)}`,
-                    });
-                  }
-                }}
-                className="index-swiper__main-item"
-              >
-                <Image className="index-swiper__main-img" src={item.url} />
-              </View>
-            )}
+        <View className="index-header">
+          <View
+            className="index-header__bg"
+            style={{
+              backgroundImage: data?.back_images
+                ? `url(${config.cdn}/${data.back_images})`
+                : undefined,
+            }}
           />
-        )}
+          {/* 首页轮播图 */}
+          {Array.isArray(data.banner) && data.banner.length > 0 && (
+            <CustomSwiper
+              className="index-swiper__wrapper"
+              swiperClassName="index-swiper__main"
+              data={data.banner}
+              itemRender={(item) => (
+                <View
+                  onClick={() => {
+                    if (item.link_url) {
+                      navigateTo({
+                        url: `/pages/webview/custom?src=${encodeURIComponent(item.link_url)}`,
+                      });
+                    }
+                  }}
+                  className="index-swiper__main-item"
+                >
+                  <Image className="index-swiper__main-img" src={item.url} />
+                </View>
+              )}
+            />
+          )}
+        </View>
         {Array.isArray(data.album) && data.album.length > 0 && (
           <View className="index-rc-album">
             <Typography.Title level={2}>推荐专辑</Typography.Title>

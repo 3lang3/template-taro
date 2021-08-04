@@ -10,9 +10,9 @@ page {
 }
 
 .index-header {
-  &__placeholder {
-    padding-top: 332px;
-  }
+  min-height: 398px;
+  margin-bottom: 60px;
+
   &__bg {
     position: absolute;
     top: 0;
@@ -20,7 +20,7 @@ page {
     left: 0;
     z-index: 0;
     z-index: -1;
-    height: 504px;
+    height: 398px;
     background-image: linear-gradient(to top, transparent, @primary);
     background-size: cover;
   }
@@ -28,8 +28,7 @@ page {
 
 .index-swiper {
   &__wrapper {
-    margin-bottom: 60px;
-    padding: 0 24px;
+    padding: 332px 24px 0;
   }
   &__main {
     width: 100%;
