@@ -2,6 +2,7 @@ import { View } from '@tarojs/components';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { useRouter } from '@tarojs/taro';
+import { useSelector } from 'react-redux';
 import { getTrendsDetail } from '@/services/home';
 import EditorRender from '@/components/EditorRender';
 import { useRequest } from 'ahooks';
@@ -11,6 +12,7 @@ import Icon from '@/components/Icon';
 import './index.less';
 
 export default () => {
+  const usreData = useSelector((state) => state.common.data);
   const { params } = useRouter();
   const {
     data: { data } = { data: {} },
@@ -18,7 +20,7 @@ export default () => {
     error,
     refresh,
   } = useRequest(getTrendsDetail, {
-    defaultParams: [{ id: params.id }],
+    defaultParams: [{ id: params.id, memberIds: usreData.ids }],
   });
 
   if (loading) return <FullPageLoader />;
