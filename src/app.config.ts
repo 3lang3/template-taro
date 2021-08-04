@@ -54,7 +54,10 @@ export default {
     'pages/song-manage/index',
     // 账户信息
     'pages/account/index',
+    // webview
     'pages/webview/custom',
+    // 平台协议
+    'pages/protocol/index',
   ],
   tabBar: {
     custom: true,

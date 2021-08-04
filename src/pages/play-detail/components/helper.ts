@@ -1,4 +1,4 @@
-import { getBackgroundAudioManager, createSelectorQuery } from '@tarojs/taro';
+import { getBackgroundAudioManager, createSelectorQuery, showModal } from '@tarojs/taro';
 import type { MovableViewProps } from '@tarojs/components/types/MovableView';
 import { useEffect, useRef, useState } from 'react';
 
@@ -99,6 +99,10 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
     }
     audio.current.onPlay(() => setPaused(false));
     audio.current.onPause(() => setPaused(true));
+
+    audio.current.onError(() => {
+      showModal({ title: '抱歉', content: '播放好像出了点问题', showCancel: false });
+    });
 
     /**
      * @todo
@@ -220,6 +224,7 @@ export type ScrollLyricItem = {
  * @param lyrics 服务端返回的歌词数据
  */
 export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
+  if (!lyrics) return [];
   if (typeof lyrics === 'string') {
     return lyrics.split('\n').map((el) => ({ time: 0, text: el }));
   }

@@ -34,12 +34,10 @@ export default function Index() {
     onError: () => setLoading(false),
   });
   useEffect(() => {
-    if (list && !list.length) {
-      run({ page: 1, pageSize: 10 });
-    } else {
-      setLoading(false);
-      setError(false);
-    }
+    run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
+      if (type === 1) throw Error(msg);
+      dispatch(msgRefresh(res._list));
+    });
   }, []);
   usePullDownRefresh(() => {
     run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
@@ -66,7 +64,7 @@ export default function Index() {
     });
   };
   const onRead = (id: number, isRead: number) => {
-    navigateTo({ url: '/pages/message/detail' });
+    navigateTo({ url: `/pages/message/detail?id=${id}` });
     if (!isRead) {
       // 未读
       readMessageRemind({ id }).then(({ type, msg }) => {

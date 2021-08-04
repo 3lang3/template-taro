@@ -56,7 +56,7 @@ export async function userLogin(opts: getUserProfile.Option) {
 }
 
 // 检查用户登录状态
-async function checkCodeSession() {
+export async function checkCodeSession() {
   try {
     await checkSession();
     return true;

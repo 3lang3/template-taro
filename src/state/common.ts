@@ -48,7 +48,7 @@ export function getUser(localUserInfo?): any {
       dispatch({ type: LOADING });
       const { data } = await getCurrentUser();
       const userInfo = { ...localUserInfo, avatarUrl: data.avatar, nickName: data.nickname };
-      dispatch({ type: DONE, payload: { data: { ...data, mobile: undefined }, userInfo } });
+      dispatch({ type: DONE, payload: { data, userInfo } });
     } catch (error) {
       dispatch({ type: ERROR, payload: error.message });
     }

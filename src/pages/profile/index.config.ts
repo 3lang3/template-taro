@@ -1,3 +1,3 @@
 export default {
-  navigationBarTitleText: '娱当家'
-}
+  navigationBarTitleText: '编辑资料',
+};

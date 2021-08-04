@@ -12,7 +12,7 @@ import {
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import { setClipboardData, navigateTo } from '@tarojs/taro';
+import { setClipboardData, navigateTo, showToast } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
@@ -44,11 +44,9 @@ const fields = {
   },
   introduce: {
     label: '作品简介',
-    rules: [{ required: true }],
   },
   explain: {
     label: '创作说明',
-    rules: [{ required: true }],
   },
 };
 
@@ -111,6 +109,14 @@ export default () => {
   const onSubmit = () => {
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
+    if (!getTagText()) {
+      showToast({ icon: 'none', title: '请选择标签' });
+      return;
+    }
+    if (payload.song_name.length > 20) {
+      showToast({ icon: 'none', title: '作品名最多输20个字' });
+      return;
+    }
     navigateTo({ url: `/pages/sell/next?params=${JSON.stringify(payload)}` });
   };
 
@@ -159,6 +165,7 @@ export default () => {
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"
+          maxlength={20}
           title={fields.song_name.label}
           type="text"
           value={payload.song_name}
@@ -224,24 +231,26 @@ export default () => {
           </Button>
         </View>
       </AtForm>
-      <AtModal isOpened={visible} onClose={closeModal}>
-        <AtModalHeader>样例参考</AtModalHeader>
-        <AtModalContent>
-          <View className="board bg-white">
-            <AtTextarea
-              customStyle={{ wordBreak: 'break-all' }}
-              className="border--bolder"
-              height="268"
-              value={simpleText}
-              count={false}
-              onChange={() => false}
-            />
-          </View>
-          <Button onClick={onModalConfirm} className="mt30" type="primary" circle>
-            复制到输入框
-          </Button>
-        </AtModalContent>
-      </AtModal>
+      {visible && (
+        <AtModal isOpened={visible} onClose={closeModal}>
+          <AtModalHeader>样例参考</AtModalHeader>
+          <AtModalContent>
+            <View className="board bg-white">
+              <AtTextarea
+                customStyle={{ wordBreak: 'break-all' }}
+                className="border--bolder"
+                height="268"
+                value={simpleText}
+                count={false}
+                onChange={() => false}
+              />
+            </View>
+            <Button onClick={onModalConfirm} className="mt30" type="primary" circle>
+              复制到输入框
+            </Button>
+          </AtModalContent>
+        </AtModal>
+      )}
     </>
   );
 };

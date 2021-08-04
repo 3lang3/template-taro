@@ -39,7 +39,7 @@ const project = new ci.Project({
 })();
 
 async function mpBuild() {
-  await exec('npx', ['@tarojs/cli', 'build', '--type', 'weapp']);
+  await exec('npx', ['--no-install', 'taro', 'build', '--type', 'weapp']);
 }
 
 async function mpUpload() {

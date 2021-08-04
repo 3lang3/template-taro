@@ -101,7 +101,7 @@ export default () => {
                 );
               if (+song.status === 3)
                 return (
-                  <Button circle size="xs" type="secondary" outline>
+                  <Button className="audit" circle size="xs" type="secondary" outline>
                     审核中
                   </Button>
                 );

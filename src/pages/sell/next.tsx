@@ -157,6 +157,9 @@ export default () => {
     if (isClaimType) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
+    if (payload.lyricist_content.length < 80 || payload.lyricist_content.length > 10000) {
+      showToast({ icon: 'none', title: '歌词最少输入80个字，最多输入10000字' });
+    }
     const { is_composer, is_lyricist, ...rest } = payload;
     if (!is_composer || !is_lyricist) {
       if (!rest.idcard) {

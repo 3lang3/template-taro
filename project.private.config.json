@@ -33,7 +33,7 @@
         {
           "name": "pages/settlein/index",
           "pathName": "pages/settlein/index",
-          "query": "identity=2",
+          "query": "",
           "scene": null
         },
         {

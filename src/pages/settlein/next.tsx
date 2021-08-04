@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
-import { eventCenter, hideToast, reLaunch, showToast, useRouter } from '@tarojs/taro';
+import { eventCenter, hideToast, reLaunch, showToast, useRouter, navigateTo } from '@tarojs/taro';
 import { View } from '@tarojs/components';
 import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
@@ -151,7 +151,12 @@ export default () => {
                       <Typography.Text size="sm" type="secondary">
                         我已阅读
                       </Typography.Text>
-                      <Typography.Link size="sm">《平台协议》</Typography.Link>
+                      <Typography.Link
+                        onClick={() => navigateTo({ url: '/pages/protocol/index' })}
+                        size="sm"
+                      >
+                        《平台协议》
+                      </Typography.Link>
                     </Flex>
                   ) as unknown as string,
                 },
