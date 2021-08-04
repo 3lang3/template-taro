@@ -7,9 +7,10 @@ import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import Flex from '@/components/Flex';
 import { useRequest } from 'ahooks';
-import { getHomeData } from '@/services/home';
+import { getHomeData, getTrends } from '@/services/home';
 import { FullPageLoader, FullPageError, rankRender } from '@/components/Chore';
 import Icon from '@/components/Icon';
+import ScrollLoadList from '@/components/ScrollLoadList';
 import config from '@/config';
 
 import './index.less';
@@ -100,12 +101,16 @@ const LatestNewsItem = (props) => {
   );
 };
 
-const LatestNews = ({ data = [] }: { data: any[] }) => {
+const LatestNews = () => {
   return (
-    <View className="latest-news">
-      {data.map((item, i) => (
-        <LatestNewsItem key={i} {...item} />
-      ))}
+    <View className="index-latest-news">
+      <Typography.Title level={2}>最新动态</Typography.Title>
+      <View className="latest-news">
+        <ScrollLoadList
+          request={getTrends}
+          row={(item, i) => <LatestNewsItem key={i} {...item} />}
+        />
+      </View>
     </View>
   );
 };
@@ -178,12 +183,7 @@ const IndexPageContent = () => {
             </View>
           </>
         )}
-        {Array.isArray(data.trends) && data.trends.length > 0 && (
-          <View className="index-latest-news">
-            <Typography.Title level={2}>最新动态</Typography.Title>
-            <LatestNews data={data.trends} />
-          </View>
-        )}
+        {+data.is_show_trends === 1 && <LatestNews />}
       </View>
     </>
   );

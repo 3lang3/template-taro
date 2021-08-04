@@ -49,6 +49,9 @@ const ScrollLoadList: <T extends Record<string, any>>(
       nomoreRef.current = _page.page >= _page.totalPage;
       setList([...list, ..._list]);
     },
+    onError: () => {
+      paginationRef.current = PAGINATION;
+    },
   });
 
   const reload = () => {
@@ -81,6 +84,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
 
   // 滚动加载
   useReachBottom(() => {
+    if (error) return;
     // 请求中或者没有更多数据 return
     if (loading || nomoreRef.current) return;
     const { page, pageSize } = paginationRef.current;
@@ -90,7 +94,12 @@ const ScrollLoadList: <T extends Record<string, any>>(
   return (
     <>
       {(() => {
-        if (error && !loading) return <Flex justify="center">加载失败</Flex>;
+        if (error && !loading)
+          return (
+            <Flex className="mt50" justify="center" direction="column">
+              <Empty message="加载失败" />
+            </Flex>
+          );
         if (nomoreRef.current && !list.length && !loading)
           return (
             <Flex className="mt50" justify="center" direction="column">
