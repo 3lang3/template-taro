@@ -95,15 +95,20 @@ export default () => {
   });
 
   // 认证信息详情
-  const { data: { data: detail } = { data: {} }, ...detailReq } = useRequest(applyDetail, {
+  const { data: { data: _detail } = { data: {} }, ...detailReq } = useRequest(applyDetail, {
     manual: true,
   });
+  const detail = _detail || {};
 
   useEffect(() => {
     // 审核状态填入初始值
     const getDetail = async () => {
       showToast({ icon: 'loading', title: '数据获取中...' });
       const { data } = await detailReq.run();
+      if (!data) {
+        return;
+      }
+
       const { province, city, district, idcard, real_name, email, mobile, stage_name } = data;
       set(
         (v) =>
@@ -120,7 +125,6 @@ export default () => {
     };
     // if (isAudit) {
     getDetail();
-    // return;
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -198,7 +202,9 @@ export default () => {
         </Flex>
       )}
 
-      <Typography.Text className="settlein-title">申请入驻词曲作者</Typography.Text>
+      <Typography.Text className="settlein-title">
+        申请入驻{isSinger ? '歌手' : '词曲作者'}
+      </Typography.Text>
       <AtForm className="custom-form settlein-form">
         <AtInput
           name="real_name"
