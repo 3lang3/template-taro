@@ -70,6 +70,6 @@ export async function generateCode(): Promise<string> {
   const res = await login();
   const { code, errMsg } = res;
   if (!code) throw new Error(`wx.login调用失败${errMsg}`);
-  setStorageSync('code', code);
+  setStorageSync(config.storage.code, code);
   return code;
 }

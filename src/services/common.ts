@@ -90,7 +90,7 @@ export function getSongStyleList() {
 }
 
 type GetDecryptedDataParams = {
-  code: string;
+  code?: string;
   encryptedData: string;
   iv: string;
 };
