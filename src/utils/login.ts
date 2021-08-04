@@ -73,3 +73,9 @@ export async function generateCode(): Promise<string> {
   setStorageSync(config.storage.code, code);
   return code;
 }
+
+/** 获取可用微信code */
+export async function getWechatCode() {
+  const localCodeAvailable = await checkCodeSession();
+  return localCodeAvailable ? undefined : await generateCode();
+}
