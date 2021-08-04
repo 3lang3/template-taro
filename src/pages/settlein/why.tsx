@@ -12,7 +12,7 @@ export default () => {
   if (error) return <FullPageError refresh={refresh} />;
   return (
     <View className="bg-white p-default">
-      <EditorRender content={data.content} />;
+      <EditorRender content={data.content} />
     </View>
   );
 };
