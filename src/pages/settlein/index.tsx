@@ -34,7 +34,13 @@ const fields = {
   },
   stage_name: {
     label: '艺名',
-    rules: [{ required: true }],
+    rules: [
+      { required: true },
+      {
+        pattern: /^[\u4E00-\u9FA5a-z]{1, 20}$/i,
+        message: '艺名只接收中英文，最多20个字符',
+      },
+    ],
   },
   area: {
     label: '请选择所在地区',
