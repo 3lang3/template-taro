@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
@@ -19,12 +19,14 @@ import './index.less';
 const WEB_UPLOAD_URL = config.boss + '/user/file';
 
 export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
+  const [pollingFileName, setPollingFileName] = useState('');
   const userData = useSelector((state) => state.common.data);
   // 轮询获取pc上传信息
   const pcReq = useRequest(getPcSongUrl, {
     manual: true,
     pollingInterval: 5000,
     onSuccess: ({ data }) => {
+      if (data.file_name) setPollingFileName(data.file_name);
       if (props.onChange && data.url) props.onChange(data.url, undefined, data);
     },
   });
@@ -47,6 +49,7 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
       onChange={props.onChange}
     >
       {({ file, remove, upload }) => {
+        const fileName = pollingFileName || file?.name;
         return (
           <>
             <Flex className="settlein-list__item border">
@@ -107,9 +110,9 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                       歌曲添加成功!
                     </Typography.Title>
                   </Flex>
-                  {file ? (
+                  {fileName ? (
                     <Typography.Text center type="light" size="sm">
-                      {file.name}
+                      {fileName}
                     </Typography.Text>
                   ) : null}
                 </Flex>

@@ -88,6 +88,8 @@ export default () => {
   const isAudit = params.status === 'audit';
   // 歌手认证
   const isSinger = +params.identity === IDENTITY.SINGER;
+  // 当前身份为词曲作者申请为歌手
+  const isAuthToSinger = isSinger && userData.identity === IDENTITY.AUTHOR;
 
   const [payload, set] = useState({
     real_name: '',
@@ -172,6 +174,7 @@ export default () => {
       city_name: areaRef.current[1],
       district_name: areaRef.current[2],
       identity: params.identity,
+      code,
       ...restValues,
     };
     if (isSinger) {
@@ -189,7 +192,7 @@ export default () => {
       return;
     }
     showToast({ icon: 'loading', title: '请求中...' });
-    const { msg } = await singerApply({ code, ...postValues });
+    const { msg } = await singerApply(postValues);
     await showToast({ title: msg, icon: 'success' });
     // 词曲作者 返回个人中心
     // @summry 需要刷新个人中心页面 不能用back只能relaunch
@@ -199,7 +202,7 @@ export default () => {
 
   return (
     <>
-      {detail.reason && (
+      {detail.reason && !isAuthToSinger && (
         <Flex className="settlein-reason" align="start">
           <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
           <Typography.Text type="danger">{detail.reason}</Typography.Text>
@@ -214,7 +217,7 @@ export default () => {
           name="real_name"
           title="真实姓名"
           type="text"
-          disabled={isAudit}
+          disabled={isAudit || isAuthToSinger}
           value={payload.real_name}
           onChange={(value) => set((v: any) => ({ ...v, real_name: value }))}
         />
@@ -222,7 +225,7 @@ export default () => {
           name="idcard"
           title="身份证号码"
           type="idcard"
-          disabled={isAudit}
+          disabled={isAudit || isAuthToSinger}
           value={payload.idcard}
           onChange={(value) => set((v: any) => ({ ...v, idcard: value }))}
         />
