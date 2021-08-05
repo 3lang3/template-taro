@@ -37,7 +37,7 @@ const fields = {
     rules: [
       { required: true },
       {
-        pattern: /^[\u4E00-\u9FA5a-z]{1, 20}$/i,
+        pattern: /^[\u4e00-\u9fa5a-z]{1,20}$/i,
         message: '艺名只接收中英文，最多20个字符',
       },
     ],
