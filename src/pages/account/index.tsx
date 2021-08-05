@@ -17,7 +17,6 @@ import {
   useDidShow,
   showModal,
   navigateBack,
-  hideToast,
 } from '@tarojs/taro';
 import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
@@ -28,6 +27,7 @@ import './index.less';
 
 export default () => {
   const { params } = useRouter<{ ids: string }>();
+  const uploaderRef = useRef<any>(null);
   const userData = useSelector((state) => state.common.data);
   const [payload, set] = useState<any>({
     id_card_image: undefined,
@@ -80,9 +80,7 @@ export default () => {
     }
     // 获取签署结果
     const getResult = async () => {
-      showToast({ icon: 'loading', title: '签约结果查询中' });
       await resultReq.run({ ids: params.ids, flow_id: schemaDataRef.current.flow_id });
-      hideToast();
     };
     getResult();
   });
@@ -115,7 +113,7 @@ export default () => {
 
   return (
     <>
-      {+detail.is_upload === 1 && (
+      {true && (
         <>
           <View className="bg-white mb20 p-default">
             <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>
@@ -124,22 +122,31 @@ export default () => {
             </Typography.Text>
           </View>
 
-          <Flex className="bg-white p-default" align="start">
+          <Flex className="bg-white p-default" align="stretch">
             <IDCardUploader
+              ref={uploaderRef}
               value={payload.id_card_image}
               onChange={(value) => set((v) => ({ ...v, id_card_image: value }))}
             />
-            <ContentPop
-              title="例图查看"
-              footer={false}
-              content={
-                <View className="idcard-simple">
-                  <Image className="idcard-simple__img" src="idcard-uploader__simple" />
-                </View>
-              }
-            >
-              <Typography.Link className="ml20">例图查看</Typography.Link>
-            </ContentPop>
+            <Flex className="ml20" direction="column" align="start" justify="between">
+              <ContentPop
+                title="例图查看"
+                footer={false}
+                content={
+                  <View className="idcard-simple">
+                    <Image
+                      className="idcard-simple__img"
+                      src="upload/2021-08-05/iTFI3MpEdHmBqxsyEY9jPVv1BgB1.jpg"
+                    />
+                  </View>
+                }
+              >
+                <Typography.Link>例图查看</Typography.Link>
+              </ContentPop>
+              <Button onClick={() => uploaderRef.current?.upload()} circle type="danger" size="sm">
+                {uploaderRef.current?.value ? '重新上传' : '上传图片'}
+              </Button>
+            </Flex>
           </Flex>
         </>
       )}

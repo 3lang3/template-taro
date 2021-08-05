@@ -7,20 +7,20 @@ import Typography from '@/components/Typography';
 import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
 import { CoverView, View } from '@tarojs/components';
-import { useEffect, memo, useRef, useState } from 'react';
+import { useEffect, memo, useRef, useState, forwardRef } from 'react';
 import { AtIndexes, AtListItem } from 'taro-ui';
 
 // 身份证上传
-export const IDCardUploader = (props: BaseUploadProps) => {
+export const IDCardUploader = forwardRef<{}, BaseUploadProps>((props, ref) => {
   return (
-    <UploaderWrapper type="image" {...props}>
-      {({ filePath, remove, upload }) => {
+    <UploaderWrapper ref={ref} type="image" {...props}>
+      {({ filePath, upload }) => {
         return (
           <View className="idcard-uploader">
             {filePath ? (
               <Image
                 mode="aspectFit"
-                onClick={remove}
+                onClick={upload}
                 src={filePath}
                 className="idcard-uploader__image"
               />
@@ -42,7 +42,7 @@ export const IDCardUploader = (props: BaseUploadProps) => {
       }}
     </UploaderWrapper>
   );
-};
+});
 
 // 银行选择
 export const BankPicker = memo<any>(
