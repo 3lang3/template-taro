@@ -42,6 +42,7 @@ export default () => {
     error,
     refresh,
   } = useRequest(getSingerBankInfo, {
+    manual: true,
     defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
       if (!data) return;
@@ -148,9 +149,9 @@ export default () => {
         </View>
         <BankPicker
           value={payload.bank_name}
-          onChange={(value) =>
-            set((v) => ({ ...v, bank_branch_name: undefined, bank_name: value }))
-          }
+          onChange={(value) => {
+            set((v) => ({ ...v, bank_name: value }));
+          }}
         />
         <AtInput
           name="bank_branch_name"
