@@ -6,7 +6,7 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
-import { View } from '@tarojs/components';
+import { CoverView, View } from '@tarojs/components';
 import { useEffect, useRef, useState } from 'react';
 import { AtIndexes, AtListItem } from 'taro-ui';
 
@@ -83,7 +83,7 @@ export const BankPicker = ({ value, onChange }) => {
         arrow={!title ? 'right' : undefined}
         onClick={() => setShow(true)}
       />
-      <View
+      <CoverView
         className={cls('bank-list__wrapper', {
           'bank-list__wrapper--active': show,
         })}
@@ -100,7 +100,7 @@ export const BankPicker = ({ value, onChange }) => {
           <View className="bank-list__title--placeholder" />
         </AtIndexes>
         ;
-      </View>
+      </CoverView>
     </>
   );
 };
