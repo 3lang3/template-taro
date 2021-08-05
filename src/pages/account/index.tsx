@@ -37,13 +37,14 @@ export default () => {
   });
 
   const {
-    data: { data: detail } = { data: {} },
+    data: { data: _detail } = { data: {} },
     loading,
     error,
     refresh,
   } = useRequest(getSingerBankInfo, {
     defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
+      if (!data) return;
       // 写入默认值
       set((v) => ({
         ...v,
@@ -53,6 +54,7 @@ export default () => {
       }));
     },
   });
+  const detail = _detail || {};
   const resultReq = useRequest(describeFlowBriefs, {
     manual: true,
     onSuccess: ({ data, type }) => {
@@ -92,7 +94,7 @@ export default () => {
     if (!payload.bank_card) return showToast({ icon: 'none', title: '请输银行卡号' });
     if (!payload.bank_branch_name) return showToast({ icon: 'none', title: '请输开户银行支行' });
     try {
-      showLoading({ title: '请稍后...' });
+      showLoading({ title: '请稍后...', mask: true });
       const { data } = await createSchemeUrl({ ids: params.ids, ...payload });
       schemaDataRef.current = data;
       hideLoading();
@@ -146,7 +148,9 @@ export default () => {
         </View>
         <BankPicker
           value={payload.bank_name}
-          onChange={(value) => set((v) => ({ ...v, bank_name: value }))}
+          onChange={(value) =>
+            set((v) => ({ ...v, bank_branch_name: undefined, bank_name: value }))
+          }
         />
         <AtInput
           name="bank_branch_name"
@@ -154,7 +158,10 @@ export default () => {
           placeholder="请输入支行名称"
           type="text"
           value={payload.bank_branch_name}
-          onChange={(value) => set((v: any) => ({ ...v, bank_branch_name: value }))}
+          onChange={(value) => {
+            set((v: any) => ({ ...v, bank_branch_name: value }));
+            return value;
+          }}
         />
         <AtInput
           name="bank_card"
@@ -162,7 +169,10 @@ export default () => {
           placeholder="请输入银行卡号"
           type="text"
           value={payload.bank_card}
-          onChange={(value) => set((v: any) => ({ ...v, bank_card: value }))}
+          onChange={(value) => {
+            set((v: any) => ({ ...v, bank_card: value }));
+            return value;
+          }}
         />
       </AtForm>
       <View className="p-lg mt50">
