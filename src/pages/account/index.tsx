@@ -6,7 +6,7 @@ import Typography from '@/components/Typography';
 import { MP_E_SIGN_APPID } from '@/config/constant';
 import { getSingerBankInfo } from '@/services/common';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { createSchemeUrl, describeFlowBriefs } from '@/services/song-manage';
+import { createSchemeUrl } from '@/services/song-manage';
 import { View } from '@tarojs/components';
 import {
   showToast,
@@ -14,7 +14,6 @@ import {
   navigateToMiniProgram,
   showLoading,
   useRouter,
-  useDidShow,
   showModal,
   navigateBack,
 } from '@tarojs/taro';
@@ -56,34 +55,8 @@ export default () => {
     },
   });
   const detail = _detail || {};
-  const resultReq = useRequest(describeFlowBriefs, {
-    manual: true,
-    onSuccess: ({ data, type }) => {
-      if (type === 1) return;
-      showModal({
-        title: '签约结果',
-        content: `${+data.status ? '签署成功' : '签署失败'}`,
-        success: ({ confirm }) => {
-          if (confirm) navigateBack();
-        },
-      });
-    },
-  });
 
-  const firstRenderRef = useRef(false);
   const schemaDataRef = useRef<any>({});
-
-  useDidShow(() => {
-    if (!firstRenderRef.current) {
-      firstRenderRef.current = true;
-      return;
-    }
-    // 获取签署结果
-    const getResult = async () => {
-      await resultReq.run({ ids: params.ids, flow_id: schemaDataRef.current.flow_id });
-    };
-    getResult();
-  });
 
   // 签约
   const onSignClick = async () => {
@@ -101,7 +74,19 @@ export default () => {
         appId: MP_E_SIGN_APPID,
         path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
         extraData: { name: userData.real_name, phone: userData.mobile },
-        success: () => {},
+        success: () => {
+          // 获取签署结果
+          showModal({
+            title: '提醒',
+            content: `协议签署成功后，我们需要通过短时间校验，如签约失败，可点击下方按钮重新再次尝试。`,
+            showCancel: true,
+            cancelText: '签约失败',
+            confirmText: '签约成功',
+            success: ({ confirm }) => {
+              if (confirm) navigateBack();
+            },
+          });
+        },
       });
     } catch (e) {
       hideLoading();

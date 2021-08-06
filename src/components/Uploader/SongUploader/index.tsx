@@ -99,7 +99,10 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                 >
                   {!props.disabled && (
                     <Icon
-                      onClick={remove}
+                      onClick={() => {
+                        remove();
+                        pcReq.run({ memberIds: userData.ids });
+                      }}
                       className="settlein-uploader__delete"
                       icon="icon-ashbin"
                     />
@@ -117,7 +120,13 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                   ) : null}
                 </Flex>
               ) : (
-                <View onClick={upload} className="border--bolder p-default">
+                <View
+                  onClick={() => {
+                    upload();
+                    pcReq.cancel();
+                  }}
+                  className="border--bolder p-default"
+                >
                   <Flex justify="center">
                     <Typography.Text type="secondary">添加歌曲</Typography.Text>
                     <Icon className="settlein-uploader__icon" icon="icon-quku_bofang" />
