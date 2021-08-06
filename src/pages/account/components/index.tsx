@@ -8,8 +8,9 @@ import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
 import { View } from '@tarojs/components';
 import { useEffect, memo, useRef, useState, forwardRef } from 'react';
-import { AtIndexes, AtListItem } from 'taro-ui';
-import { previewImage } from '@tarojs/taro';
+import { AtActivityIndicator, AtListItem } from 'taro-ui';
+import AtIndexes from '@/components/Indexes';
+import { getCurrentInstance, previewImage, setNavigationBarTitle } from '@tarojs/taro';
 
 // 身份证上传
 export const IDCardUploader = forwardRef<{}, BaseUploadProps>((props, ref) => {
@@ -43,7 +44,9 @@ export const IDCardUploader = forwardRef<{}, BaseUploadProps>((props, ref) => {
 // 银行选择
 export const BankPicker = memo<any>(
   ({ value, onChange }) => {
+    const { page } = getCurrentInstance();
     const [show, setShow] = useState(false);
+    const [showIndex, setShowIndex] = useState(false);
     const [title, setTitle] = useState<any>();
     const list = useSelector((state) => state.common.bankList);
     const innerEffect = useRef(false);
@@ -69,6 +72,11 @@ export const BankPicker = memo<any>(
       if (onChange) onChange(item.ids);
       setTitle(item.bank_name);
       setShow(false);
+      setNavigationBarTitle({ title: page?.config?.navigationBarTitleText as string });
+    };
+
+    const onTransitionEnd = () => {
+      setShowIndex(show);
     };
 
     return (
@@ -77,37 +85,27 @@ export const BankPicker = memo<any>(
           title="选择银行"
           extraText={title}
           arrow={!title ? 'right' : undefined}
-          onClick={() => setShow(true)}
+          onClick={() => {
+            setShow(true);
+            setNavigationBarTitle({ title: '选择银行' });
+          }}
         />
 
         <View
+          onTransitionEnd={onTransitionEnd}
           className={cls('bank-list__wrapper', {
             'bank-list__wrapper--active': show,
           })}
         >
           {(() => {
-            if (!list.length || !show) return null;
-            return (
-              <View style="height: 100vh;">
-                <View style="height: 100%;">
-                  <AtIndexes animation isVibrate={false} list={list as any} onClick={onClick}>
-                    <Flex justify="between" className="bank-list__title">
-                      <Typography.Title style={{ margin: 0 }} level={3}>
-                        选择银行
-                      </Typography.Title>
-                      <Flex
-                        onClick={() => setShow(false)}
-                        className="bank-list__close"
-                        justify="end"
-                      >
-                        <Icon icon="icon-pop_icon_shanchu" />
-                      </Flex>
-                    </Flex>
-                    <View className="bank-list__title--placeholder" />
-                  </AtIndexes>
-                </View>
-              </View>
-            );
+            if (!list.length) return null;
+            if (!showIndex)
+              return (
+                <Flex className="p-lg" align="center" justify="center">
+                  <AtActivityIndicator content="数据加载中..." />
+                </Flex>
+              );
+            return <AtIndexes animation list={list as any} onClick={onClick} />;
           })()}
         </View>
       </>
