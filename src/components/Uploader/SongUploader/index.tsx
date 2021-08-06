@@ -101,6 +101,11 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                     <Icon
                       onClick={() => {
                         remove();
+                        if (pollingFileName) {
+                          setPollingFileName('');
+                          pcReq.cancel();
+                          return;
+                        }
                         pcReq.run({ memberIds: userData.ids });
                       }}
                       className="settlein-uploader__delete"
