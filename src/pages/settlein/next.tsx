@@ -185,7 +185,7 @@ export default () => {
             提交成功，请耐心等待审核结果
           </Typography.Title>
           <Typography.Text center>
-            审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
+            审核结果将在48小时内通过系统消息通知，如有疑问请联系在线客服
           </Typography.Text>
           <View className="text-center">
             <Button onClick={onSubmitAfter} circle className="mt40" type="primary" inline>
