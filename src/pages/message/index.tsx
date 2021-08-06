@@ -34,15 +34,12 @@ export default function Index() {
     onError: () => setLoading(false),
   });
   useEffect(() => {
-    run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      dispatch(msgRefresh(res._list));
-    });
+    dispatch(msgRefresh([]));
+    run({ page: 1, pageSize: 10 });
   }, []);
   usePullDownRefresh(() => {
-    run({ page: 1, pageSize: 10 }).then(({ data: res, type, msg }) => {
-      if (type === 1) throw Error(msg);
-      dispatch(msgRefresh(res._list));
+    dispatch(msgRefresh([]));
+    run({ page: 1, pageSize: 10 }).then(() => {
       stopPullDownRefresh();
     });
   });
@@ -111,7 +108,7 @@ export default function Index() {
             </Typography.Text>
           </View>
         ))}
-        {totalCount > 6 && totalCount === list.length && (
+        {totalCount === list.length && (
           <Flex justify="center">
             <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
           </Flex>

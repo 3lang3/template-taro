@@ -49,6 +49,7 @@ const INITIAL_STATE: MessageStateType = {
 export default function messageReducer(state = INITIAL_STATE, { type, payload }) {
   switch (type) {
     case SETMESSAGELIST:
+      console.log(state.page);
       return { ...state, list: payload, page: state.page + 1 };
     case MESSAGETOTALPAGE:
       return {
