@@ -6,7 +6,7 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { BaseUploadProps } from '@/components/Uploader/PropsType';
 import { UploaderWrapper } from '@/components/Uploader/wrapper';
-import { CoverView, View } from '@tarojs/components';
+import { View } from '@tarojs/components';
 import { useEffect, memo, useRef, useState, forwardRef } from 'react';
 import { AtIndexes, AtListItem } from 'taro-ui';
 
@@ -85,7 +85,7 @@ export const BankPicker = memo<any>(
           onClick={() => setShow(true)}
         />
 
-        <CoverView
+        <View
           className={cls('bank-list__wrapper', {
             'bank-list__wrapper--active': show,
           })}
@@ -102,7 +102,7 @@ export const BankPicker = memo<any>(
             <View className="bank-list__title--placeholder" />
           </AtIndexes>
           ;
-        </CoverView>
+        </View>
       </>
     );
   },
