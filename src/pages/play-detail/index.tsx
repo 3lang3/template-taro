@@ -9,7 +9,14 @@ import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
+import {
+  navigateBack,
+  saveImageToPhotosAlbum,
+  showModal,
+  showToast,
+  useRouter,
+  useShareAppMessage,
+} from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import AuthWrapper from '@/components/AuthWrapper';
 import { IDENTITY } from '@/config/constant';
@@ -277,7 +284,20 @@ function ScoreButton({ detail }) {
             className="modal-score__swiper__wrapper"
             swiperClassName="modal-score__swiper"
             data={detail.composer_content || []}
-            itemRender={(img) => <Image className="modal-score__img" src={img} />}
+            itemRender={(img) => (
+              <Image
+                onLongPress={() =>
+                  saveImageToPhotosAlbum({
+                    filePath: getHttpPath(img),
+                    success: () => {
+                      showToast({ icon: 'success', title: '保存成功' });
+                    },
+                  })
+                }
+                className="modal-score__img"
+                src={img}
+              />
+            )}
           />
           <Typography.Text type="secondary" size="sm">
             长按保存图片
