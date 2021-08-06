@@ -21,6 +21,7 @@ import {
   operationMusicSongPrice,
   applyWantSong,
   delWantSong,
+  getMusicSongDetail,
 } from '@/services/song';
 import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
@@ -229,8 +230,15 @@ type PlayDetailParams = {
    * - score 词曲制作页面(根据身份展示不同视图)
    */
   type: 'score';
+  isLib: string;
   ids: string;
 };
+
+function getRequest(pageType, isLib) {
+  if (isLib) return getMusicSongDetail;
+  if (pageType === 'score') return getSaleSongDetail;
+  return getSongDetail;
+}
 
 const PageContentWrapper = () => {
   const { params } = useRouter<PlayDetailParams>();
@@ -239,7 +247,7 @@ const PageContentWrapper = () => {
     error,
     refresh,
     data: { data } = { data: {} },
-  } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
+  } = useRequest(getRequest(params.type, params.isLib), {
     defaultParams: [{ ids: params.ids }],
   });
   if (loading) return <FullPageLoader />;
