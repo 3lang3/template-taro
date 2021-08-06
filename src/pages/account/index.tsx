@@ -78,10 +78,9 @@ export default () => {
           // 获取签署结果
           showModal({
             title: '提醒',
-            content: `协议签署成功后，我们需要通过短时间校验，如签约失败，可点击下方按钮重新再次尝试。`,
-            showCancel: true,
-            cancelText: '签约失败',
-            confirmText: '签约成功',
+            content:
+              '“腾讯电子签”返回有在当前界面提示“协议若已签署，则签署协议会在五分钟内完成，无需重复前往签署，请耐心等待刷新“词曲管理”界面查看签署状态！”，按钮“知道了”，点击后回到“词曲管理”界面',
+            confirmText: '知道了',
             success: ({ confirm }) => {
               if (confirm) navigateBack();
             },
@@ -98,7 +97,7 @@ export default () => {
 
   return (
     <>
-      {true && (
+      {+detail.is_upload === 1 && (
         <>
           <View className="bg-white mb20 p-default">
             <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>

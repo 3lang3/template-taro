@@ -47,7 +47,6 @@ export const BankPicker = memo<any>(
     const [title, setTitle] = useState<any>();
     const list = useSelector((state) => state.common.bankList);
     const innerEffect = useRef(false);
-
     useEffect(() => {
       if (innerEffect.current) {
         innerEffect.current = false;
@@ -86,18 +85,30 @@ export const BankPicker = memo<any>(
             'bank-list__wrapper--active': show,
           })}
         >
-          <AtIndexes list={show ? list : ([] as any)} onClick={onClick}>
-            <Flex justify="between" className="bank-list__title">
-              <Typography.Title style={{ margin: 0 }} level={3}>
-                选择银行
-              </Typography.Title>
-              <Flex onClick={() => setShow(false)} className="bank-list__close" justify="end">
-                <Icon icon="icon-pop_icon_shanchu" />
-              </Flex>
-            </Flex>
-            <View className="bank-list__title--placeholder" />
-          </AtIndexes>
-          ;
+          {(() => {
+            if (!list.length || !show) return null;
+            return (
+              <View style="height: 100vh;">
+                <View style="height: 100%;">
+                  <AtIndexes animation isVibrate={false} list={list as any} onClick={onClick}>
+                    <Flex justify="between" className="bank-list__title">
+                      <Typography.Title style={{ margin: 0 }} level={3}>
+                        选择银行
+                      </Typography.Title>
+                      <Flex
+                        onClick={() => setShow(false)}
+                        className="bank-list__close"
+                        justify="end"
+                      >
+                        <Icon icon="icon-pop_icon_shanchu" />
+                      </Flex>
+                    </Flex>
+                    <View className="bank-list__title--placeholder" />
+                  </AtIndexes>
+                </View>
+              </View>
+            );
+          })()}
         </View>
       </>
     );
