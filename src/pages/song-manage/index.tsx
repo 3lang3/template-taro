@@ -72,7 +72,7 @@ export default () => {
             price1={song.composer_price}
             price2={song.lyricist_price}
             actionRender={() => {
-              if (+song.status === 0)
+              if (+song.status === 1)
                 return (
                   <Button
                     onClick={() =>
