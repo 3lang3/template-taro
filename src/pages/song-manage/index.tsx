@@ -7,6 +7,7 @@ import { navigateTo, showModal, showToast, useDidShow } from '@tarojs/taro';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
+import Icon from '@/components/Icon';
 import { useRef } from 'react';
 import './index.less';
 
@@ -60,6 +61,11 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
+  // 点击详情
+  function onIcon(node) {
+    navigateTo({ url: `/pages/sell/index?ids=${node.ids}` });
+  }
+
   return (
     <>
       <ScrollLoadList
@@ -71,6 +77,13 @@ export default () => {
             title={song.song_name}
             price1={song.composer_price}
             price2={song.lyricist_price}
+            iconRender={() => (
+              <Icon
+                onClick={() => onIcon(song)}
+                className="icon-icon_xiangqing"
+                icon="icon-icon_xiangqing"
+              />
+            )}
             actionRender={() => {
               if (+song.status === 1)
                 return (

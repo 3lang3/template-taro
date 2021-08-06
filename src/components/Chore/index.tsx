@@ -73,6 +73,7 @@ type ManageSongItemProps = {
   /** 词价格 */
   price2: string | number;
   actionRender?: () => React.ReactNode | string;
+  iconRender?: () => React.ReactNode | string;
   onClick?: () => void;
 };
 // 词曲管理子项
@@ -81,6 +82,7 @@ export const ManageSongItem = ({
   price1,
   price2,
   actionRender,
+  iconRender,
   ...props
 }: ManageSongItemProps) => {
   return (
@@ -97,6 +99,7 @@ export const ManageSongItem = ({
         </Flex>
       </View>
       {actionRender ? actionRender() : null}
+      {iconRender ? iconRender() : null}
     </Flex>
   );
 };

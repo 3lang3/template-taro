@@ -12,12 +12,14 @@ import {
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import { setClipboardData, navigateTo, showToast } from '@tarojs/taro';
+import { setClipboardData, navigateTo, showToast, getCurrentInstance } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
-import './index.less';
+import { getSaleSongDetail } from '@/services/song';
+import { useRequest } from 'ahooks';
 import { SellSteps } from './components';
+import './index.less';
 
 const simpleText = `创作目的：提高自己知名度，售卖版权取得收益
 创作完成时间：2016年5月20日
@@ -106,7 +108,36 @@ export default () => {
     explain: '',
   });
 
+  const { router } = getCurrentInstance();
+  const { ids } = (router as any).params;
+  if (ids) {
+    useRequest(getSaleSongDetail, {
+      defaultParams: [{ ids }],
+      onSuccess: ({ data: { song_name, sect, language, tag, introduce, explain } }) => {
+        const tagArr: Array<TagNode[]> = [[], [], []] as any;
+        pickerData().forEach((item, i) => {
+          item.children.forEach((child) => {
+            if (tag.includes(child.name) && tag.length) {
+              tagArr[i].push(child as any);
+              tag.shift();
+            }
+          });
+        });
+        onLabel(tagArr);
+        set((v) => ({
+          ...v,
+          song_name,
+          sect,
+          language,
+          introduce,
+          explain,
+        }));
+      },
+    });
+  }
+
   const onSubmit = () => {
+    console.log(payload);
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     if (!getTagText()) {
