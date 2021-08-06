@@ -9,28 +9,24 @@ import { UploaderWrapper } from '@/components/Uploader/wrapper';
 import { View } from '@tarojs/components';
 import { useEffect, memo, useRef, useState, forwardRef } from 'react';
 import { AtIndexes, AtListItem } from 'taro-ui';
+import { previewImage } from '@tarojs/taro';
 
 // 身份证上传
 export const IDCardUploader = forwardRef<{}, BaseUploadProps>((props, ref) => {
   return (
     <UploaderWrapper ref={ref} type="image" {...props}>
-      {({ filePath, upload }) => {
+      {({ filePath }) => {
         return (
           <View className="idcard-uploader">
             {filePath ? (
               <Image
                 mode="aspectFit"
-                onClick={upload}
+                onClick={() => previewImage({ urls: [filePath] })}
                 src={filePath}
                 className="idcard-uploader__image"
               />
             ) : (
-              <Flex
-                className="idcard-uploader__btn"
-                direction="column"
-                justify="center"
-                onClick={upload}
-              >
+              <Flex className="idcard-uploader__btn" direction="column" justify="center">
                 <Icon icon="icon-tab_wode" className="idcard-uploader__icon" />
                 <Typography.Text type="secondary" size="sm">
                   身份证正反面（附带签字）
