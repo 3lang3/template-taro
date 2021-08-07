@@ -87,6 +87,8 @@ export type MyState = {
   lyricist_content: string; // 歌词
   composer_content: string[]; // 曲谱照片
   composer_url: string;
+  reason: string; // 驳回原因
+  status: number; // 审核状态
 };
 
 type RouterParams = {
@@ -116,6 +118,8 @@ export default () => {
     lyricist_content: '', // 歌词
     composer_content: [], // 曲谱照片
     composer_url: '',
+    reason: '', // 驳回原因
+    status: -1, // 状态
   });
 
   useEffect(() => {
@@ -130,6 +134,8 @@ export default () => {
         // 写入默认值
         set((v) => ({
           ...v,
+          status: data.status,
+          reason: data.reason,
           composer: data.composer,
           is_composer: Boolean(data.is_composer),
           composer_original_price: +data.composer_original_price,
@@ -156,8 +162,7 @@ export default () => {
   });
 
   const onSubmit = async () => {
-    if (params.status && params.status !== '5') return;
-    if (isClaimType) return;
+    if (isClaimType || (payload.status !== -1 && payload.status !== 2)) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     if (payload.lyricist_content.length < 80 || payload.lyricist_content.length > 10000) {
@@ -236,10 +241,16 @@ export default () => {
 
   return (
     <>
+      {payload.reason && payload.status === 2 && (
+        <Flex align="start" className="settlein-reason">
+          <Typography.Text>驳回原因：</Typography.Text>
+          <Typography.Text style={{ flex: '1' }} type="danger">
+            {payload.reason}
+          </Typography.Text>
+        </Flex>
+      )}
       <SellSteps current={1} />
-      <AtForm
-        className={`custom-form ${params.status && params.status !== '5' && 'form-disabled'}}`}
-      >
+      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}}`}>
         <Flex justify="between" className="bg-white">
           <AtInput
             name="composer"
