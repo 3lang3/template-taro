@@ -10,10 +10,12 @@ export type P = {
   files: string[];
   onChange: (path: string[], files: chooseImage.ImageFile[]) => void;
   onRemove: (idx: number) => void;
+  disabled?: boolean;
 };
 
-export default ({ files, onChange, onRemove }) => {
+export default ({ files, onChange, onRemove, disabled }) => {
   function onUpload() {
+    if (disabled) return;
     chooseImage({
       count: 1, // 默认9
       sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有

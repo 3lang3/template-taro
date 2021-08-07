@@ -3,10 +3,19 @@ import { ManageSongItem } from '@/components/Chore';
 import Typography from '@/components/Typography';
 import { operationMusicSongPrice } from '@/services/song';
 import { delMusicSong, getMusicSongManageList } from '@/services/song-manage';
-import { navigateTo, showModal, showToast, useDidShow } from '@tarojs/taro';
+import {
+  navigateTo,
+  openDocument,
+  showModal,
+  showToast,
+  useDidShow,
+  downloadFile,
+  hideToast,
+} from '@tarojs/taro';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
+import config from '@/config';
 import Icon from '@/components/Icon';
 import { useRef } from 'react';
 import './index.less';
@@ -27,7 +36,8 @@ export default () => {
   });
 
   // 删除
-  const onDeleteClick = async (record) => {
+  const onDeleteClick = async (record, e) => {
+    e.stopPropagation();
     const { confirm } = await showModal({
       title: '提示',
       content: '确认删除',
@@ -40,7 +50,8 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
-  const onCounterOfferClick = (record) => {
+  const onCounterOfferClick = (record, e) => {
+    e.stopPropagation();
     selectRecordRef.current = record;
     counterOfferRef.current?.show({
       composer_price: record.composer_price,
@@ -61,129 +72,130 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
+  const previewPdf = (url, e) => {
+    e.stopPropagation();
+    try {
+      showToast({ icon: 'loading', title: '正在加载文件', mask: true });
+      downloadFile({
+        url,
+        success: ({ tempFilePath }) => {
+          hideToast();
+          openDocument({ filePath: tempFilePath });
+        },
+      });
+    } catch (error) {
+      showToast({ icon: 'none', title: '预览失败！' });
+    }
+  };
+
   return (
     <>
       <ScrollLoadList
         actionRef={actionRef}
         request={getMusicSongManageList}
-        row={(song) => (
-          <ManageSongItem
-            key={song.ids}
-            title={song.song_name}
-            price1={song.composer_price}
-            price2={song.lyricist_price}
-            iconRender={() => (
-              <Icon
-                onClick={() =>
-                  navigateTo({ url: `/pages/sell/index?ids=${song.ids}&status=${song.status}` })
-                }
-                className="icon-icon_xiangqing"
-                icon="icon-icon_xiangqing"
-              />
-            )}
-            actionRender={() => {
-              if (+song.status === 1)
-                return (
-                  <Button
-                    onClick={() =>
-                      navigateTo({
-                        url: `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}`,
-                      })
-                    }
-                    circle
-                    size="xs"
-                    type="primary"
-                  >
-                    待认领
-                  </Button>
-                );
-              if (+song.status === 2)
-                return (
-                  <Button
-                    onClick={() =>
-                      navigateTo({ url: `/pages/sell/next?pageType=claim&ids=${song.ids}` })
-                    }
-                    circle
-                    size="xs"
-                    type="primary"
-                    outline
-                  >
-                    词曲认领中
-                  </Button>
-                );
-              if (+song.status === 3)
-                return (
-                  <Button className="audit" circle size="xs" type="secondary" outline>
-                    审核中
-                  </Button>
-                );
-              if (+song.status === 4)
-                return (
-                  <>
+        row={(song) => {
+          let url = `/pages/sell/next?ids=${song.ids}&status=${song.status}`;
+
+          if (+song.status === 1) {
+            url = `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}&status=${song.status}`;
+          }
+
+          if (+song.status === 2) {
+            url = `/pages/sell/next?pageType=claim&ids=${song.ids}&status=${song.status}`;
+          }
+
+          if (+song.status === 6) {
+            url = `/pages/account/index?ids=${song.ids}&status=${song.status}`;
+          }
+
+          return (
+            <ManageSongItem
+              key={song.ids}
+              title={song.song_name}
+              price1={song.composer_price}
+              price2={song.lyricist_price}
+              onClick={() => (url ? navigateTo({ url }) : null)}
+              iconRender={() => <Icon className="icon-icon_xiangqing" icon="icon-icon_xiangqing" />}
+              actionRender={() => {
+                if (+song.status === 1)
+                  return (
+                    <Button circle size="xs" type="primary">
+                      待认领
+                    </Button>
+                  );
+                if (+song.status === 2)
+                  return (
+                    <Button circle size="xs" type="primary" outline>
+                      词曲认领中
+                    </Button>
+                  );
+                if (+song.status === 3)
+                  return (
+                    <Button className="audit" circle size="xs" type="secondary" outline>
+                      审核中
+                    </Button>
+                  );
+                if (+song.status === 4)
+                  return (
+                    <>
+                      <Button circle size="xs" type="secondary" outline>
+                        已通过
+                      </Button>
+                      <Typography.Text
+                        onClick={(e) => onCounterOfferClick(song, e)}
+                        className="ml20"
+                        type="primary"
+                      >
+                        改价
+                      </Typography.Text>
+                    </>
+                  );
+                if (+song.status === 5)
+                  return (
+                    <>
+                      <Button circle size="xs" type="danger" outline>
+                        已驳回
+                      </Button>
+                      <Typography.Text
+                        onClick={(e) => onDeleteClick(song, e)}
+                        className="ml20"
+                        type="danger"
+                      >
+                        删除
+                      </Typography.Text>
+                    </>
+                  );
+                if (+song.status === 6)
+                  return (
+                    <Button circle size="xs" type="primary">
+                      签署协议
+                    </Button>
+                  );
+                if (+song.status === 8)
+                  return (
                     <Button
-                      onClick={() =>
-                        navigateTo({ url: `/pages/play-detail/index?ids=${song.ids}&type=score` })
-                      }
+                      onClick={(e) => previewPdf(`${config.cdn}/${song.download_url}`, e)}
                       circle
                       size="xs"
                       type="secondary"
                       outline
                     >
-                      已通过
+                      签署完成
                     </Button>
-                    <Typography.Text
-                      onClick={() => onCounterOfferClick(song)}
-                      className="ml20"
-                      type="primary"
-                    >
-                      改价
-                    </Typography.Text>
-                  </>
-                );
-              if (+song.status === 5)
-                return (
-                  <>
-                    <Button circle size="xs" type="danger" outline>
-                      已驳回
+                  );
+
+                if (+song.status === 9)
+                  return (
+                    <Button circle size="xs" type="secondary" outline>
+                      交易完成
                     </Button>
-                    <Typography.Text
-                      onClick={() => onDeleteClick(song)}
-                      className="ml20"
-                      type="danger"
-                    >
-                      删除
-                    </Typography.Text>
-                  </>
-                );
-              if (+song.status === 6)
-                return (
-                  <Button
-                    onClick={() => navigateTo({ url: `/pages/account/index?ids=${song.ids}` })}
-                    circle
-                    size="xs"
-                    type="primary"
-                  >
-                    签署协议
-                  </Button>
-                );
-              if (+song.status === 8)
-                return (
-                  <Button circle size="xs" type="secondary" outline>
-                    签署完成
-                  </Button>
-                );
+                  );
 
-              if (+song.status === 9)
-                return (
-                  <Button circle size="xs" type="secondary" outline>
-                    交易完成
-                  </Button>
-                );
-
-              return null;
-            }}
-          />
-        )}
+                return null;
+              }}
+            />
+          );
+        }}
       />
       <ChangePriceModal
         ref={counterOfferRef}

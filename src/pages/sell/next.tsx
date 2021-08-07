@@ -96,6 +96,8 @@ type RouterParams = {
   pageType: 'claim';
   /** 受邀认领 */
   invited: string;
+  /** 词曲状态 */
+  status: string;
   /** 歌曲ids */
   ids: string;
 } & Record<string, any>;
@@ -121,6 +123,8 @@ export default () => {
     reason: '', // 驳回原因
     status: -1, // 状态
   });
+
+  const disabled = !!params.status;
 
   useEffect(() => {
     // 动态设置标题
@@ -217,6 +221,7 @@ export default () => {
 
   // 删除图片
   const onImgRemove = (index: number) => {
+    if (disabled) return;
     payload.composer_content.splice(index, 1);
     set((v: MyState) => ({ ...v, composer_content: [...v.composer_content] }));
   };
@@ -256,14 +261,14 @@ export default () => {
             name="composer"
             title={fields.composer.label}
             type="text"
-            disabled={radioDisabledRef.current.composer || isClaimType}
+            disabled={radioDisabledRef.current.composer || disabled}
             value={payload.composer as string}
             onChange={(value) => set((v: MyState) => ({ ...v, composer: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
             className="px24"
-            disabled={isClaimType}
+            disabled={disabled}
             value={payload.is_composer}
             onChange={(v) => radioClick(v, 'composer')}
             label="我是作曲人"
@@ -275,16 +280,13 @@ export default () => {
           arrow
           data={priceData}
           mode="selector"
-          disabled={isClaimType}
+          disabled={disabled}
           value={payload.composer_original_price}
           onChange={(value) => set((v: MyState) => ({ ...v, composer_original_price: value }))}
         />
-        <SongUploader
-          disabled={isClaimType}
-          value={payload.composer_url}
-          onChange={onSongUploader}
-        />
+        <SongUploader disabled={disabled} value={payload.composer_url} onChange={onSongUploader} />
         <ImagePicker
+          disabled={disabled}
           onRemove={onImgRemove}
           files={payload.composer_content}
           onChange={onImagePickerChange}
@@ -296,11 +298,11 @@ export default () => {
             title="作词人姓名"
             type="text"
             value={payload.lyricist as string}
-            disabled={radioDisabledRef.current.lyricist || isClaimType}
+            disabled={radioDisabledRef.current.lyricist || disabled}
             onChange={(value) => set((v: MyState) => ({ ...v, lyricist: value }))}
           />
           <Radio
-            disabled={isClaimType}
+            disabled={disabled}
             style={{ flex: '1 0 auto' }}
             className="px24"
             value={payload.is_lyricist}
@@ -309,7 +311,7 @@ export default () => {
           />
         </Flex>
         <CustomPicker
-          disabled={isClaimType}
+          disabled={disabled}
           title="请选择期望的词价格（最终以实际成功为准）"
           arrow
           data={priceData}
@@ -320,7 +322,7 @@ export default () => {
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
           <AtTextarea
-            disabled={isClaimType}
+            disabled={disabled}
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
@@ -340,7 +342,7 @@ export default () => {
               </Typography.Text>
               <InviteHelpIcon />
             </Flex>
-            {params.isInvited ? <ClaimButton detail={detail} /> : null}
+            {!!params.invited ? <ClaimButton detail={detail} /> : null}
           </Flex>
         )}
 
@@ -385,6 +387,7 @@ export default () => {
                 if (+detail.status === 0) return '审核中';
                 if (+detail.status === 1) return '已通过';
                 if (+detail.status === 3) return '交易完成';
+                if (+detail.status) return '返回';
                 return '提交';
               })()}
             </Button>
