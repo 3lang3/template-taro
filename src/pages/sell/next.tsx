@@ -124,8 +124,6 @@ export default () => {
     status: -1, // 状态
   });
 
-  const disabled = !!params.status;
-
   useEffect(() => {
     // 动态设置标题
     setNavigationBarTitle({ title: isClaimType ? '词曲认领' : '出售词曲' });
@@ -221,7 +219,6 @@ export default () => {
 
   // 删除图片
   const onImgRemove = (index: number) => {
-    if (disabled) return;
     payload.composer_content.splice(index, 1);
     set((v: MyState) => ({ ...v, composer_content: [...v.composer_content] }));
   };
@@ -261,14 +258,13 @@ export default () => {
             name="composer"
             title={fields.composer.label}
             type="text"
-            disabled={radioDisabledRef.current.composer || disabled}
+            disabled={radioDisabledRef.current.composer}
             value={payload.composer as string}
             onChange={(value) => set((v: MyState) => ({ ...v, composer: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
             className="px24"
-            disabled={disabled}
             value={payload.is_composer}
             onChange={(v) => radioClick(v, 'composer')}
             label="我是作曲人"
@@ -280,13 +276,11 @@ export default () => {
           arrow
           data={priceData}
           mode="selector"
-          disabled={disabled}
           value={payload.composer_original_price}
           onChange={(value) => set((v: MyState) => ({ ...v, composer_original_price: value }))}
         />
-        <SongUploader disabled={disabled} value={payload.composer_url} onChange={onSongUploader} />
+        <SongUploader value={payload.composer_url} onChange={onSongUploader} />
         <ImagePicker
-          disabled={disabled}
           onRemove={onImgRemove}
           files={payload.composer_content}
           onChange={onImagePickerChange}
@@ -298,11 +292,10 @@ export default () => {
             title="作词人姓名"
             type="text"
             value={payload.lyricist as string}
-            disabled={radioDisabledRef.current.lyricist || disabled}
+            disabled={radioDisabledRef.current.lyricist}
             onChange={(value) => set((v: MyState) => ({ ...v, lyricist: value }))}
           />
           <Radio
-            disabled={disabled}
             style={{ flex: '1 0 auto' }}
             className="px24"
             value={payload.is_lyricist}
@@ -311,7 +304,6 @@ export default () => {
           />
         </Flex>
         <CustomPicker
-          disabled={disabled}
           title="请选择期望的词价格（最终以实际成功为准）"
           arrow
           data={priceData}
@@ -322,7 +314,6 @@ export default () => {
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
           <AtTextarea
-            disabled={disabled}
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
