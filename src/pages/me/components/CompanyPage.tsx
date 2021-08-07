@@ -5,14 +5,27 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { getMechanismInfo } from '@/services/me';
 import { View } from '@tarojs/components';
-import { navigateTo, requestSubscribeMessage } from '@tarojs/taro';
+import { navigateTo, requestSubscribeMessage, useDidShow } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useSelector } from 'react-redux';
 import './company.less';
 
 export default () => {
   const userData = useSelector((state) => state.common.data);
-  const { data: { data } = { data: {} }, loading, error, refresh } = useRequest(getMechanismInfo);
+  const {
+    data: { data } = { data: {} },
+    loading,
+    error,
+    run,
+    refresh,
+  } = useRequest(getMechanismInfo, {
+    manual: true,
+  });
+
+  useDidShow(() => {
+    run();
+  });
+
   if (loading && !data.song) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
 
