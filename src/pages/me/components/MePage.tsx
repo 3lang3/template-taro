@@ -10,9 +10,9 @@ import { getHomePageDetail, MePageResType } from '@/services/me';
 import { updateUserData } from '@/state/common';
 import { getWechatCode, userLogin } from '@/utils/login';
 import { View } from '@tarojs/components';
-import { getStorageSync, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
+import { getStorageSync, navigateTo, setStorageSync, showToast, useDidShow } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 
@@ -35,15 +35,11 @@ export default () => {
     { manual: true },
   );
 
-  useEffect(() => {
-    const getDetail = async () => {
-      await detailReq.run();
-    };
-    if (isLogin && !page.ids) {
-      getDetail();
+  useDidShow(() => {
+    if (isLogin) {
+      detailReq.run();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLogin]);
+  });
 
   // 用户登录
   const onUserProfile = async () => {
