@@ -42,13 +42,12 @@ export const IDCardUploader = forwardRef<{}, BaseUploadProps>((props, ref) => {
 });
 
 // 银行选择
-export const BankPicker = memo<any>(
-  ({ value, onChange }) => {
+const BankPickerContent = ({ value, onChange, list }) => {
+  {
     const { page } = getCurrentInstance();
     const [show, setShow] = useState(false);
     const [showIndex, setShowIndex] = useState(false);
     const [title, setTitle] = useState<any>();
-    const list = useSelector((state) => state.common.bankList);
     const innerEffect = useRef(false);
     useEffect(() => {
       if (innerEffect.current) {
@@ -110,6 +109,13 @@ export const BankPicker = memo<any>(
         </View>
       </>
     );
+  }
+};
+export const BankPicker = memo<any>(
+  (props) => {
+    const list = useSelector((state) => state.common.bankList);
+    if (!list.length) return null;
+    return <BankPickerContent {...props} list={list} />;
   },
   (prev, next) => prev.value === next.value,
 );
@@ -117,8 +123,8 @@ export const BankPicker = memo<any>(
 // 通过value获取银行名称
 function getTitleFromValue(data, value) {
   const _data = data.reduce((a, v) => {
-    a.push(...v.items);
+    a = [...a, ...v.items];
     return a;
   }, []);
-  return _data.find((el) => +el.ids === value);
+  return _data.find((el) => +el.ids === +value);
 }
