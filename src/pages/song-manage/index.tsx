@@ -61,11 +61,6 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
-  // 点击详情
-  function onIcon(node) {
-    navigateTo({ url: `/pages/sell/index?ids=${node.ids}` });
-  }
-
   return (
     <>
       <ScrollLoadList
@@ -79,7 +74,9 @@ export default () => {
             price2={song.lyricist_price}
             iconRender={() => (
               <Icon
-                onClick={() => onIcon(song)}
+                onClick={() =>
+                  navigateTo({ url: `/pages/sell/index?ids=${song.ids}&status=${song.status}` })
+                }
                 className="icon-icon_xiangqing"
                 icon="icon-icon_xiangqing"
               />
