@@ -109,7 +109,7 @@ export default () => {
   });
 
   const { router } = getCurrentInstance();
-  const { ids } = (router as any).params;
+  const { ids, status } = (router as any).params;
   if (ids) {
     useRequest(getSaleSongDetail, {
       defaultParams: [{ ids }],
@@ -117,7 +117,7 @@ export default () => {
         const tagArr: Array<TagNode[]> = [[], [], []] as any;
         pickerData().forEach((item, i) => {
           item.children.forEach((child) => {
-            if (tag.includes(child.name) && tag.length) {
+            if (tag && tag.includes(child.name) && tag.length) {
               tagArr[i].push(child as any);
               tag.shift();
             }
@@ -127,8 +127,8 @@ export default () => {
         set((v) => ({
           ...v,
           song_name,
-          sect,
-          language,
+          sect: songStyle.find((item) => item.name === sect)?.id as any,
+          language: langData.find((item) => item.name === language)?.id as any,
           introduce,
           explain,
         }));
@@ -137,7 +137,6 @@ export default () => {
   }
 
   const onSubmit = () => {
-    console.log(payload);
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     if (!getTagText()) {
@@ -148,7 +147,12 @@ export default () => {
       showToast({ icon: 'none', title: '作品名最多输20个字' });
       return;
     }
-    navigateTo({ url: `/pages/sell/next?params=${JSON.stringify(payload)}` });
+    navigateTo({
+      url: `/pages/sell/next?params=${JSON.stringify({
+        ...payload,
+        ids,
+      })}&ids=${ids || ''}&status=${status || ''}`,
+    });
   };
 
   const closeModal = () => setVisible(false);
@@ -188,11 +192,10 @@ export default () => {
       return String(myArr);
     };
   }, [payload.tag]);
-
   return (
     <>
       <SellSteps />
-      <AtForm className="custom-form">
+      <AtForm className={`custom-form ${status && status !== '5' && 'form-disabled'}`}>
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"

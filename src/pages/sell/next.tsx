@@ -120,7 +120,7 @@ export default () => {
     // 动态设置标题
     setNavigationBarTitle({ title: isClaimType ? '词曲认领' : '出售词曲' });
     // 认领状态 获取词曲详情
-    if (params.ids && isClaimType) {
+    if (params.ids) {
       const getDetail = async () => {
         showLoading({ title: '加载中...' });
         const { data } = await getSaleSongDetail({ ids: params.ids });
@@ -154,6 +154,7 @@ export default () => {
   });
 
   const onSubmit = async () => {
+    if (params.status && params.status !== '5') return;
     if (isClaimType) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
@@ -234,7 +235,9 @@ export default () => {
   return (
     <>
       <SellSteps current={1} />
-      <AtForm className="custom-form">
+      <AtForm
+        className={`custom-form ${params.status && params.status !== '5' && 'form-disabled'}}`}
+      >
         <Flex justify="between" className="bg-white">
           <AtInput
             name="composer"
@@ -361,7 +364,7 @@ export default () => {
             3、上传者本人需拥有词曲的完整权利。禁止盗用他人作品，一经发现娱当家将严厉追究相关法律责任，且永久冻结违规账号
           </Typography.Text>
         </View>
-        {/* 认领模式没有提交按钮 */}
+        {/* 认领模式没有提交按钮  出售词曲驳回才显示按钮 */}
         {!isClaimType && (
           <View className="p-default">
             <Button className="mt50 mb50" onClick={onSubmit} circle type="primary" size="lg">
