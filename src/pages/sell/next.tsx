@@ -105,7 +105,6 @@ type RouterParams = {
 export default () => {
   const { params } = useRouter<RouterParams>();
   const isClaimType = params.pageType === 'claim';
-  const disabled = isClaimType || !!params.status;
   const [detail, setDetail] = useState<any>({});
   const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
@@ -124,6 +123,8 @@ export default () => {
     reason: '', // 驳回原因
     status: -1, // 状态
   });
+
+  const disabled = !!params.status;
 
   useEffect(() => {
     // 动态设置标题

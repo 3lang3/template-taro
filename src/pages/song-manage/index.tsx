@@ -94,18 +94,18 @@ export default () => {
         actionRef={actionRef}
         request={getMusicSongManageList}
         row={(song) => {
-          let url = `/pages/sell/next?ids=${song.ids}`;
+          let url = `/pages/sell/next?ids=${song.ids}&status=${song.status}`;
 
           if (+song.status === 1) {
-            url = `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}`;
+            url = `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}&status=${song.status}`;
           }
 
           if (+song.status === 2) {
-            url = `/pages/sell/next?pageType=claim&ids=${song.ids}`;
+            url = `/pages/sell/next?pageType=claim&ids=${song.ids}&status=${song.status}`;
           }
 
           if (+song.status === 6) {
-            url = `/pages/account/index?ids=${song.ids}`;
+            url = `/pages/account/index?ids=${song.ids}&status=${song.status}`;
           }
 
           return (
