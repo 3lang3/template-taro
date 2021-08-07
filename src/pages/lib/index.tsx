@@ -159,7 +159,7 @@ const LibPageContent = () => {
                         title="歌词查看"
                         content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
                       >
-                        <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                        <Icon icon="icon-quku-geci" className="lib-song-action__item" />
                       </ContentPop>
                     )}
                     <Icon
