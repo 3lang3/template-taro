@@ -3,6 +3,7 @@ import { CircleIndexList } from '@/components/Chore';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import Image from '@/components/Image';
+import ProScrollView from '@/components/ProScrollView';
 import Typography from '@/components/Typography';
 import { IDENTITY } from '@/config/constant';
 import { getDecryptedData } from '@/services/common';
@@ -10,9 +11,9 @@ import { getHomePageDetail, MePageResType } from '@/services/me';
 import { updateUserData } from '@/state/common';
 import { getWechatCode, userLogin } from '@/utils/login';
 import { View } from '@tarojs/components';
-import { getStorageSync, navigateTo, setStorageSync, showToast, useDidShow } from '@tarojs/taro';
+import { getStorageSync, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AtModal, AtModalContent, AtModalHeader } from 'taro-ui';
 
@@ -35,11 +36,12 @@ export default () => {
     { manual: true },
   );
 
-  useDidShow(() => {
+  useEffect(() => {
     if (isLogin) {
       detailReq.run();
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLogin]);
 
   // 用户登录
   const onUserProfile = async () => {
@@ -129,7 +131,7 @@ export default () => {
   };
 
   return (
-    <>
+    <ProScrollView onRefresherRefresh={detailReq.run}>
       <Flex justify="between" direction="column" className="page-me">
         <View style={{ flex: 1, width: '100%' }}>
           <Flex className="me-header">
@@ -356,6 +358,6 @@ export default () => {
           </View>
         </AtModalContent>
       </AtModal>
-    </>
+    </ProScrollView>
   );
 };

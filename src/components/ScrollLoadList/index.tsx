@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AtActivityIndicator } from 'taro-ui';
 import { Empty } from '../Chore';
 import Flex from '../Flex';
+import ProScrollView from '../ProScrollView';
 import Typography from '../Typography';
 
 export type ActionType<T = {}> = {
@@ -47,7 +48,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
       if (type === 1) throw Error(msg);
       paginationRef.current = _page;
       nomoreRef.current = _page.page >= _page.totalPage;
-      setList([...list, ..._list]);
+      setList(_page.page === 1 ? _list : [...list, ..._list]);
     },
     onError: () => {
       paginationRef.current = PAGINATION;
@@ -56,6 +57,11 @@ const ScrollLoadList: <T extends Record<string, any>>(
 
   const reload = () => {
     setList([]);
+    paginationRef.current = PAGINATION;
+    run(params);
+  };
+
+  const pulldown = () => {
     paginationRef.current = PAGINATION;
     run(params);
   };
@@ -106,7 +112,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
               {emptyRender()}
             </Flex>
           );
-        return list.map(props.row);
+        return <ProScrollView onRefresherRefresh={pulldown}>{list.map(props.row)}</ProScrollView>;
       })()}
       {loading && (
         <Flex justify="center">
