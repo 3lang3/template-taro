@@ -86,7 +86,9 @@ export default () => {
                 return (
                   <Button
                     onClick={() =>
-                      navigateTo({ url: `/pages/sell/next?pageType=claim&ids=${song.ids}` })
+                      navigateTo({
+                        url: `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}`,
+                      })
                     }
                     circle
                     size="xs"

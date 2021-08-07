@@ -92,6 +92,8 @@ export type MyState = {
 type RouterParams = {
   /** 认领模式 */
   pageType: 'claim';
+  /** 受邀认领 */
+  invited: string;
   /** 歌曲ids */
   ids: string;
 } & Record<string, any>;
@@ -327,7 +329,7 @@ export default () => {
               </Typography.Text>
               <InviteHelpIcon />
             </Flex>
-            <ClaimButton detail={detail} />
+            {params.isInvited ? <ClaimButton detail={detail} /> : null}
           </Flex>
         )}
 
@@ -443,7 +445,6 @@ function ClaimButton({ detail }) {
       reLaunch({ url: '/pages/me/index' });
     }, 1500);
   };
-
   if (detail.is_claim) return null;
   return (
     <>

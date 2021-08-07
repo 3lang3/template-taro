@@ -5,7 +5,12 @@ import Image from '@/components/Image';
 import Typography from '@/components/Typography';
 import { getMechanismInfo } from '@/services/me';
 import { View } from '@tarojs/components';
-import { navigateTo, requestSubscribeMessage } from '@tarojs/taro';
+import {
+  navigateTo,
+  requestSubscribeMessage,
+  usePullDownRefresh,
+  stopPullDownRefresh,
+} from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useSelector } from 'react-redux';
 import './company.less';
@@ -13,8 +18,13 @@ import './company.less';
 export default () => {
   const userData = useSelector((state) => state.common.data);
   const { data: { data } = { data: {} }, loading, error, refresh } = useRequest(getMechanismInfo);
-  if (loading) return <FullPageLoader />;
+  if (loading && !data.song) return <FullPageLoader />;
   if (error) return <FullPageError refresh={refresh} />;
+
+  usePullDownRefresh(async () => {
+    await refresh();
+    stopPullDownRefresh();
+  });
 
   const handleClick = async () => {
     // 消息通知订阅

@@ -36,7 +36,10 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
     if (userData.ids) {
       pcReq.run({ memberIds: userData.ids });
     }
-    return () => pcReq.cancel();
+    return () => {
+      pcReq.cancel();
+      rmPcSongUrl({ memberIds: userData.ids });
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData.ids]);
 
