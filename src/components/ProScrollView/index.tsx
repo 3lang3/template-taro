@@ -6,7 +6,7 @@ export type ProScrollViewAction = {
   refresh: () => void;
 };
 
-type ProScrollViewProps = {
+export type ProScrollViewProps = {
   children?: React.ReactNode;
 } & ScrollViewProps;
 

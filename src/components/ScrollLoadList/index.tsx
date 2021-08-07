@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AtActivityIndicator } from 'taro-ui';
 import { Empty } from '../Chore';
 import Flex from '../Flex';
-import ProScrollView from '../ProScrollView';
+import ProScrollView, { ProScrollViewProps } from '../ProScrollView';
 import Typography from '../Typography';
 
 export type ActionType<T = {}> = {
@@ -25,6 +25,8 @@ type ScrollLoadListProps<T = {}> = {
   emptyRender?: () => React.ReactNode;
   /** 初始化的参数，可以操作 list */
   actionRef?: React.MutableRefObject<ActionType | undefined>;
+  /** 下拉刷新 */
+  refresh?: boolean | Omit<ProScrollViewProps, 'refresherEnabled' | 'onRefresherRefresh'>;
 };
 
 /**
@@ -112,7 +114,13 @@ const ScrollLoadList: <T extends Record<string, any>>(
               {emptyRender()}
             </Flex>
           );
-        return <ProScrollView onRefresherRefresh={pulldown}>{list.map(props.row)}</ProScrollView>;
+        return props.refresh ? (
+          <ProScrollView {...(props.refresh as any)} onRefresherRefresh={pulldown}>
+            {list.map(props.row)}
+          </ProScrollView>
+        ) : (
+          list.map(props.row)
+        );
       })()}
       {loading && (
         <Flex justify="center">
