@@ -72,7 +72,8 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
-  const previewPdf = (url) => {
+  const previewPdf = (url, e) => {
+    e.stopPropagation();
     try {
       showToast({ icon: 'loading', title: '正在加载文件', mask: true });
       downloadFile({
@@ -105,12 +106,6 @@ export default () => {
 
           if (+song.status === 6) {
             url = `/pages/account/index?ids=${song.ids}`;
-          }
-
-          if (+song.status === 8) {
-            url = `/pages/webview/custom?src=${encodeURIComponent(
-              `${config.cdn}/${song.download_url}`,
-            )}`;
           }
 
           return (
@@ -179,7 +174,7 @@ export default () => {
                 if (+song.status === 8)
                   return (
                     <Button
-                      onClick={() => previewPdf(song.download_url)}
+                      onClick={(e) => previewPdf(`${config.cdn}/${song.download_url}`, e)}
                       circle
                       size="xs"
                       type="secondary"
