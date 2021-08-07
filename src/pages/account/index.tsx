@@ -41,7 +41,6 @@ export default () => {
     error,
     refresh,
   } = useRequest(getSingerBankInfo, {
-    manual: true,
     defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
       if (!data) return;
@@ -97,7 +96,7 @@ export default () => {
 
   return (
     <>
-      {+detail.is_upload === 1 && (
+      {+detail.is_upload !== 0 && (
         <>
           <View className="bg-white mb20 p-default">
             <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>
