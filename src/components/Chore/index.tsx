@@ -43,14 +43,19 @@ type LibSongItemProps = {
   title: string;
   tags?: string[];
   actionRender?: () => React.ReactNode | string;
+  isRead?: boolean;
   onClick?: () => void;
 };
 // 曲库歌曲子项
-export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItemProps) => {
+export const LibSongItem = ({ title, isRead, tags, actionRender, ...props }: LibSongItemProps) => {
   return (
     <Flex justify="between" className="lib-song-item" {...props}>
       <View className="lib-song-item__content">
-        <Typography.Title className="lib-song-item__title" level={3} ellipsis>
+        <Typography.Title
+          className={`lib-song-item__title ${isRead && 'lib-song-item__title--read'}`}
+          level={3}
+          ellipsis
+        >
           {title}
         </Typography.Title>
         {Array.isArray(tags) && (

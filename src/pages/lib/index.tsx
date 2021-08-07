@@ -149,6 +149,7 @@ const LibPageContent = () => {
           row={(song, i) => (
             <LibSongItem
               key={i}
+              isRead={song.is_read === 1}
               title={song.song_name}
               tags={[song.sect, song.language]}
               actionRender={() => {
