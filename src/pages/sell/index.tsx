@@ -72,6 +72,7 @@ export type State = {
   tag: TagNode[];
   introduce: string;
   explain: string;
+  reason: string;
 };
 
 export default () => {
@@ -106,6 +107,7 @@ export default () => {
     tag: [],
     introduce: '',
     explain: '',
+    reason: '', // 驳回原因
   });
 
   const { router } = getCurrentInstance();
@@ -113,7 +115,7 @@ export default () => {
   if (ids) {
     useRequest(getSaleSongDetail, {
       defaultParams: [{ ids }],
-      onSuccess: ({ data: { song_name, sect, language, tag, introduce, explain } }) => {
+      onSuccess: ({ data: { song_name, sect, language, tag, introduce, explain, reason } }) => {
         const tagArr: Array<TagNode[]> = [[], [], []] as any;
         pickerData().forEach((item, i) => {
           item.children.forEach((child) => {
@@ -126,6 +128,7 @@ export default () => {
         onLabel(tagArr);
         set((v) => ({
           ...v,
+          reason: reason,
           song_name,
           sect: songStyle.find((item) => item.name === sect)?.id as any,
           language: langData.find((item) => item.name === language)?.id as any,

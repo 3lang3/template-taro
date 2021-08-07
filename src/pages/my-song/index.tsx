@@ -38,14 +38,14 @@ export default () => {
               return (
                 <Flex justify="end">
                   {+song.is_appoint ? (
-                    <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                    <Icon icon="icon-quku-geci" className="lib-song-action__item" />
                   ) : null}
                   <>
                     <ContentPop
                       title="歌词查看"
                       content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
                     >
-                      <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+                      <Icon icon="icon-quku-geci" className="lib-song-action__item" />
                     </ContentPop>
                     <Icon
                       onClick={() =>

@@ -7,6 +7,7 @@ export type Node = {
   sect: string; // 曲风
   language: string; // 语种
   lyricist_content: string; // 歌词
+  is_read: 0 | 1; // 是否已读 0未读，1已读
 };
 
 // 曲库列表

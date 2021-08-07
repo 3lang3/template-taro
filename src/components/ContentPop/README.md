@@ -7,6 +7,6 @@ import Icon from '@/components/Icon';
 import ContentPop from '@/components/ContentPop';
 
 <ContentPop title="歌词查看" content="显示内容">
-  <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
+  <Icon icon="icon-quku-geci" className="lib-song-action__item" />
 </ContentPop>;
 ```

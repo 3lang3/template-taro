@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components';
-import React, { useState, ReactElement } from 'react';
+import React, { useState, ReactElement, useEffect } from 'react';
 import { showToast } from '@tarojs/taro';
 import { AtButton } from 'taro-ui';
 import { useBoolean } from 'ahooks';
@@ -24,10 +24,32 @@ export type P = {
   children?: ReactElement;
 };
 
-export default ({ data, title, contentTitle, max, onSubmit, onCancel, children, toastMsg }: P) => {
+export default ({
+  data,
+  title,
+  contentTitle,
+  max,
+  onSubmit,
+  onCancel,
+  children,
+  toastMsg,
+  value,
+}: P) => {
   const [visible, { setTrue, setFalse }] = useBoolean(false);
   const [active, setActive] = useState(0);
   const [contentActive, setContentActive] = useState<Node[][]>([[], [], []]); // 返回数据
+  useEffect(() => {
+    if (
+      value?.length &&
+      !contentActive[0].length &&
+      !contentActive[1].length &&
+      !contentActive[2].length
+    ) {
+      value.forEach((item, i) => {
+        contentActive[i] = item.value;
+      });
+    }
+  }, [value]);
   function onContent(node: Node) {
     const index = contentActive[active].findIndex((item) => item.value === node.value);
     if (index >= 0) {
