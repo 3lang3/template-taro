@@ -49,7 +49,9 @@ export default () => {
                     </ContentPop>
                     <Icon
                       onClick={() =>
-                        navigateTo({ url: `/pages/play-detail/index?ids=${song.ids}&type=score` })
+                        navigateTo({
+                          url: `/pages/play-detail/index?ids=${song.ids}&type=score&isLib=1`,
+                        })
                       }
                       icon="icon-quku_bofang"
                       className="lib-song-action__item"
