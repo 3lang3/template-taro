@@ -44,9 +44,7 @@ const generateRequest = (prefix: string) => {
   ) => {
     const tk = getStorageSync(config.storage.tokenKey);
     if (tk) {
-      header[config.storage.tokenKey] =
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJneWdtYWxsLmNvbSIsImF1ZCI6Imd5Z21hbGwuY29tIiwianRpIjoiYXNkZmEiLCJuYmYiOjE2MjgxMzE0NjMuNzU0NTYyLCJpYXQiOjE2MjgxMzE0NjMuNzU0NTYyLCJleHAiOjE2MjkxNjgyNjMuNzU0NTYyLCJtZW1iZXIiOnsiaWRzIjo1MjM2MDQ1OTksImlzX2Rpc2FibGUiOjB9fQ.sPqL9vcvI_1p94IU2Z34upXk1SKyinQJoaPsbrj3EI4' ||
-        tk;
+      header[config.storage.tokenKey] = tk;
     }
     opts = opts || {};
     opts.header = { ...header, ...opts.header };
