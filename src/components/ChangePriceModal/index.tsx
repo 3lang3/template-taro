@@ -62,6 +62,12 @@ export default forwardRef<ChangePriceModalType, ChangePriceModalProps>(
       } else if (rest.composer_price > 9999 || rest.lyricist_price > 9999) {
         showToast({ icon: 'none', title: '价格不能高于9999' });
         return;
+      } else if (
+        String(rest.composer_price).includes('.') ||
+        String(rest.lyricist_price).includes('.')
+      ) {
+        showToast({ icon: 'none', title: '价格必须为整数' });
+        return;
       }
       onConfirm?.(showChangePriceRadio ? payload : rest);
     };
