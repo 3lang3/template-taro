@@ -202,7 +202,7 @@ export default () => {
 
   return (
     <>
-      {detail.reason && !isAuthToSinger && (
+      {detail.reason && !isAuthToSinger && !isAudit && (
         <Flex className="settlein-reason" align="start">
           <Typography.Text style={{ flex: '1 0 auto' }}>驳回原因：</Typography.Text>
           <Typography.Text type="danger">{detail.reason}</Typography.Text>
