@@ -16,6 +16,7 @@ import { setClipboardData, navigateTo, showToast, getCurrentInstance } from '@ta
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
+import Flex from '@/components/Flex';
 import { getSaleSongDetail } from '@/services/song';
 import { useRequest } from 'ahooks';
 import { SellSteps } from './components';
@@ -73,6 +74,7 @@ export type State = {
   introduce: string;
   explain: string;
   reason: string;
+  status: number;
 };
 
 export default () => {
@@ -108,14 +110,17 @@ export default () => {
     introduce: '',
     explain: '',
     reason: '', // 驳回原因
+    status: 0,
   });
 
   const { router } = getCurrentInstance();
-  const { ids, status } = (router as any).params;
+  const { ids } = (router as any).params;
   if (ids) {
     useRequest(getSaleSongDetail, {
       defaultParams: [{ ids }],
-      onSuccess: ({ data: { song_name, sect, language, tag, introduce, explain, reason } }) => {
+      onSuccess: ({
+        data: { song_name, sect, language, tag, introduce, explain, reason, status },
+      }) => {
         const tagArr: Array<TagNode[]> = [[], [], []] as any;
         pickerData().forEach((item, i) => {
           item.children.forEach((child) => {
@@ -128,7 +133,8 @@ export default () => {
         onLabel(tagArr);
         set((v) => ({
           ...v,
-          reason: reason,
+          status,
+          reason,
           song_name,
           sect: songStyle.find((item) => item.name === sect)?.id as any,
           language: langData.find((item) => item.name === language)?.id as any,
@@ -154,7 +160,7 @@ export default () => {
       url: `/pages/sell/next?params=${JSON.stringify({
         ...payload,
         ids,
-      })}&ids=${ids || ''}&status=${status || ''}`,
+      })}&ids=${ids || ''}`,
     });
   };
 
@@ -197,8 +203,16 @@ export default () => {
   }, [payload.tag]);
   return (
     <>
+      {payload.reason && payload.status === 2 && (
+        <Flex align="start" className="settlein-reason">
+          <Typography.Text>驳回原因：</Typography.Text>
+          <Typography.Text style={{ flex: '1' }} type="danger">
+            {payload.reason}
+          </Typography.Text>
+        </Flex>
+      )}
       <SellSteps />
-      <AtForm className={`custom-form ${status && status !== '5' && 'form-disabled'}`}>
+      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}`}>
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"
