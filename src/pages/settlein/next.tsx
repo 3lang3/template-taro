@@ -94,6 +94,11 @@ export default () => {
     closeModal();
     reLaunch({ url: '/pages/me/index' });
   };
+
+  function onProtocol(e) {
+    e.stopPropagation();
+    navigateTo({ url: '/pages/protocol/index' });
+  }
   return (
     <>
       <Flex className="settlein-reason" align="start">
@@ -151,10 +156,7 @@ export default () => {
                       <Typography.Text size="sm" type="secondary">
                         我已阅读
                       </Typography.Text>
-                      <Typography.Link
-                        onClick={() => navigateTo({ url: '/pages/protocol/index' })}
-                        size="sm"
-                      >
+                      <Typography.Link onClick={onProtocol.bind(this)} size="sm">
                         《平台协议》
                       </Typography.Link>
                     </Flex>
