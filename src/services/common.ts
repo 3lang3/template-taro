@@ -128,6 +128,17 @@ export function getPcSongUrl(data: { memberIds: string | number }) {
     false,
   );
 }
+// 删除大文件上传信息
+export function rmPcSongUrl(data: { memberIds: string | number }) {
+  return request(
+    '/pc/delSongUrl',
+    {
+      method: 'GET',
+      data,
+    },
+    false,
+  );
+}
 // 获取签署用户的银行卡信息
 export function getSingerBankInfo(data: { ids: string | number }) {
   return request(

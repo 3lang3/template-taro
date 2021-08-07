@@ -3,11 +3,11 @@ import { useSelector } from 'react-redux';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
-import { chooseMessageFile, setClipboardData } from '@tarojs/taro';
+import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
 import config from '@/config';
 import { AtInput } from 'taro-ui';
 import { useRequest } from 'ahooks';
-import { getPcSongUrl } from '@/services/common';
+import { getPcSongUrl, rmPcSongUrl } from '@/services/common';
 import Icon from '@/components/Icon';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
@@ -39,6 +39,17 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
     return () => pcReq.cancel();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData.ids]);
+
+  const pollingFileRemove = async () => {
+    try {
+      showToast({ icon: 'loading', title: '正在删除...', mask: true });
+      await rmPcSongUrl({ memberIds: userData.ids });
+      setPollingFileName('');
+      showToast({ icon: 'success', title: '删除成功' });
+    } catch (error) {
+      showToast({ icon: 'none', title: '删除失败，请重试' });
+    }
+  };
 
   return (
     <UploaderWrapper
@@ -102,8 +113,7 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                       onClick={() => {
                         remove();
                         if (pollingFileName) {
-                          setPollingFileName('');
-                          pcReq.cancel();
+                          pollingFileRemove();
                           return;
                         }
                         pcReq.run({ memberIds: userData.ids });
