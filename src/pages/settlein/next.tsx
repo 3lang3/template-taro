@@ -40,7 +40,7 @@ export default () => {
     // @hack 获取上一个页面传递的数据
     eventCenter.once('page:message:settle-next', (response) => {
       prevStepPayloadRef.current = response.payload;
-      if (isAudit) {
+      if (response.detail) {
         set((v) => ({
           ...v,
           song_url: response.detail.song_url,
