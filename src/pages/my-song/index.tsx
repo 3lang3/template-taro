@@ -37,9 +37,6 @@ export default () => {
             actionRender={() => {
               return (
                 <Flex justify="end">
-                  {+song.is_appoint ? (
-                    <Icon icon="icon-quku-geci" className="lib-song-action__item" />
-                  ) : null}
                   <>
                     <ContentPop
                       title="歌词查看"
