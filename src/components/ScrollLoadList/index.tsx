@@ -39,12 +39,21 @@ type ScrollLoadListProps<T = {}> = {
  */
 const ScrollLoadList: <T extends Record<string, any>>(
   props: ScrollLoadListProps<T>,
-) => JSX.Element = ({ params = {}, emptyRender = () => <Empty />, actionRef, ...props }) => {
+) => JSX.Element = ({
+  params = {},
+  emptyRender = () => <Empty />,
+  actionRef,
+  refresh = true,
+  ...props
+}) => {
   const [list, setList] = useState<any[]>([]);
+  const listDataRef = useRef<any[]>([]);
   const paginationRef = useRef(PAGINATION);
   const nomoreRef = useRef(false);
 
-  const { loading, error, run } = useRequest(props.request, {
+  listDataRef.current = list;
+
+  const { loading, error, ...req } = useRequest(props.request, {
     manual: true,
     onSuccess: ({ data: { _list, _page }, type, msg }) => {
       if (type === 1) throw Error(msg);
@@ -56,6 +65,11 @@ const ScrollLoadList: <T extends Record<string, any>>(
       paginationRef.current = PAGINATION;
     },
   });
+
+  const run = (p) => {
+    const { pageSize } = paginationRef.current;
+    req.run({ pageSize, ...p });
+  };
 
   const reload = () => {
     setList([]);
@@ -69,7 +83,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
   };
 
   const rowMutate = ({ index, data }) => {
-    const newList = JSON.parse(JSON.stringify(list));
+    const newList = JSON.parse(JSON.stringify(listDataRef.current));
     newList.splice(index, 1, data);
     setList(newList);
   };
@@ -95,8 +109,8 @@ const ScrollLoadList: <T extends Record<string, any>>(
     if (error) return;
     // 请求中或者没有更多数据 return
     if (loading || nomoreRef.current) return;
-    const { page, pageSize } = paginationRef.current;
-    run({ ...params, pageSize, page: page + 1 });
+    const { page } = paginationRef.current;
+    run({ ...params, page: page + 1 });
   });
 
   return (
@@ -114,10 +128,8 @@ const ScrollLoadList: <T extends Record<string, any>>(
               {emptyRender()}
             </Flex>
           );
-        return props.refresh ? (
-          <ProScrollView {...(props.refresh as any)} onRefresherRefresh={pulldown}>
-            {list.map(props.row)}
-          </ProScrollView>
+        return refresh ? (
+          <ProScrollView onRefresherRefresh={pulldown}>{list.map(props.row)}</ProScrollView>
         ) : (
           list.map(props.row)
         );
@@ -129,7 +141,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
       )}
       {/* 请求页数大于1才展示加载完文案 */}
       {nomoreRef.current && paginationRef.current.page > 1 && (
-        <Flex justify="center">
+        <Flex justify="center" className="p-default">
           <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
         </Flex>
       )}

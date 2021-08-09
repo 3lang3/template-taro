@@ -36,3 +36,12 @@ export function getHomePageDetail(): Promise<PromiseResponseType<MePageResType>>
 export function getMechanismInfo() {
   return request('/member/getMechanismInfo');
 }
+
+export function getMechanismSongList(data) {
+  return request('/member/getMechanismSongList', { method: 'GET', data });
+}
+
+// 机构查看词曲
+export function companyViewSong(data: { ids: string | number }) {
+  return request(`/song/getSongDetail`, { method: 'GET', data });
+}
