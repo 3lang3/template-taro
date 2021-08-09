@@ -383,6 +383,7 @@ export default () => {
               {(() => {
                 if (+detail.status === 0) return '审核中';
                 if (+detail.status === 1) return '已通过';
+                if (+detail.status === 2) return '提交';
                 if (+detail.status === 3) return '交易完成';
                 if (+detail.status) return '返回';
                 return '提交';
