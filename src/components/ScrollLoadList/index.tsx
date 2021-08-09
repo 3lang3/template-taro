@@ -1,7 +1,7 @@
 import { PAGINATION } from '@/config/constant';
 import { useReachBottom } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AtActivityIndicator } from 'taro-ui';
 import { Empty } from '../Chore';
 import Flex from '../Flex';
@@ -22,6 +22,7 @@ type ScrollLoadListProps<T = {}> = {
   row: (row: T, idx: number) => React.ReactNode;
   /** 额外参数 */
   params?: Record<string, any>;
+  headerRender?: () => React.ReactNode;
   /** 空状态ui */
   emptyRender?: () => React.ReactNode;
   /** 初始化的参数，可以操作 list */
@@ -114,23 +115,23 @@ const ScrollLoadList: <T extends Record<string, any>>(
     await run({ ...params, page: page + 1 });
   };
 
-  const renderLoaderAndDone = () => {
+  const renderLoaderAndDone = useCallback(() => {
     return (
       <>
         {loading && (
-          <Flex justify="center">
+          <Flex className="p-default" justify="center">
             <AtActivityIndicator />
           </Flex>
         )}
         {/* 请求页数大于1才展示加载完文案 */}
         {nomoreRef.current && paginationRef.current.page > 1 && (
-          <Flex justify="center" className="p-default">
+          <Flex justify="center" className="p-lg">
             <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
           </Flex>
         )}
       </>
     );
-  };
+  }, [loading]);
   // 滚动加载
   useReachBottom(async () => {
     if (refresh) return;
@@ -139,6 +140,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
 
   return (
     <>
+      {refresh ? null : props.headerRender?.()}
       {(() => {
         if (error && !loading)
           return (
@@ -159,7 +161,9 @@ const ScrollLoadList: <T extends Record<string, any>>(
             onScrollToLower={loadmore}
             onRefresherRefresh={pulldown}
           >
+            {props.headerRender?.()}
             {list.map(props.row)}
+            {renderLoaderAndDone()}
           </ProScrollView>
         ) : (
           list.map(props.row)

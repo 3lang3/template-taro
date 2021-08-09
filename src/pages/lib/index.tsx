@@ -141,10 +141,10 @@ const LibPageContent = () => {
   return (
     <>
       <TabNavigationBar />
-      <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
-      <View className="lib-song-wrapper">
+      <View className="lib-page">
+        <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
         <ScrollLoadList<Node>
-          refresh={{ className: 'lib-song-wrapper__list' }}
+          refresh={{ className: 'lib-page__list' }}
           params={getParams(params)}
           request={getMusicSongList}
           row={(song, i) => (

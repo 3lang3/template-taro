@@ -2,11 +2,19 @@
 
 @tabs-height: 277px;
 
+.lib-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - @custom-tabbar-height);
+
+  &__list {
+    flex: 1;
+    height: 1px;
+    padding-top: 40px;
+  }
+}
+
 .lib-tabs {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
   display: flex;
   align-items: flex-end;
   height: @tabs-height;
@@ -84,13 +92,6 @@
   }
 }
 
-.lib-song-wrapper {
-  padding-top: @tabs-height + 40px;
-
-  &__list {
-    height: calc(100vh - @tabs-height - 40px);
-  }
-}
 .lib-song-action {
   &__item {
     width: 42px;

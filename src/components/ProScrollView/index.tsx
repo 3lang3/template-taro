@@ -1,6 +1,8 @@
 import { ScrollView } from '@tarojs/components';
 import { ScrollViewProps } from '@tarojs/components/types/ScrollView';
-import { forwardRef, useState, useImperativeHandle } from 'react';
+import { getCurrentInstance } from '@tarojs/taro';
+import { forwardRef, useState, useImperativeHandle, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
 export type ProScrollViewAction = {
   refresh: () => void;
@@ -11,8 +13,10 @@ export type ProScrollViewProps = {
 } & ScrollViewProps;
 
 export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
+  const { page } = getCurrentInstance();
+  const navigation = useSelector((state: any) => state.navigation);
   const [refresherTriggered, setRefresherTriggered] = useState(false);
-  const { onRefresherPulling, onRefresherRefresh, onRefresherRestore, ...restProps } = props;
+  const { onRefresherPulling, onRefresherRefresh, onRefresherRestore, style, ...restProps } = props;
   const _onRefresherPulling = async (event) => {
     setRefresherTriggered(true);
     onRefresherPulling?.(event);
@@ -28,16 +32,25 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
     setRefresherTriggered(false);
   };
 
+  const computeStyle = useMemo(() => {
+    let paddingBottom = 0;
+    if (page?.config?.navigationStyle === 'custom') {
+      paddingBottom += navigation.navBarHeight;
+    }
+    return { paddingBottom };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation.navBarHeight]);
+
   useImperativeHandle(ref, () => ({
     refresh: _onRefresherRefresh,
   }));
 
   return (
     <ScrollView
-      style={props.className ? undefined : { height: '100vh' }}
+      scrollY
+      style={Object.assign({}, computeStyle, style)}
       refresherEnabled
       refresherBackground="transparent"
-      scrollY
       refresherTriggered={refresherTriggered}
       onRefresherPulling={props.onRefresherPulling ? _onRefresherPulling : undefined}
       onRefresherRefresh={props.onRefresherRefresh ? _onRefresherRefresh : undefined}
