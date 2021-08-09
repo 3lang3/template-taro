@@ -14,11 +14,14 @@ type CustomTabBarProps = {
   /**
    * 背景色
    */
+  isRead?: boolean; // 是否显示圆点
   bgColor?: string;
   children?: React.ReactNode;
   title?: React.ReactNode | string;
   titleColor?: string;
   className?: string;
+  onIcon?: () => void; // 单击图标
+  icon?: string; // 左边按钮图标
   /**
    * 是否展示主页按钮
    * @default true
@@ -114,7 +117,12 @@ const CustomNavigation = ({
   );
 };
 
-export const TabNavigationBar = ({ title = '娱当家', ...props }: CustomTabBarProps) => {
+export const TabNavigationBar = ({
+  title = '娱当家',
+  icon = 'icon-nav_xiaoxi',
+  isRead = true,
+  ...props
+}: CustomTabBarProps) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.common.data);
   const messageReducer = useSelector(({ message }) => message);
@@ -145,8 +153,12 @@ export const TabNavigationBar = ({ title = '娱当家', ...props }: CustomTabBar
   return (
     <CustomNavigation title={title} {...props}>
       <View className="message-box">
-        <Icon icon="icon-nav_xiaoxi" className="message-box__icon" onClick={handleClick} />
-        {messageReducer.isReadAll ? <View className="message-box__dot" /> : ''}
+        <Icon
+          icon={icon}
+          className="message-box__icon"
+          onClick={props.onIcon ? props.onIcon : handleClick}
+        />
+        {messageReducer.isReadAll && isRead ? <View className="message-box__dot" /> : ''}
       </View>
     </CustomNavigation>
   );
