@@ -82,7 +82,7 @@ export type State = {
   introduce: string;
   explain: string;
   reason: string;
-  status: number;
+  status: number | null;
 };
 
 export default () => {
@@ -119,7 +119,7 @@ export default () => {
     introduce: '',
     explain: '',
     reason: '', // 驳回原因
-    status: 0,
+    status: null,
   });
 
   const { router } = getCurrentInstance();
@@ -221,7 +221,7 @@ export default () => {
       }
       return !!item;
     });
-    if (result && [0, 2].includes(payload.status)) {
+    if (result && [null, 2].includes(payload.status as any)) {
       // 没有值直接返回
       setBackVisible(true);
     } else {
@@ -250,7 +250,7 @@ export default () => {
       <SellSteps />
       <AtForm
         className={cls('custom-form', {
-          'form-disabled': payload.status !== 2 && payload.status !== 0,
+          'form-disabled': ![null, 2].includes(payload.status as any),
         })}
       >
         <AtInput
