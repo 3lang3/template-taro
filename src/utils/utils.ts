@@ -9,3 +9,10 @@ export function getHttpPath(path: string): string {
 export function isDef<T>(val: T): val is NonNullable<T> {
   return val !== undefined && val !== null;
 }
+
+/**
+ * 字符串换行符替换成<br />
+ */
+export const stringToHtml = (content: string) => {
+  return content.replace(/(\r\n|\n)/g, '<br>');
+};

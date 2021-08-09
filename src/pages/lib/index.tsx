@@ -6,10 +6,12 @@ import { TabNavigationBar } from '@/components/CustomNavigation';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
+import EditorRender from '@/components/EditorRender';
 import Typography from '@/components/Typography';
 import { useSelector } from 'react-redux';
 import ScrollLoadList from '@/components/ScrollLoadList';
 import { getMusicSongList, Node } from '@/services/lib';
+import { stringToHtml } from '@/utils/utils';
 import { LibSongItem } from '@/components/Chore';
 import ContentPop from '@/components/ContentPop';
 import './index.less';
@@ -159,7 +161,9 @@ const LibPageContent = () => {
                     {song.lyricist_content && (
                       <ContentPop
                         title="歌词查看"
-                        content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
+                        content={
+                          <EditorRender text center content={stringToHtml(song.lyricist_content)} />
+                        }
                       >
                         <Icon icon="icon-quku-geci" className="lib-song-action__item" />
                       </ContentPop>
