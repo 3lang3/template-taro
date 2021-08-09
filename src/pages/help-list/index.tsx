@@ -12,6 +12,7 @@ export default () => {
   return (
     <View className="help-list">
       <ScrollLoadList<ListNode>
+        refresh={false}
         request={getList}
         params={{ helpCategoryIds: ids }}
         row={(item, i) => (

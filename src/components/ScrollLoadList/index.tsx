@@ -10,6 +10,7 @@ import Typography from '../Typography';
 
 export type ActionType<T = {}> = {
   reload: () => void;
+  pulldown: () => void;
   /** 更改行数据 */
   rowMutate: ({ index, data }: { index: number; data: any }) => void;
 } & T;
@@ -56,7 +57,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
   const { loading, error, ...req } = useRequest(props.request, {
     manual: true,
     onSuccess: ({ data: { _list, _page }, type, msg }) => {
-      if (type === 1) throw Error(msg);
+      if (type === 1 || !_list) throw Error(msg);
       paginationRef.current = _page;
       nomoreRef.current = _page.page >= _page.totalPage;
       setList(_page.page === 1 ? _list : [...list, ..._list]);
@@ -77,9 +78,9 @@ const ScrollLoadList: <T extends Record<string, any>>(
     run(params);
   };
 
-  const pulldown = () => {
+  const pulldown = async () => {
     paginationRef.current = PAGINATION;
-    run(params);
+    await run(params);
   };
 
   const rowMutate = ({ index, data }) => {
@@ -99,6 +100,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
       actionRef.current = {
         reload,
         rowMutate,
+        pulldown,
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,7 +131,9 @@ const ScrollLoadList: <T extends Record<string, any>>(
             </Flex>
           );
         return refresh ? (
-          <ProScrollView onRefresherRefresh={pulldown}>{list.map(props.row)}</ProScrollView>
+          <ProScrollView {...(refresh as any)} onRefresherRefresh={pulldown}>
+            {list.map(props.row)}
+          </ProScrollView>
         ) : (
           list.map(props.row)
         );

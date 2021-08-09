@@ -79,7 +79,7 @@ type ManageSongItemProps = {
   price2: string | number;
   actionRender?: () => React.ReactNode | string;
   iconRender?: () => React.ReactNode | string;
-  onClick?: () => void;
+  onClick?: (e) => void;
 };
 // 词曲管理子项
 export const ManageSongItem = ({

@@ -1,5 +1,5 @@
 import Button from '@/components/Button';
-import { showToast } from '@tarojs/taro';
+import { showToast, stopPullDownRefresh, usePullDownRefresh } from '@tarojs/taro';
 import Typography from '@/components/Typography';
 import InputSelect from '@/components/InputSelect';
 import { useRequest } from 'ahooks';
@@ -36,9 +36,16 @@ export default () => {
     const newNode = { ...node, singer: members.map((item) => item.nickname) };
     actionRef.current?.rowMutate({ index, data: newNode });
   }
+
+  usePullDownRefresh(async () => {
+    await actionRef.current?.pulldown();
+    stopPullDownRefresh();
+  });
+
   return (
     <>
       <ScrollLoadList
+        refresh={false}
         actionRef={actionRef}
         request={getBuySongList}
         row={(song, i) => (

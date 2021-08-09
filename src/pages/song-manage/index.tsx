@@ -8,7 +8,6 @@ import {
   openDocument,
   showModal,
   showToast,
-  useDidShow,
   downloadFile,
   hideToast,
 } from '@tarojs/taro';
@@ -24,16 +23,6 @@ export default () => {
   const actionRef = useRef<ActionType>();
   const selectRecordRef = useRef<any>(null);
   const counterOfferRef = useRef<ChangePriceModalType>(null);
-  const firstRenderRef = useRef(false);
-
-  useDidShow(() => {
-    if (!firstRenderRef.current) {
-      firstRenderRef.current = true;
-      return;
-    }
-    // 签署回来刷新页面
-    actionRef.current?.reload();
-  });
 
   // 删除
   const onDeleteClick = async (record, e) => {
@@ -59,6 +48,15 @@ export default () => {
     });
   };
 
+  // 认领
+  const onClaimClick = (record, e, isInvited?) => {
+    e.stopPropagation();
+    let url = `/pages/sell/index?pageType=claim&ids=${record.ids}&status=${record.status}`;
+    if (isInvited) url += '&invited=1';
+    navigateTo({ url });
+  };
+
+  // 还价确认
   const onCounterOfferConfirm = async (values) => {
     showToast({ icon: 'loading', title: '提交中' });
     const { msg } = await operationMusicSongPrice({
@@ -72,6 +70,12 @@ export default () => {
     counterOfferRef.current?.close();
   };
 
+  const onSignClick = (record, e) => {
+    e.stopPropagation();
+    navigateTo({ url: `/pages/account/index?ids=${record.ids}` });
+  };
+
+  // 预览已签署的协议
   const previewPdf = (url, e) => {
     e.stopPropagation();
     try {
@@ -94,43 +98,37 @@ export default () => {
         actionRef={actionRef}
         request={getMusicSongManageList}
         row={(song) => {
-          let url = `/pages/sell/next?ids=${song.ids}&status=${song.status}`;
-
-          if (+song.status === 1) {
-            url = `/pages/sell/next?pageType=claim&invited=1&ids=${song.ids}&status=${song.status}`;
-          }
-
-          if (+song.status === 2) {
-            url = `/pages/sell/next?pageType=claim&ids=${song.ids}&status=${song.status}`;
-          }
-
-          if (+song.status === 6) {
-            url = `/pages/account/index?ids=${song.ids}&status=${song.status}`;
-          }
-
           return (
             <ManageSongItem
               key={song.ids}
               title={song.song_name}
               price1={song.composer_price}
               price2={song.lyricist_price}
-              iconRender={() => (
-                <Icon
-                  onClick={() => (url ? navigateTo({ url }) : null)}
-                  className="icon-icon_xiangqing"
-                  icon="icon-icon_xiangqing"
-                />
-              )}
+              onClick={() => {
+                navigateTo({ url: `/pages/sell/index?ids=${song.ids}&status=${song.status}` });
+              }}
+              iconRender={() => <Icon className="icon-icon_xiangqing" icon="icon-icon_xiangqing" />}
               actionRender={() => {
                 if (+song.status === 1)
                   return (
-                    <Button circle size="xs" type="primary">
+                    <Button
+                      onClick={(e) => onClaimClick(song, e, true)}
+                      circle
+                      size="xs"
+                      type="primary"
+                    >
                       待认领
                     </Button>
                   );
                 if (+song.status === 2)
                   return (
-                    <Button circle size="xs" type="primary" outline>
+                    <Button
+                      onClick={(e) => onClaimClick(song, e)}
+                      circle
+                      size="xs"
+                      type="primary"
+                      outline
+                    >
                       词曲认领中
                     </Button>
                   );
@@ -172,7 +170,7 @@ export default () => {
                   );
                 if (+song.status === 6)
                   return (
-                    <Button circle size="xs" type="primary">
+                    <Button onClick={(e) => onSignClick(song, e)} circle size="xs" type="primary">
                       签署协议
                     </Button>
                   );
