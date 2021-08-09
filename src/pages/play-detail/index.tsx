@@ -70,8 +70,12 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   // 还价
   const onCounterOfferClick = () => {
     counterOfferRef.current?.show({
-      composer_price: detail.composer_final_price,
-      lyricist_price: detail.lyricist_final_price,
+      composer_price: +detail.composer_final_price
+        ? detail.composer_final_price
+        : detail.composer_original_price,
+      lyricist_price: +detail.lyricist_final_price
+        ? detail.lyricist_final_price
+        : detail.lyricist_original_price,
     });
   };
   // 还价提交

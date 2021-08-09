@@ -12,6 +12,10 @@ export type ProScrollViewProps = {
   children?: React.ReactNode;
 } & ScrollViewProps;
 
+/**
+ * @see https://developers.weixin.qq.com/miniprogram/dev/component/scroll-view.html
+ * 组件需要设置height
+ */
 export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
   const { page } = getCurrentInstance();
   const navigation = useSelector((state: any) => state.navigation);

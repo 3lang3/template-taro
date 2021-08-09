@@ -13,11 +13,6 @@ export function getSaleSongDetail(data: { ids: string | number }) {
   return request(`/song/getSaleSongDetail?${stringify(data)}`);
 }
 
-// 曲库词曲详情
-export function getMusicSongDetail(data: { ids: string | number }) {
-  return request(`/song/getMusicSongDetail?${stringify(data)}`);
-}
-
 // 歌曲详情
 export function getSongDetail(data: { ids: string | number }) {
   return request(`/music/getSongDetail?${stringify(data)}`);
