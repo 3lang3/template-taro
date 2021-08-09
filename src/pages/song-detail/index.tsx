@@ -2,7 +2,7 @@ import cls from 'classnames';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { View } from '@tarojs/components';
-import { getCurrentInstance } from '@tarojs/taro';
+import { getCurrentInstance, setNavigationBarTitle } from '@tarojs/taro';
 import { getMakeSongDetail, Node } from '@/services/song-detail';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
 import { useRequest } from 'ahooks';
@@ -11,7 +11,8 @@ import './index.less';
 
 export default () => {
   const { router } = getCurrentInstance();
-  const { ids } = (router as any).params;
+  const { ids, title } = (router as any).params;
+  setNavigationBarTitle({ title });
   const [list, setList] = useState<Node[]>([]);
 
   const { loading, error, refresh } = useRequest(getMakeSongDetail, {

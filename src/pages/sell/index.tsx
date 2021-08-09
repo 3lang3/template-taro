@@ -1,6 +1,7 @@
 import cls from 'classnames';
 import Typography from '@/components/Typography';
 import { useState, useMemo } from 'react';
+import { TabNavigationBar } from '@/components/CustomNavigation';
 import {
   AtInput,
   AtForm,
@@ -13,7 +14,13 @@ import {
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import { setClipboardData, navigateTo, showToast, getCurrentInstance } from '@tarojs/taro';
+import {
+  setClipboardData,
+  navigateTo,
+  showToast,
+  getCurrentInstance,
+  navigateBack,
+} from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
@@ -80,6 +87,7 @@ export type State = {
 
 export default () => {
   const [visible, setVisible] = useState(false);
+  const [backVisible, setBackVisible] = useState(false);
   const store = useSelector((state) => state.common);
   const pickerData = useMemo(() => {
     return () => {
@@ -203,8 +211,34 @@ export default () => {
     };
   }, [payload.tag]);
 
+  /**
+   * 点击按钮返回
+   */
+  function onBack() {
+    const result = Object.values(payload).some((item) => {
+      if (typeof item === 'object') {
+        return false;
+      }
+      return !!item;
+    });
+    if (result && [0, 2].includes(payload.status)) {
+      // 没有值直接返回
+      setBackVisible(true);
+    } else {
+      navigateBack();
+    }
+  }
+
   return (
     <>
+      <TabNavigationBar
+        onIcon={onBack}
+        icon="icon-nav_icon_fanhui"
+        isRead={false}
+        mode="light"
+        title="出售词曲"
+        fixedHeight
+      />
       {payload.reason && payload.status === 2 && (
         <Flex align="start" className="settlein-reason">
           <Typography.Text>驳回原因：</Typography.Text>
@@ -308,6 +342,17 @@ export default () => {
           </AtModalContent>
         </AtModal>
       )}
+      <AtModal
+        className="back-pop"
+        isOpened={backVisible}
+        title="您填写的信息尚未保存，是否离开"
+        cancelText="取消"
+        confirmText="确认"
+        onClose={() => setBackVisible(false)}
+        onCancel={() => setBackVisible(false)}
+        onConfirm={() => navigateBack()}
+        content="离开后编辑的内容可能会消失"
+      />
     </>
   );
 };
