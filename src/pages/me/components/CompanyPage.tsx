@@ -70,7 +70,7 @@ export default () => {
         </Button>
       </Flex>
       <ScrollLoadList
-        refresh
+        refresh={{ className: 'company-body' }}
         actionRef={actionRef}
         request={getMechanismSongList}
         row={(song, i) => (

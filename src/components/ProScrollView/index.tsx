@@ -32,14 +32,14 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
     refresh: _onRefresherRefresh,
   }));
 
-  console.log(refresherTriggered);
-
   return (
     <ScrollView
+      style={props.className ? undefined : { height: '100vh' }}
       refresherThreshold={80}
       refresherEnabled
       enhanced
-      refresherDefaultStyle="black"
+      refresherDefaultStyle="white"
+      refresherBackground="transparent"
       scrollY
       refresherTriggered={refresherTriggered}
       onRefresherPulling={props.onRefresherPulling ? _onRefresherPulling : undefined}
