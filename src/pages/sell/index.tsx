@@ -1,3 +1,4 @@
+import cls from 'classnames';
 import Typography from '@/components/Typography';
 import { useState, useMemo } from 'react';
 import {
@@ -201,6 +202,7 @@ export default () => {
       return String(myArr);
     };
   }, [payload.tag]);
+
   return (
     <>
       {payload.reason && payload.status === 2 && (
@@ -212,7 +214,11 @@ export default () => {
         </Flex>
       )}
       <SellSteps />
-      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}`}>
+      <AtForm
+        className={cls('custom-form', {
+          'form-disabled': payload.status !== 2 && payload.status !== 0,
+        })}
+      >
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"
