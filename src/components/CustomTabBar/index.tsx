@@ -64,7 +64,9 @@ export default () => {
               className="custom-tabbar__img"
               src={`../../${idx === i ? item.selectedIconPath : item.iconPath}`}
             />
-            <CoverView>{item.text}</CoverView>
+            <CoverView>
+              {data.identity === IDENTITY.COMPANY && item.text === '我的' ? '机构' : item.text}
+            </CoverView>
           </CoverView>
         ))}
       </CoverView>

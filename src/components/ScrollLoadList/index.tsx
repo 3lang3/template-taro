@@ -106,13 +106,35 @@ const ScrollLoadList: <T extends Record<string, any>>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionRef]);
 
-  // 滚动加载
-  useReachBottom(() => {
+  const loadmore = async () => {
     if (error) return;
     // 请求中或者没有更多数据 return
     if (loading || nomoreRef.current) return;
     const { page } = paginationRef.current;
-    run({ ...params, page: page + 1 });
+    await run({ ...params, page: page + 1 });
+  };
+
+  const renderLoaderAndDone = () => {
+    return (
+      <>
+        {loading && (
+          <Flex justify="center">
+            <AtActivityIndicator />
+          </Flex>
+        )}
+        {/* 请求页数大于1才展示加载完文案 */}
+        {nomoreRef.current && paginationRef.current.page > 1 && (
+          <Flex justify="center" className="p-default">
+            <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
+          </Flex>
+        )}
+      </>
+    );
+  };
+  // 滚动加载
+  useReachBottom(async () => {
+    if (refresh) return;
+    await loadmore();
   });
 
   return (
@@ -131,24 +153,19 @@ const ScrollLoadList: <T extends Record<string, any>>(
             </Flex>
           );
         return refresh ? (
-          <ProScrollView {...(refresh as any)} onRefresherRefresh={pulldown}>
+          <ProScrollView
+            {...(refresh as any)}
+            lowerThreshold={20}
+            onScrollToLower={loadmore}
+            onRefresherRefresh={pulldown}
+          >
             {list.map(props.row)}
           </ProScrollView>
         ) : (
           list.map(props.row)
         );
       })()}
-      {loading && (
-        <Flex justify="center">
-          <AtActivityIndicator />
-        </Flex>
-      )}
-      {/* 请求页数大于1才展示加载完文案 */}
-      {nomoreRef.current && paginationRef.current.page > 1 && (
-        <Flex justify="center" className="p-default">
-          <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
-        </Flex>
-      )}
+      {refresh ? null : renderLoaderAndDone()}
     </>
   );
 };

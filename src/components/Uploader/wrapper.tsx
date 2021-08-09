@@ -4,6 +4,8 @@ import { chooseImage, chooseMessageFile, showToast } from '@tarojs/taro';
 import { uploadSingleFile } from '@/utils/upload';
 import type { BaseUploadWrapperProps } from './PropsType';
 
+const DefaultMusicExt = ['amr', 'dts', 'ape', 'ac3', 'aac', 'mp3', 'wav'];
+
 export const UploaderWrapper = forwardRef<{}, BaseUploadWrapperProps>(
   ({ children, type, ...props }, ref) => {
     const [chooseFile, setChooseFile] = useState<any>();
@@ -22,7 +24,7 @@ export const UploaderWrapper = forwardRef<{}, BaseUploadWrapperProps>(
           ? await chooseMessageFile({
               count: 1,
               type: 'file',
-              extension: ['mp3', 'wav'],
+              extension: DefaultMusicExt,
             })
           : await chooseImage({
               count: 1, // 默认9
