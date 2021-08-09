@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import cls from 'classnames';
 import Typography from '@/components/Typography';
 import { useState, useRef, useEffect } from 'react';
 import {
@@ -252,7 +253,11 @@ export default () => {
         </Flex>
       )}
       <SellSteps current={1} />
-      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}`}>
+      <AtForm
+        className={cls('custom-form', {
+          'form-disabled': payload.status !== -1 && payload.status !== 2,
+        })}
+      >
         <Flex justify="between" className="bg-white">
           <AtInput
             name="composer"
