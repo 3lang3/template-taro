@@ -2,6 +2,7 @@ import cls from 'classnames';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
 import { View } from '@tarojs/components';
+import { getCurrentInstance } from '@tarojs/taro';
 import { getMakeSongDetail, Node } from '@/services/song-detail';
 import { FullPageLoader, FullPageError, Empty } from '@/components/Chore';
 import { useRequest } from 'ahooks';
@@ -9,7 +10,8 @@ import { useState } from 'react';
 import './index.less';
 
 export default () => {
-  const ids = 527875806;
+  const { router } = getCurrentInstance();
+  const { ids } = (router as any).params;
   const [list, setList] = useState<Node[]>([]);
 
   const { loading, error, refresh } = useRequest(getMakeSongDetail, {
