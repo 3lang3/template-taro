@@ -6,7 +6,12 @@ import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import Typography from '@/components/Typography';
 import { getMechanismInfo, getMechanismSongList } from '@/services/me';
 import { View } from '@tarojs/components';
-import { navigateTo, requestSubscribeMessage } from '@tarojs/taro';
+import {
+  navigateTo,
+  requestSubscribeMessage,
+  stopPullDownRefresh,
+  usePullDownRefresh,
+} from '@tarojs/taro';
 import { useRequest } from 'ahooks';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -27,6 +32,11 @@ export default () => {
     run();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  usePullDownRefresh(async () => {
+    await actionRef.current?.pulldown();
+    stopPullDownRefresh();
+  });
 
   const handleClick = async () => {
     // 消息通知订阅

@@ -44,7 +44,7 @@ const ScrollLoadList: <T extends Record<string, any>>(
   params = {},
   emptyRender = () => <Empty />,
   actionRef,
-  refresh = true,
+  refresh,
   ...props
 }) => {
   const [list, setList] = useState<any[]>([]);

@@ -10,6 +10,8 @@ import {
   showToast,
   downloadFile,
   hideToast,
+  usePullDownRefresh,
+  stopPullDownRefresh,
 } from '@tarojs/taro';
 import ChangePriceModal from '@/components/ChangePriceModal';
 import type { ChangePriceModalType } from '@/components/ChangePriceModal';
@@ -91,6 +93,11 @@ export default () => {
       showToast({ icon: 'none', title: '预览失败！' });
     }
   };
+
+  usePullDownRefresh(async () => {
+    await actionRef.current?.pulldown();
+    stopPullDownRefresh();
+  });
 
   return (
     <>

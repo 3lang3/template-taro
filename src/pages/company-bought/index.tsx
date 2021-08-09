@@ -45,7 +45,6 @@ export default () => {
   return (
     <>
       <ScrollLoadList
-        refresh={false}
         actionRef={actionRef}
         request={getBuySongList}
         row={(song, i) => (
