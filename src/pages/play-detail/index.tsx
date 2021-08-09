@@ -10,6 +10,7 @@ import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
 import {
+  getImageInfo,
   navigateBack,
   saveImageToPhotosAlbum,
   showModal,
@@ -147,13 +148,13 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
             {isScorePage ? (
               <>
                 {Array.isArray(detail.tag) && detail.tag.length > 0 && (
-                  <View className="play-detail__tags">
+                  <Flex wrap="wrap" align="center" justify="center" className="play-detail__tags">
                     {detail.tag.map((el, i) => (
-                      <Tag key={i} type="light">
+                      <Tag className="mb10" key={i} type="light">
                         {el}
                       </Tag>
                     ))}
-                  </View>
+                  </Flex>
                 )}
               </>
             ) : (
@@ -283,14 +284,19 @@ function ScoreButton({ detail }) {
             data={detail.composer_content || []}
             itemRender={(img) => (
               <Image
-                onLongPress={() =>
-                  saveImageToPhotosAlbum({
-                    filePath: getHttpPath(img),
-                    success: () => {
-                      showToast({ icon: 'success', title: '保存成功' });
-                    },
-                  })
-                }
+                onLongPress={async () => {
+                  try {
+                    const { path } = await getImageInfo({ src: getHttpPath(img) });
+                    saveImageToPhotosAlbum({
+                      filePath: path,
+                      success: () => {
+                        showToast({ icon: 'success', title: '保存成功' });
+                      },
+                    });
+                  } catch (error) {
+                    showToast({ icon: 'none', title: error.message });
+                  }
+                }}
                 className="modal-score__img"
                 src={img}
               />

@@ -32,6 +32,8 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
     refresh: _onRefresherRefresh,
   }));
 
+  console.log(refresherTriggered);
+
   return (
     <ScrollView
       refresherThreshold={80}
