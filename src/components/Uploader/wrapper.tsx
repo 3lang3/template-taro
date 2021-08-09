@@ -22,7 +22,7 @@ export const UploaderWrapper = forwardRef<{}, BaseUploadWrapperProps>(
           ? await chooseMessageFile({
               count: 1,
               type: 'file',
-              extension: ['.mp3'],
+              extension: ['mp3', 'wav'],
             })
           : await chooseImage({
               count: 1, // 默认9
