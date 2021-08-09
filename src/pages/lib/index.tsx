@@ -144,6 +144,7 @@ const LibPageContent = () => {
       <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
       <View className="lib-song-wrapper">
         <ScrollLoadList<Node>
+          refresh
           params={getParams(params)}
           request={getMusicSongList}
           row={(song, i) => (
