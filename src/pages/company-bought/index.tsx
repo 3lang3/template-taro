@@ -5,7 +5,12 @@ import InputSelect from '@/components/InputSelect';
 import { useRequest } from 'ahooks';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import { useRef } from 'react';
-import { getBuySongList, getSingerByName, appointMusicSong } from '@/services/company-bought';
+import {
+  getBuySongList,
+  getSingerByName,
+  appointMusicSong,
+  getAppointSongList,
+} from '@/services/company-bought';
 import { ManageSongItem } from '@/components/Chore';
 import './index.less';
 
@@ -14,7 +19,10 @@ export default () => {
   const { run } = useRequest(getSingerByName, {
     manual: true,
   });
-  function onSubmit(node, members, index) {
+  const { run: listRun } = useRequest(getAppointSongList, {
+    manual: true,
+  });
+  async function onSubmit(node, members, index) {
     if (!members.length) {
       showToast({
         title: '请输入指定歌手',
@@ -23,18 +31,20 @@ export default () => {
       });
       return;
     }
-    appointMusicSong({ ids: node.ids, memberIds: members.map((item) => item.ids) }).then(
-      ({ type, msg }) => {
-        if (type === 1) throw Error(msg);
-        showToast({
-          title: '操作成功',
-          icon: 'success',
-          duration: 1500,
-        });
-      },
-    );
-    const newNode = { ...node, singer: members.map((item) => item.nickname) };
-    actionRef.current?.rowMutate({ index, data: newNode });
+    return await appointMusicSong({
+      ids: node.ids,
+      memberIds: members.map((item) => item.ids),
+    }).then(({ type, msg }) => {
+      if (type === 1) throw Error(msg);
+      showToast({
+        title: '操作成功',
+        icon: 'success',
+        duration: 1500,
+      });
+      const newNode = { ...node, singer: members.map((item) => item.nickname) };
+      actionRef.current?.reload();
+      return true;
+    });
   }
 
   usePullDownRefresh(async () => {
@@ -69,6 +79,7 @@ export default () => {
                 <InputSelect
                   title="指定歌手"
                   request={run}
+                  initRequest={(() => listRun({ ids: song.ids })) as any}
                   onSubmit={(members) => onSubmit(song, members, i)}
                 >
                   <Typography.Text type="primary">{song.singer[0]}</Typography.Text>
