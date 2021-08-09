@@ -4,7 +4,7 @@ import Flex from '@/components/Flex';
 import Image from '@/components/Image';
 import ScrollLoadList, { ActionType } from '@/components/ScrollLoadList';
 import Typography from '@/components/Typography';
-import { getMechanismInfo, getMechanismSongList, companyViewSong } from '@/services/me';
+import { getMechanismInfo, getMechanismSongList } from '@/services/me';
 import { View } from '@tarojs/components';
 import { navigateTo, requestSubscribeMessage } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
@@ -49,7 +49,6 @@ export default () => {
     navigateTo({
       url: `/pages/play-detail/index?type=score&ids=${song.ids}`,
       success: () => {
-        companyViewSong({ ids: song.ids });
         const newNode = { ...song, is_read: 1 };
         actionRef.current?.rowMutate({ index, data: newNode });
       },
