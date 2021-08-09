@@ -6,7 +6,8 @@ import { View } from '@tarojs/components';
 import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
-import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import { AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import MyAtInput from '@/components/MyAtInput';
 import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
 import { singerApply } from '@/services/settlein';
@@ -122,10 +123,11 @@ export default () => {
           </Flex>
           <View className="settlein-list__wrapper">
             <Flex className="input--border">
-              <AtInput
+              <MyAtInput
                 disabled={isAudit}
                 name="website_url"
                 type="text"
+                maxlength={200}
                 placeholder="请输入平台个人链接"
                 value={payload.website_url}
                 onChange={(value) => set((v: any) => ({ ...v, website_url: value }))}

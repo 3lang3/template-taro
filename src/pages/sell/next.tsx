@@ -252,7 +252,7 @@ export default () => {
         </Flex>
       )}
       <SellSteps current={1} />
-      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}}`}>
+      <AtForm className={`custom-form ${payload.status !== 2 && 'form-disabled'}`}>
         <Flex justify="between" className="bg-white">
           <AtInput
             name="composer"
@@ -314,6 +314,7 @@ export default () => {
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
           <AtTextarea
+            maxLength={1000}
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
