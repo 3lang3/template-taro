@@ -34,7 +34,10 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
 
   return (
     <ScrollView
+      refresherThreshold={80}
       refresherEnabled
+      enhanced
+      refresherDefaultStyle="black"
       scrollY
       refresherTriggered={refresherTriggered}
       onRefresherPulling={props.onRefresherPulling ? _onRefresherPulling : undefined}

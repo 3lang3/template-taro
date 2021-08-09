@@ -28,7 +28,6 @@ import {
   operationMusicSongPrice,
   applyWantSong,
   delWantSong,
-  getMusicSongDetail,
 } from '@/services/song';
 import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
@@ -237,12 +236,10 @@ type PlayDetailParams = {
    * - score 词曲制作页面(根据身份展示不同视图)
    */
   type: 'score';
-  isLib: string;
   ids: string;
 };
 
-function getRequest(pageType, isLib) {
-  if (isLib) return getMusicSongDetail;
+function getRequest(pageType) {
   if (pageType === 'score') return getSaleSongDetail;
   return getSongDetail;
 }
@@ -254,7 +251,7 @@ const PageContentWrapper = () => {
     error,
     refresh,
     data: { data } = { data: {} },
-  } = useRequest(getRequest(params.type, params.isLib), {
+  } = useRequest(getRequest(params.type), {
     defaultParams: [{ ids: params.ids }],
   });
   if (loading) return <FullPageLoader />;
@@ -310,7 +307,7 @@ function ScoreButton({ detail }) {
 
 // 申请唱歌按钮
 function ApplySingButton({ detail }) {
-  const [status, setStatus] = useState<number>(() => +detail.status);
+  const [status, setStatus] = useState<number>(() => +detail.apply_status);
   // 申请唱歌
   const onSongApply = async () => {
     showToast({ icon: 'loading', title: '申请中...', mask: true });

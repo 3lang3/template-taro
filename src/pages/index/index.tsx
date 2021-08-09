@@ -107,7 +107,6 @@ const LatestNews = () => {
       <Typography.Title level={2}>最新动态</Typography.Title>
       <View className="latest-news">
         <ScrollLoadList
-          refresh={false}
           request={getTrends}
           row={(item, i) => <LatestNewsItem key={i} {...item} />}
         />

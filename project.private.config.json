@@ -135,6 +135,12 @@
             "appId": "wxa023b292fd19d41d",
             "extraData": "{ \"a\": 123 }"
           }
+        },
+        {
+          "name": "pages/help/index",
+          "pathName": "pages/help/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

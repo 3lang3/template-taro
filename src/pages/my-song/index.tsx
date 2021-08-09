@@ -47,7 +47,7 @@ export default () => {
                     <Icon
                       onClick={() =>
                         navigateTo({
-                          url: `/pages/play-detail/index?ids=${song.ids}&type=score&isLib=1`,
+                          url: `/pages/play-detail/index?ids=${song.ids}&type=score`,
                         })
                       }
                       icon="icon-quku_bofang"

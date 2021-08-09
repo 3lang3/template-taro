@@ -166,7 +166,7 @@ const LibPageContent = () => {
                     <Icon
                       onClick={() =>
                         navigateTo({
-                          url: `/pages/play-detail/index?type=score&isLib=1&ids=${song.ids}`,
+                          url: `/pages/play-detail/index?type=score&ids=${song.ids}`,
                         })
                       }
                       icon="icon-quku_bofang"
