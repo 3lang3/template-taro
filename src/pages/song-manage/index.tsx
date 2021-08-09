@@ -114,8 +114,13 @@ export default () => {
               title={song.song_name}
               price1={song.composer_price}
               price2={song.lyricist_price}
-              onClick={() => (url ? navigateTo({ url }) : null)}
-              iconRender={() => <Icon className="icon-icon_xiangqing" icon="icon-icon_xiangqing" />}
+              iconRender={() => (
+                <Icon
+                  onClick={() => (url ? navigateTo({ url }) : null)}
+                  className="icon-icon_xiangqing"
+                  icon="icon-icon_xiangqing"
+                />
+              )}
               actionRender={() => {
                 if (+song.status === 1)
                   return (
