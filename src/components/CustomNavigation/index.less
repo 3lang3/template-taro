@@ -36,8 +36,17 @@
   &__title {
     position: absolute;
     left: 50%;
+    display: -webkit-box;
+    overflow: hidden;
     font-size: 36px;
+    text-overflow: ellipsis;
     transform: translate(-50%, 0);
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+
+    &-sm {
+      font-size: 28px;
+    }
   }
 
   &__capsule {
@@ -48,7 +57,6 @@
     width: 174px;
     height: 64px;
     padding: 0 22px;
-    // background: rgba(255, 255, 255, 0.8);
     border: 1px solid #fff;
     border-radius: 33px;
     opacity: 1;

@@ -101,7 +101,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   return (
     <>
       {/* 自定义navigation */}
-      <CustomNavigation title={detail.song_name} />
+      <CustomNavigation title={detail.song_name} smallTitle />
       {/* navigation占位符 */}
       <View style={{ height: navigation.navBarHeight }} />
       {/* blur效果层 */}

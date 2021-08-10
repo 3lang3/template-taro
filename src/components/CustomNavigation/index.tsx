@@ -38,6 +38,8 @@ type CustomTabBarProps = {
    *  - dark 黑色背景 @todo
    */
   mode?: 'light' | 'default';
+  /** 小字号标题 */
+  smallTitle?: boolean;
 };
 
 const CustomNavigation = ({
@@ -48,6 +50,7 @@ const CustomNavigation = ({
   home = true,
   delta = 1,
   mode,
+  smallTitle,
   ...props
 }: CustomTabBarProps) => {
   const navigation = useSelector((state: any) => state.navigation);
@@ -108,7 +111,10 @@ const CustomNavigation = ({
             );
           })()}
           {title ? (
-            <View style={{ color: titleColor }} className="custom-navi__title">
+            <View
+              style={{ color: titleColor }}
+              className={cls('custom-navi__title', { 'custom-navi__title-sm': smallTitle })}
+            >
               {title}
             </View>
           ) : null}
