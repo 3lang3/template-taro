@@ -333,8 +333,8 @@ export default () => {
             <Flex style={{ flex: 1 }}>
               <Typography.Text type="secondary">
                 该词或曲作者
-                <Text className={detail.is_claim ? 'text-success' : 'text-danger'}>
-                  {detail.is_claim ? '已' : '未'}认领
+                <Text className={+detail.is_claim === 1 ? 'text-success' : 'text-danger'}>
+                  {+detail.is_claim === 1 ? '已' : '未'}认领
                 </Text>
               </Typography.Text>
               <InviteHelpIcon />
@@ -457,7 +457,7 @@ function ClaimButton({ detail }) {
       reLaunch({ url: '/pages/me/index' });
     }, 1500);
   };
-  if (detail.is_claim) return null;
+  if (+detail.is_claim === 1) return null;
   return (
     <>
       <Button onClick={() => setVisible(true)} type="primary" circle size="sm">
