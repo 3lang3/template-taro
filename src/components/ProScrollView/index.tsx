@@ -1,7 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ScrollView } from '@tarojs/components';
 import { ScrollViewProps } from '@tarojs/components/types/ScrollView';
-import { forwardRef, useState, useImperativeHandle, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { forwardRef, useState, useImperativeHandle, useCallback } from 'react';
 
 export type ProScrollViewAction = {
   refresh: () => void;
@@ -17,7 +17,6 @@ export type ProScrollViewProps = {
  * 组件需要设置height
  */
 export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
-  const navigation = useSelector((state: any) => state.navigation);
   const [refresherTriggered, setRefresherTriggered] = useState(false);
   const {
     onRefresherPulling,
@@ -27,38 +26,33 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
     style,
     ...restProps
   } = props;
-  const _onRefresherPulling = async (event) => {
+  const _onRefresherPulling = useCallback(async (event) => {
     setRefresherTriggered(true);
     onRefresherPulling?.(event);
-  };
-  const _onRefresherRefresh = async (event) => {
+  }, []);
+  const _onRefresherRefresh = useCallback(async (event) => {
     setRefresherTriggered(true);
     await onRefresherRefresh?.(event);
     if (!onRefresherRestore) setRefresherTriggered(false);
-  };
+  }, []);
 
-  const _onRefresherRestore = async (event) => {
+  const _onRefresherRestore = useCallback(async (event) => {
     onRefresherRestore?.(event);
     setRefresherTriggered(false);
-  };
+  }, []);
 
-  const computeStyle = useMemo(() => {
-    let paddingBottom = 0;
-    if (withExtraPadding) {
-      paddingBottom += navigation.navBarHeight;
-    }
-    return { paddingBottom };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigation.navBarHeight]);
-
-  useImperativeHandle(ref, () => ({
-    refresh: _onRefresherRefresh,
-  }));
+  useImperativeHandle(
+    ref,
+    () => ({
+      refresh: _onRefresherRefresh,
+    }),
+    [],
+  );
 
   return (
     <ScrollView
       scrollY
-      style={Object.assign({}, computeStyle, style)}
+      style={style}
       refresherEnabled
       refresherBackground="transparent"
       refresherTriggered={refresherTriggered}

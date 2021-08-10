@@ -2,15 +2,17 @@ import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
 import { FullPageLoader, FullPageError, LibSongItem, Empty } from '@/components/Chore';
+import { Text } from '@tarojs/components';
 import { getWantSongList } from '@/services/my-song';
 import { setList } from '@/state/my-song';
+import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Typography from '@/components/Typography';
 import { useRequest } from 'ahooks';
-import ContentPop from '@/components/ContentPop';
+import ContentPop, { ContentPopAction } from '@/components/ContentPop';
 import './index.less';
 
 export default () => {
+  const popRef = useRef<ContentPopAction>(null);
   const dispatch = useDispatch();
   const { list } = useSelector((state) => {
     return state.mySong;
@@ -28,6 +30,7 @@ export default () => {
 
   return (
     <>
+      <ContentPop title="歌词查看" center ref={popRef} />
       {list.length ? (
         list.map((song, i) => (
           <LibSongItem
@@ -38,12 +41,11 @@ export default () => {
               return (
                 <Flex justify="end">
                   <>
-                    <ContentPop
-                      title="歌词查看"
-                      content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
-                    >
-                      <Icon icon="icon-quku-geci" className="lib-song-action__item" />
-                    </ContentPop>
+                    <Icon
+                      onClick={() => popRef.current?.show(<Text>{song.lyricist_content}</Text>)}
+                      icon="icon-quku-geci"
+                      className="lib-song-action__item"
+                    />
                     <Icon
                       onClick={() =>
                         navigateTo({

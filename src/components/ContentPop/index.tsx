@@ -51,27 +51,28 @@ export default forwardRef<unknown, P>(
               setVisible(true);
             },
           })}
-        {visible && (
-          <Pop overlayProps={{ onClick: () => (maskClosable ? setVisible(false) : null) }}>
-            <View className="select-pop">
-              <Flex className="content" direction="column" justify="between">
-                <Text className="select-pop-title">{title}</Text>
-                <View
-                  className={cls('select-pop-content', {
-                    'select-pop-content--center': center,
-                  })}
-                >
-                  {contentRef.current}
-                </View>
-                {footer && (
-                  <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
-                    知道了
-                  </AtButton>
-                )}
-              </Flex>
-            </View>
-          </Pop>
-        )}
+        <Pop
+          style={{ display: visible ? 'block' : 'none' }}
+          overlayProps={{ onClick: () => (maskClosable ? setVisible(false) : null) }}
+        >
+          <View className="select-pop">
+            <Flex className="content" direction="column" justify="between">
+              <Text className="select-pop-title">{title}</Text>
+              <View
+                className={cls('select-pop-content', {
+                  'select-pop-content--center': center,
+                })}
+              >
+                {contentRef.current}
+              </View>
+              {footer && (
+                <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
+                  知道了
+                </AtButton>
+              )}
+            </Flex>
+          </View>
+        </Pop>
       </>
     );
   },

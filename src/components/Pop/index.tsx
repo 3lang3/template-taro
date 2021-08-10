@@ -6,11 +6,12 @@ import './index.less';
 export type P = {
   children: React.ReactElement;
   overlayProps?: ViewProps;
+  style: React.CSSProperties;
 };
 
-export default ({ children, overlayProps }: P) => {
+export default ({ children, overlayProps, style }: P) => {
   return (
-    <View className="pop">
+    <View className="pop" style={style}>
       <View className="pop-overlay" {...overlayProps} />
       <Flex direction="column" justify="center" className="pop-container">
         {children}

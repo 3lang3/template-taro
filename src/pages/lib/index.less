@@ -5,11 +5,13 @@
 .lib-page {
   display: flex;
   flex-direction: column;
+  box-sizing: content-box;
   height: 100vh;
 
   &__list {
     flex: 1;
     height: 1px;
+    padding-bottom: @custom-tabbar-height;
     &-plc {
       display: block;
       height: 40px;
