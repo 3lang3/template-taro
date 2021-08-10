@@ -163,7 +163,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
             ) : (
               <>
                 <Typography.Text type="light" className="play-detail__author">
-                  {detail.singer}
+                  {detail.singer.join('、')}
                 </Typography.Text>
                 <Icon
                   openType="share"
