@@ -1,6 +1,5 @@
 import { ScrollView } from '@tarojs/components';
 import { ScrollViewProps } from '@tarojs/components/types/ScrollView';
-import { getCurrentInstance } from '@tarojs/taro';
 import { forwardRef, useState, useImperativeHandle, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -10,6 +9,7 @@ export type ProScrollViewAction = {
 
 export type ProScrollViewProps = {
   children?: React.ReactNode;
+  withExtraPadding?: boolean;
 } & ScrollViewProps;
 
 /**
@@ -17,10 +17,16 @@ export type ProScrollViewProps = {
  * 组件需要设置height
  */
 export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
-  const { page } = getCurrentInstance();
   const navigation = useSelector((state: any) => state.navigation);
   const [refresherTriggered, setRefresherTriggered] = useState(false);
-  const { onRefresherPulling, onRefresherRefresh, onRefresherRestore, style, ...restProps } = props;
+  const {
+    onRefresherPulling,
+    onRefresherRefresh,
+    onRefresherRestore,
+    withExtraPadding,
+    style,
+    ...restProps
+  } = props;
   const _onRefresherPulling = async (event) => {
     setRefresherTriggered(true);
     onRefresherPulling?.(event);
@@ -38,7 +44,7 @@ export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
 
   const computeStyle = useMemo(() => {
     let paddingBottom = 0;
-    if (page?.config?.navigationStyle === 'custom') {
+    if (withExtraPadding) {
       paddingBottom += navigation.navBarHeight;
     }
     return { paddingBottom };

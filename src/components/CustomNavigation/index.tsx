@@ -61,7 +61,9 @@ const CustomNavigation = ({
   return (
     <>
       <View
-        className={cls('custom-navi', `custom-navi--${mode}`)}
+        className={cls('custom-navi', {
+          [`custom-navi--${mode}`]: mode,
+        })}
         style={{ height: navigation.navBarHeight }}
       >
         <View

@@ -72,14 +72,14 @@ function PageContent({ data, params }) {
               icon="icon-shouye_zhaunji_fenxiang"
               className="album-header__share"
             />
-            <View>
+            <View className="album-header__content_title">
               <Typography.Text className="mb15" strong size="lg" type="light">
                 {data.album_name}
               </Typography.Text>
               <Typography.Text type="light">{data.singer_name}</Typography.Text>
             </View>
             <View style={{ width: '100%', overflow: 'hidden' }}>
-              <Typography.Text className="mb15" size="sm" type="light">
+              <Typography.Text className="mb10" size="sm" type="light">
                 发行时间:{data.issue_date}
               </Typography.Text>
               <Flex

@@ -1,3 +1,4 @@
+import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import { AtButton } from 'taro-ui';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
@@ -18,12 +19,14 @@ export type P = {
    * @todo 支持自定义按钮
    */
   footer?: boolean;
+  /** 文本居中 */
+  center?: boolean;
   /** 点击蒙层是否允许关闭	 */
   maskClosable?: boolean;
 };
 
 export default forwardRef<unknown, P>(
-  ({ title, content, children, footer = true, maskClosable = true }, ref) => {
+  ({ title, content, children, footer = true, maskClosable = true, center }, ref) => {
     const contentRef = useRef(content);
     const [visible, setVisible] = useState(false);
 
@@ -53,7 +56,13 @@ export default forwardRef<unknown, P>(
             <View className="select-pop">
               <Flex className="content" direction="column" justify="between">
                 <Text className="select-pop-title">{title}</Text>
-                <View className="select-pop-content">{contentRef.current}</View>
+                <View
+                  className={cls('select-pop-content', {
+                    'select-pop-content--center': center,
+                  })}
+                >
+                  {contentRef.current}
+                </View>
                 {footer && (
                   <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
                     知道了

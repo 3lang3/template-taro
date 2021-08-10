@@ -6,12 +6,10 @@ import { TabNavigationBar } from '@/components/CustomNavigation';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import { navigateTo } from '@tarojs/taro';
-import EditorRender from '@/components/EditorRender';
 import Typography from '@/components/Typography';
 import { useSelector } from 'react-redux';
 import ScrollLoadList from '@/components/ScrollLoadList';
 import { getMusicSongList, Node } from '@/services/lib';
-import { stringToHtml } from '@/utils/utils';
 import { LibSongItem } from '@/components/Chore';
 import ContentPop, { ContentPopAction } from '@/components/ContentPop';
 import './index.less';
@@ -143,12 +141,16 @@ const LibPageContent = () => {
 
   return (
     <>
-      <ContentPop ref={popRef} title="歌词查看" />
       <TabNavigationBar />
       <View className="lib-page">
         <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
         <ScrollLoadList<Node>
           refresh={{ className: 'lib-page__list' }}
+          headerRender={() => (
+            <>
+              <View className="lib-page__list-plc" />
+            </>
+          )}
           params={getParams(params)}
           request={getMusicSongList}
           row={(song, i) => (
@@ -164,11 +166,7 @@ const LibPageContent = () => {
                       <Icon
                         onClick={() =>
                           popRef.current?.show(
-                            <EditorRender
-                              text
-                              center
-                              content={stringToHtml(song.lyricist_content)}
-                            />,
+                            <Text className="lib-song-action__lyric">{song.lyricist_content}</Text>,
                           )
                         }
                         icon="icon-quku-geci"
@@ -191,6 +189,7 @@ const LibPageContent = () => {
           )}
         />
       </View>
+      <ContentPop ref={popRef} title="歌词查看" center />
     </>
   );
 };

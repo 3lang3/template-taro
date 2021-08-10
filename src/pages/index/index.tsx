@@ -56,7 +56,7 @@ const HotSongItem = (props) => {
           {props.song_name}
         </Typography.Text>
         <Typography.Text className="hot-song-item__author" size="sm" type="secondary" ellipsis>
-          {props.singer}
+          {props.singer.join('、')}
         </Typography.Text>
       </View>
     </View>
