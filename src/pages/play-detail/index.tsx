@@ -9,7 +9,15 @@ import CustomNavigation from '@/components/CustomNavigation';
 import Typography from '@/components/Typography';
 import { View, Text } from '@tarojs/components';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { navigateBack, showModal, showToast, useRouter, useShareAppMessage } from '@tarojs/taro';
+import {
+  getImageInfo,
+  navigateBack,
+  saveImageToPhotosAlbum,
+  showModal,
+  showToast,
+  useRouter,
+  useShareAppMessage,
+} from '@tarojs/taro';
 import Icon from '@/components/Icon';
 import AuthWrapper from '@/components/AuthWrapper';
 import { IDENTITY } from '@/config/constant';
@@ -20,7 +28,6 @@ import {
   abandonMusicSong,
   operationMusicSongPrice,
   applyWantSong,
-  delWantSong,
 } from '@/services/song';
 import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
@@ -52,7 +59,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   useShareAppMessage(({ from }) => {
     if (from === 'button') {
       return {
-        title: `${detail.song_name}-${detail.singer}`,
+        title: `${detail.song_name}-${detail.singer.join('、')}`,
         imageUrl: getHttpPath(bgImg),
       };
     }
@@ -62,8 +69,12 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   // 还价
   const onCounterOfferClick = () => {
     counterOfferRef.current?.show({
-      composer_price: detail.composer_price,
-      lyricist_price: detail.lyricist_price,
+      composer_price: +detail.composer_final_price
+        ? detail.composer_final_price
+        : detail.composer_original_price,
+      lyricist_price: +detail.lyricist_final_price
+        ? detail.lyricist_final_price
+        : detail.lyricist_original_price,
     });
   };
   // 还价提交
@@ -90,7 +101,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   return (
     <>
       {/* 自定义navigation */}
-      <CustomNavigation title={detail.song_name} />
+      <CustomNavigation title={detail.song_name} smallTitle />
       {/* navigation占位符 */}
       <View style={{ height: navigation.navBarHeight }} />
       {/* blur效果层 */}
@@ -140,19 +151,19 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
             {isScorePage ? (
               <>
                 {Array.isArray(detail.tag) && detail.tag.length > 0 && (
-                  <View className="play-detail__tags">
+                  <Flex wrap="wrap" align="center" justify="center" className="play-detail__tags">
                     {detail.tag.map((el, i) => (
-                      <Tag key={i} type="light">
+                      <Tag className="mb10" key={i} type="light">
                         {el}
                       </Tag>
                     ))}
-                  </View>
+                  </Flex>
                 )}
               </>
             ) : (
               <>
                 <Typography.Text type="light" className="play-detail__author">
-                  {detail.singer}
+                  {detail.singer.join('、')}
                 </Typography.Text>
                 <Icon
                   openType="share"
@@ -232,6 +243,11 @@ type PlayDetailParams = {
   ids: string;
 };
 
+function getRequest(pageType) {
+  if (pageType === 'score') return getSaleSongDetail;
+  return getSongDetail;
+}
+
 const PageContentWrapper = () => {
   const { params } = useRouter<PlayDetailParams>();
   const {
@@ -239,7 +255,7 @@ const PageContentWrapper = () => {
     error,
     refresh,
     data: { data } = { data: {} },
-  } = useRequest(params.type === 'score' ? getSaleSongDetail : getSongDetail, {
+  } = useRequest(getRequest(params.type), {
     defaultParams: [{ ids: params.ids }],
   });
   if (loading) return <FullPageLoader />;
@@ -269,7 +285,25 @@ function ScoreButton({ detail }) {
             className="modal-score__swiper__wrapper"
             swiperClassName="modal-score__swiper"
             data={detail.composer_content || []}
-            itemRender={(img) => <Image className="modal-score__img" src={img} />}
+            itemRender={(img) => (
+              <Image
+                onLongPress={async () => {
+                  try {
+                    const { path } = await getImageInfo({ src: getHttpPath(img) });
+                    saveImageToPhotosAlbum({
+                      filePath: path,
+                      success: () => {
+                        showToast({ icon: 'success', title: '保存成功' });
+                      },
+                    });
+                  } catch (error) {
+                    showToast({ icon: 'none', title: error.message });
+                  }
+                }}
+                className="modal-score__img"
+                src={img}
+              />
+            )}
           />
           <Typography.Text type="secondary" size="sm">
             长按保存图片
@@ -282,7 +316,7 @@ function ScoreButton({ detail }) {
 
 // 申请唱歌按钮
 function ApplySingButton({ detail }) {
-  const [status, setStatus] = useState<number>(() => +detail.status);
+  const [status, setStatus] = useState<number>(() => +detail.apply_status);
   // 申请唱歌
   const onSongApply = async () => {
     showToast({ icon: 'loading', title: '申请中...', mask: true });
@@ -293,7 +327,7 @@ function ApplySingButton({ detail }) {
   // 取消申请
   const onCancelApplay = async () => {
     showToast({ icon: 'loading', title: '取消中...', mask: true });
-    const { msg } = await delWantSong({ ids: detail.ids });
+    const { msg } = await applyWantSong({ ids: detail.ids });
     setStatus(0);
     showToast({ icon: 'success', title: msg });
   };

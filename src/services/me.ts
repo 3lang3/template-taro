@@ -36,3 +36,7 @@ export function getHomePageDetail(): Promise<PromiseResponseType<MePageResType>>
 export function getMechanismInfo() {
   return request('/member/getMechanismInfo');
 }
+
+export function getMechanismSongList(data) {
+  return request('/member/getMechanismSongList', { method: 'GET', data });
+}

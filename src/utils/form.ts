@@ -26,7 +26,7 @@ export function validateFields(values: Record<string, any>, fields: Record<strin
         // 必填校验
         if (rule.required && !value) return true;
         // 正则校验
-        if (rule.pattern && !rule.pattern.test(value)) return true;
+        if (rule.pattern && !rule.pattern.test(value.trim())) return true;
         // 自动移validator校验
         if (rule.validator && !rule.validator(value)) return true;
       });

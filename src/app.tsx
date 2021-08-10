@@ -33,7 +33,7 @@ class App extends Component<any, any> {
   }
   // 获取场景值
   onLaunch(opts) {
-    console.log(`launch scence: ${opts.scence}`);
+    console.log(`launch scence: ${opts.scene}`, opts);
   }
   render() {
     return <Provider store={store}>{this.props.children}</Provider>;

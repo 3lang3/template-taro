@@ -1,3 +1,5 @@
 export default {
-  navigationBarTitleText: '已购词曲'
-}
+  navigationBarTitleText: '已购词曲',
+  enablePullDownRefresh: true,
+  backgroundTextStyle: 'dark',
+};

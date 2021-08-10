@@ -10,7 +10,7 @@ import './index.less';
 
 let timer: any = null;
 
-export default ({ onSubmit, children, request, title }) => {
+export default ({ onSubmit, children, request, title, ...props }) => {
   const [visible, setVisible] = useState(false);
   const [value, setValue] = useState(''); // 输入框
   const [selector, setSelector] = useState<any>([] as any[]);
@@ -48,8 +48,12 @@ export default ({ onSubmit, children, request, title }) => {
   return (
     <>
       {cloneElement(children, {
-        onClick: () => {
+        onClick: async () => {
           setVisible(true);
+          if (props.initRequest) {
+            const { data } = await props.initRequest();
+            setSelector(data.map((item) => ({ ...item, ids: item.member_ids })));
+          }
         },
       })}
       {visible && (
@@ -91,8 +95,9 @@ export default ({ onSubmit, children, request, title }) => {
                 取消
               </Button>
               <Button
-                onClick={() => {
-                  if (onSubmit(selector)) setVisible(false);
+                onClick={async () => {
+                  const res = await onSubmit(selector);
+                  if (res) setVisible(false);
                 }}
                 type="primary"
                 circle

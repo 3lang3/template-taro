@@ -42,7 +42,7 @@ function PageContent({ data, params }) {
 
   useShareAppMessage(() => {
     return {
-      title: `${data.album_name}-${data.singer_name}`,
+      title: `${data.album_name}${data.singer?.[0] ? `-${data.singer?.[0]}` : ''}`,
       imageUrl: getHttpPath(data.album_image),
     };
   });
@@ -72,14 +72,14 @@ function PageContent({ data, params }) {
               icon="icon-shouye_zhaunji_fenxiang"
               className="album-header__share"
             />
-            <View>
+            <View className="album-header__content_title">
               <Typography.Text className="mb15" strong size="lg" type="light">
                 {data.album_name}
               </Typography.Text>
-              <Typography.Text type="light">{data.singer_name}</Typography.Text>
+              <Typography.Text type="light">{data.singer.join('、')}</Typography.Text>
             </View>
             <View style={{ width: '100%', overflow: 'hidden' }}>
-              <Typography.Text className="mb15" size="sm" type="light">
+              <Typography.Text className="mb10" size="sm" type="light">
                 发行时间:{data.issue_date}
               </Typography.Text>
               <Flex
@@ -108,7 +108,7 @@ function PageContent({ data, params }) {
               <View className="album-body__item-content">
                 <Typography.Title level={3}>{item.song_name}</Typography.Title>
                 <Typography.Text size="sm" type="secondary">
-                  {item.singer}
+                  {item.singer.join('、')}
                 </Typography.Text>
               </View>
             </Flex>

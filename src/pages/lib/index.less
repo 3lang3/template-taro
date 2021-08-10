@@ -2,11 +2,24 @@
 
 @tabs-height: 277px;
 
+.lib-page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
+  height: 100vh;
+
+  &__list {
+    flex: 1;
+    height: 1px;
+    padding-bottom: @custom-tabbar-height;
+    &-plc {
+      display: block;
+      height: 40px;
+    }
+  }
+}
+
 .lib-tabs {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
   display: flex;
   align-items: flex-end;
   height: @tabs-height;
@@ -84,9 +97,6 @@
   }
 }
 
-.lib-song-wrapper {
-  padding-top: @tabs-height + 40px;
-}
 .lib-song-action {
   &__item {
     width: 42px;
@@ -94,5 +104,8 @@
     margin-left: 38px;
     color: @gray-6;
     font-size: 45px;
+  }
+  &__lyric {
+    font-size: 28px;
   }
 }

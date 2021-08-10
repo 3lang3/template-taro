@@ -82,6 +82,7 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
   const dragging = useRef(false);
   // 拖拽区域信息
   const movable = useRef<MovableStateProps>({ width: 0, x: 0 });
+  const movableDot = useRef<Omit<MovableStateProps, 'x'>>({ width: 0 });
   const audio = useRef<Taro.BackgroundAudioManager>(backgroundAudioManager);
   // 歌词相关
   const lyricRef = useRef<any>({
@@ -91,14 +92,13 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
 
   useEffect(() => {
     if (audio.current.src !== src) {
-      audio.current.title = info.title;
-      Object.entries(info).forEach(([k, v]) => {
-        if (v) audio.current[k] = v;
-      });
-      audio.current.src = src;
+      init();
     }
     audio.current.onPlay(() => setPaused(false));
     audio.current.onPause(() => setPaused(true));
+    audio.current.onEnded(() => {
+      init();
+    });
 
     audio.current.onError(() => {
       showModal({ title: '抱歉', content: '播放好像出了点问题', showCancel: false });
@@ -123,7 +123,7 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
       // 拖动中 dot的x偏移不再更新
       if (!dragging.current) {
         // @todo dot本身宽度未计算
-        payload.dotProgress = payload.progress * movable.current.width;
+        payload.dotProgress = payload.progress * (movable.current.width - movableDot.current.width);
       }
 
       // 歌词功能
@@ -145,11 +145,16 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
     // useLayoutEffect中获取不到dom实例真实属性
     // @hack
     setImmediate(() => {
+      // play-core__ctrl-bar__dot
       // 获取movable-view宽度
       createSelectorQuery()
         .select('.play-core__ctrl-bar')
         .boundingClientRect((rect) => {
           movable.current.width = rect.width;
+        })
+        .select('.play-core__ctrl-bar__dot')
+        .boundingClientRect((rect) => {
+          movableDot.current.width = rect.width / 2;
         })
         .exec();
 
@@ -167,6 +172,15 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 初始化backgroundAudioManager
+  const init = () => {
+    audio.current.title = info.title;
+    Object.entries(info).forEach(([k, v]) => {
+      if (v) audio.current[k] = v;
+    });
+    audio.current.src = src;
+  };
+
   // 进度条开始拖动
   const onTouchStart = () => {
     dragging.current = true;
@@ -174,7 +188,10 @@ export function useCustomAudio({ src, lyric, info }: UseCustomAudioParams): UseC
   // 进度条拖动结束
   const onTouchEnd = () => {
     // seek时间点
-    const seek = ((movable.current.x / movable.current.width) * state.duration).toFixed(2);
+    const seek = (
+      (movable.current.x / (movable.current.width - movableDot.current.width)) *
+      state.duration
+    ).toFixed(2);
     audio.current.seek(+seek);
     dragging.current = false;
   };
@@ -233,11 +250,13 @@ export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
       const lyricStr = lyric.substr(1);
       const splitIdx = lyricStr.search(/\]/);
       if (splitIdx === -1) {
-        console.warn(`原歌词第${i}条格式不正确，无法解析，已忽略`);
+        console.warn(`原歌词第${i + 1}条格式不正确，无法解析，已忽略`);
         return false;
       }
       const splitChar = lyricStr[splitIdx];
       const [timeStr, lyricFtm] = lyricStr.split(splitChar);
+      if (!timeStr.trim().length) return false;
+      if (!lyricFtm.trim().length) return false;
 
       return { time: formatMsToSec(timeStr), text: lyricFtm };
     })

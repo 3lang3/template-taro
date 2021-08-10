@@ -2,13 +2,12 @@ import { useEffect } from 'react';
 import { getAlbumDetail } from '@/state/album';
 import Flex from '@/components/Flex';
 import CustomNavigation from '@/components/CustomNavigation';
-import Typography from '@/components/Typography';
 import Image from '@/components/Image';
 import config from '@/config';
 import { useRouter } from '@tarojs/taro';
 import { useDispatch, useSelector } from 'react-redux';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { View } from '@tarojs/components';
+import { Text, View } from '@tarojs/components';
 import './index.less';
 
 export default () => {
@@ -48,9 +47,9 @@ export default () => {
           <Image className="album-detail__cover" src={data.album_image} />
 
           <View className="album-detail__wrapper">
-            <Flex className="album-detail__p">
+            <Flex className="album-detail__p" align="baseline">
               <View className="album-detail__p-label">专辑:</View>
-              <View className="album-detail__p-text">{data.album_name}</View>
+              <Text className="album-detail__p-text">{data.album_name}</Text>
             </Flex>
             <Flex className="album-detail__p">
               <View className="album-detail__p-label">语种:</View>
@@ -68,9 +67,9 @@ export default () => {
               <View className="album-detail__p-label">流派:</View>
               <View className="album-detail__p-text">{data.sect}</View>
             </Flex>
-            <Typography.Text type="light" className="mt50">
-              {data.desc}
-            </Typography.Text>
+            <View className="album-detail__desc">
+              <Text>{data.desc}</Text>
+            </View>
           </View>
         </View>
       </View>

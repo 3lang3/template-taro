@@ -6,7 +6,7 @@ import Typography from '@/components/Typography';
 import { MP_E_SIGN_APPID } from '@/config/constant';
 import { getSingerBankInfo } from '@/services/common';
 import { FullPageError, FullPageLoader } from '@/components/Chore';
-import { createSchemeUrl, describeFlowBriefs } from '@/services/song-manage';
+import { createSchemeUrl } from '@/services/song-manage';
 import { View } from '@tarojs/components';
 import {
   showToast,
@@ -14,10 +14,8 @@ import {
   navigateToMiniProgram,
   showLoading,
   useRouter,
-  useDidShow,
   showModal,
   navigateBack,
-  hideToast,
 } from '@tarojs/taro';
 import ContentPop from '@/components/ContentPop';
 import { useRequest } from 'ahooks';
@@ -28,6 +26,7 @@ import './index.less';
 
 export default () => {
   const { params } = useRouter<{ ids: string }>();
+  const uploaderRef = useRef<any>(null);
   const userData = useSelector((state) => state.common.data);
   const [payload, set] = useState<any>({
     id_card_image: undefined,
@@ -37,13 +36,14 @@ export default () => {
   });
 
   const {
-    data: { data: detail } = { data: {} },
+    data: { data: _detail } = { data: {} },
     loading,
     error,
     refresh,
   } = useRequest(getSingerBankInfo, {
     defaultParams: [{ ids: params.ids }],
     onSuccess: ({ data }) => {
+      if (!data) return;
       // 写入默认值
       set((v) => ({
         ...v,
@@ -53,37 +53,7 @@ export default () => {
       }));
     },
   });
-  const resultReq = useRequest(describeFlowBriefs, {
-    manual: true,
-    onSuccess: ({ data, type }) => {
-      if (type === 1) return;
-      showModal({
-        title: '签约结果',
-        content: `${+data.status ? '签署成功' : '签署失败'}`,
-        success: ({ confirm }) => {
-          if (confirm) navigateBack();
-        },
-      });
-    },
-  });
-
-  const firstRenderRef = useRef(false);
-  const schemaDataRef = useRef<any>({});
-
-  useDidShow(() => {
-    if (!firstRenderRef.current) {
-      firstRenderRef.current = true;
-      return;
-    }
-    // 获取签署结果
-    const getResult = async () => {
-      showToast({ icon: 'loading', title: '签约结果查询中' });
-      await resultReq.run({ ids: params.ids, flow_id: schemaDataRef.current.flow_id });
-      hideToast();
-    };
-    getResult();
-  });
-
+  const detail = _detail || {};
   // 签约
   const onSignClick = async () => {
     if (+detail.is_upload && !payload.id_card_image)
@@ -92,15 +62,25 @@ export default () => {
     if (!payload.bank_card) return showToast({ icon: 'none', title: '请输银行卡号' });
     if (!payload.bank_branch_name) return showToast({ icon: 'none', title: '请输开户银行支行' });
     try {
-      showLoading({ title: '请稍后...' });
+      showLoading({ title: '请稍后...', mask: true });
       const { data } = await createSchemeUrl({ ids: params.ids, ...payload });
-      schemaDataRef.current = data;
       hideLoading();
       navigateToMiniProgram({
         appId: MP_E_SIGN_APPID,
         path: `pages/guide?from=miniprogram&id=${data.flow_id}`,
         extraData: { name: userData.real_name, phone: userData.mobile },
-        success: () => {},
+        success: () => {
+          // 获取签署结果
+          showModal({
+            title: '提醒',
+            content:
+              '“腾讯电子签”返回有在当前界面提示“协议若已签署，则签署协议会在五分钟内完成，无需重复前往签署，请耐心等待刷新“词曲管理”界面查看签署状态！”，按钮“知道了”，点击后回到“词曲管理”界面',
+            confirmText: '知道了',
+            success: ({ confirm }) => {
+              if (confirm) navigateBack();
+            },
+          });
+        },
       });
     } catch (e) {
       hideLoading();
@@ -112,7 +92,7 @@ export default () => {
 
   return (
     <>
-      {+detail.is_upload === 1 && (
+      {+detail.is_upload !== 0 && (
         <>
           <View className="bg-white mb20 p-default">
             <Typography.Text type="danger">1.该身份证信息仅用于词曲交易环节使用</Typography.Text>
@@ -121,22 +101,31 @@ export default () => {
             </Typography.Text>
           </View>
 
-          <Flex className="bg-white p-default" align="start">
+          <Flex className="bg-white p-default" align="stretch">
             <IDCardUploader
+              ref={uploaderRef}
               value={payload.id_card_image}
               onChange={(value) => set((v) => ({ ...v, id_card_image: value }))}
             />
-            <ContentPop
-              title="例图查看"
-              footer={false}
-              content={
-                <View className="idcard-simple">
-                  <Image className="idcard-simple__img" src="idcard-uploader__simple" />
-                </View>
-              }
-            >
-              <Typography.Link className="ml20">例图查看</Typography.Link>
-            </ContentPop>
+            <Flex className="ml20" direction="column" align="start" justify="between">
+              <ContentPop
+                title="例图查看"
+                footer={false}
+                content={
+                  <View className="idcard-simple">
+                    <Image
+                      className="idcard-simple__img"
+                      src="upload/2021-08-05/iTFI3MpEdHmBqxsyEY9jPVv1BgB1.jpg"
+                    />
+                  </View>
+                }
+              >
+                <Typography.Link>例图查看</Typography.Link>
+              </ContentPop>
+              <Button onClick={() => uploaderRef.current?.upload()} circle type="danger" size="sm">
+                {uploaderRef.current?.value ? '重新上传' : '上传图片'}
+              </Button>
+            </Flex>
           </Flex>
         </>
       )}
@@ -146,7 +135,9 @@ export default () => {
         </View>
         <BankPicker
           value={payload.bank_name}
-          onChange={(value) => set((v) => ({ ...v, bank_name: value }))}
+          onChange={(value) => {
+            set((v) => ({ ...v, bank_name: value }));
+          }}
         />
         <AtInput
           name="bank_branch_name"
@@ -154,7 +145,10 @@ export default () => {
           placeholder="请输入支行名称"
           type="text"
           value={payload.bank_branch_name}
-          onChange={(value) => set((v: any) => ({ ...v, bank_branch_name: value }))}
+          onChange={(value) => {
+            set((v: any) => ({ ...v, bank_branch_name: value }));
+            return value;
+          }}
         />
         <AtInput
           name="bank_card"
@@ -162,7 +156,10 @@ export default () => {
           placeholder="请输入银行卡号"
           type="text"
           value={payload.bank_card}
-          onChange={(value) => set((v: any) => ({ ...v, bank_card: value }))}
+          onChange={(value) => {
+            set((v: any) => ({ ...v, bank_card: value }));
+            return value;
+          }}
         />
       </AtForm>
       <View className="p-lg mt50">

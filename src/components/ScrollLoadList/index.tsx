@@ -1,14 +1,16 @@
 import { PAGINATION } from '@/config/constant';
 import { useReachBottom } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AtActivityIndicator } from 'taro-ui';
 import { Empty } from '../Chore';
 import Flex from '../Flex';
+import ProScrollView, { ProScrollViewProps } from '../ProScrollView';
 import Typography from '../Typography';
 
 export type ActionType<T = {}> = {
   reload: () => void;
+  pulldown: () => void;
   /** 更改行数据 */
   rowMutate: ({ index, data }: { index: number; data: any }) => void;
 } & T;
@@ -20,10 +22,13 @@ type ScrollLoadListProps<T = {}> = {
   row: (row: T, idx: number) => React.ReactNode;
   /** 额外参数 */
   params?: Record<string, any>;
+  headerRender?: () => React.ReactNode;
   /** 空状态ui */
   emptyRender?: () => React.ReactNode;
   /** 初始化的参数，可以操作 list */
   actionRef?: React.MutableRefObject<ActionType | undefined>;
+  /** 下拉刷新 */
+  refresh?: boolean | Omit<ProScrollViewProps, 'refresherEnabled' | 'onRefresherRefresh'>;
 };
 
 /**
@@ -36,23 +41,37 @@ type ScrollLoadListProps<T = {}> = {
  */
 const ScrollLoadList: <T extends Record<string, any>>(
   props: ScrollLoadListProps<T>,
-) => JSX.Element = ({ params = {}, emptyRender = () => <Empty />, actionRef, ...props }) => {
+) => JSX.Element = ({
+  params = {},
+  emptyRender = () => <Empty />,
+  actionRef,
+  refresh,
+  ...props
+}) => {
   const [list, setList] = useState<any[]>([]);
+  const listDataRef = useRef<any[]>([]);
   const paginationRef = useRef(PAGINATION);
   const nomoreRef = useRef(false);
 
-  const { loading, error, run } = useRequest(props.request, {
+  listDataRef.current = list;
+
+  const { loading, error, ...req } = useRequest(props.request, {
     manual: true,
     onSuccess: ({ data: { _list, _page }, type, msg }) => {
-      if (type === 1) throw Error(msg);
+      if (type === 1 || !_list) throw Error(msg);
       paginationRef.current = _page;
       nomoreRef.current = _page.page >= _page.totalPage;
-      setList([...list, ..._list]);
+      setList(_page.page === 1 ? _list : [...list, ..._list]);
     },
     onError: () => {
       paginationRef.current = PAGINATION;
     },
   });
+
+  const run = (p) => {
+    const { pageSize } = paginationRef.current;
+    req.run({ pageSize, ...p });
+  };
 
   const reload = () => {
     setList([]);
@@ -60,8 +79,13 @@ const ScrollLoadList: <T extends Record<string, any>>(
     run(params);
   };
 
+  const pulldown = async () => {
+    paginationRef.current = PAGINATION;
+    await run(params);
+  };
+
   const rowMutate = ({ index, data }) => {
-    const newList = JSON.parse(JSON.stringify(list));
+    const newList = JSON.parse(JSON.stringify(listDataRef.current));
     newList.splice(index, 1, data);
     setList(newList);
   };
@@ -77,22 +101,46 @@ const ScrollLoadList: <T extends Record<string, any>>(
       actionRef.current = {
         reload,
         rowMutate,
+        pulldown,
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionRef]);
 
-  // 滚动加载
-  useReachBottom(() => {
+  const loadmore = async () => {
     if (error) return;
     // 请求中或者没有更多数据 return
     if (loading || nomoreRef.current) return;
-    const { page, pageSize } = paginationRef.current;
-    run({ ...params, pageSize, page: page + 1 });
+    const { page } = paginationRef.current;
+    await run({ ...params, page: page + 1 });
+  };
+
+  const renderLoaderAndDone = useCallback(() => {
+    return (
+      <>
+        {loading && (
+          <Flex className="p-default" justify="center">
+            <AtActivityIndicator />
+          </Flex>
+        )}
+        {/* 请求页数大于1才展示加载完文案 */}
+        {nomoreRef.current && paginationRef.current.page > 1 && (
+          <Flex justify="center" className="p-lg">
+            <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
+          </Flex>
+        )}
+      </>
+    );
+  }, [loading]);
+  // 滚动加载
+  useReachBottom(async () => {
+    if (refresh) return;
+    await loadmore();
   });
 
   return (
     <>
+      {refresh ? null : props.headerRender?.()}
       {(() => {
         if (error && !loading)
           return (
@@ -106,19 +154,22 @@ const ScrollLoadList: <T extends Record<string, any>>(
               {emptyRender()}
             </Flex>
           );
-        return list.map(props.row);
+        return refresh ? (
+          <ProScrollView
+            {...(refresh as any)}
+            lowerThreshold={20}
+            onScrollToLower={loadmore}
+            onRefresherRefresh={pulldown}
+          >
+            {props.headerRender?.()}
+            {list.map(props.row)}
+            {renderLoaderAndDone()}
+          </ProScrollView>
+        ) : (
+          list.map(props.row)
+        );
       })()}
-      {loading && (
-        <Flex justify="center">
-          <AtActivityIndicator />
-        </Flex>
-      )}
-      {/* 请求页数大于1才展示加载完文案 */}
-      {nomoreRef.current && paginationRef.current.page > 1 && (
-        <Flex justify="center">
-          <Typography.Text style={{ color: '#aaa' }}>全部加载完拉~</Typography.Text>
-        </Flex>
-      )}
+      {refresh ? null : renderLoaderAndDone()}
     </>
   );
 };

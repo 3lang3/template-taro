@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import ScrollLoadList from '@/components/ScrollLoadList';
 import { getMusicSongList, Node } from '@/services/lib';
 import { LibSongItem } from '@/components/Chore';
-import ContentPop from '@/components/ContentPop';
+import ContentPop, { ContentPopAction } from '@/components/ContentPop';
 import './index.less';
 
 export type P = {
@@ -97,6 +97,7 @@ const LibTabs = ({ onChange, data = [], params = {} }: P) => {
 };
 
 const LibPageContent = () => {
+  const popRef = useRef<ContentPopAction>();
   const { songStyle, languageVersion } = useSelector((state) => state.common);
   const tabsData = useMemo(() => {
     return () => [
@@ -141,30 +142,38 @@ const LibPageContent = () => {
   return (
     <>
       <TabNavigationBar />
-      <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
-      <View className="lib-song-wrapper">
+      <View className="lib-page">
+        <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
         <ScrollLoadList<Node>
+          refresh={{ className: 'lib-page__list' }}
+          headerRender={() => <View className="lib-page__list-plc" />}
           params={getParams(params)}
           request={getMusicSongList}
           row={(song, i) => (
             <LibSongItem
               key={i}
+              isRead={song.is_read === 1}
               title={song.song_name}
               tags={[song.sect, song.language]}
               actionRender={() => {
                 return (
                   <Flex justify="end">
                     {song.lyricist_content && (
-                      <ContentPop
-                        title="歌词查看"
-                        content={<Typography.Text center>{song.lyricist_content}</Typography.Text>}
-                      >
-                        <Icon icon="icon-quku_qupu" className="lib-song-action__item" />
-                      </ContentPop>
+                      <Icon
+                        onClick={() =>
+                          popRef.current?.show(
+                            <Text className="lib-song-action__lyric">{song.lyricist_content}</Text>,
+                          )
+                        }
+                        icon="icon-quku-geci"
+                        className="lib-song-action__item"
+                      />
                     )}
                     <Icon
                       onClick={() =>
-                        navigateTo({ url: `/pages/play-detail/index?type=score&ids=${song.ids}` })
+                        navigateTo({
+                          url: `/pages/play-detail/index?type=score&ids=${song.ids}`,
+                        })
                       }
                       icon="icon-quku_bofang"
                       className="lib-song-action__item"
@@ -176,6 +185,7 @@ const LibPageContent = () => {
           )}
         />
       </View>
+      <ContentPop ref={popRef} forceRender title="歌词查看" center />
     </>
   );
 };

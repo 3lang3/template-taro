@@ -1,5 +1,7 @@
+import cls from 'classnames';
 import Typography from '@/components/Typography';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { TabNavigationBar } from '@/components/CustomNavigation';
 import {
   AtInput,
   AtForm,
@@ -12,12 +14,15 @@ import {
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import { setClipboardData, navigateTo, showToast } from '@tarojs/taro';
+import { setClipboardData, navigateTo, showToast, useRouter, navigateBack } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
-import './index.less';
+import Flex from '@/components/Flex';
+import { getSaleSongDetail } from '@/services/song';
+import { useRequest } from 'ahooks';
 import { SellSteps } from './components';
+import './index.less';
 
 const simpleText = `创作目的：提高自己知名度，售卖版权取得收益
 创作完成时间：2016年5月20日
@@ -70,10 +75,27 @@ export type State = {
   tag: TagNode[];
   introduce: string;
   explain: string;
+  reason: string;
+  status: number | null;
 };
 
+type RouterParams = {
+  /**
+   * 词曲管理列表状态
+   * - 1 认领者
+   * - 2 发起者
+   */
+  listStatus: string;
+  /** 歌曲ids */
+  ids: string;
+} & Record<string, any>;
+
 export default () => {
+  const { params } = useRouter<RouterParams>();
+  const { ids } = params;
+
   const [visible, setVisible] = useState(false);
+  const [backVisible, setBackVisible] = useState(false);
   const store = useSelector((state) => state.common);
   const pickerData = useMemo(() => {
     return () => {
@@ -104,7 +126,44 @@ export default () => {
     tag: [],
     introduce: '',
     explain: '',
+    reason: '', // 驳回原因
+    status: null,
   });
+
+  const detailReq = useRequest(getSaleSongDetail, {
+    manual: true,
+    onSuccess: ({
+      data: { song_name, sect, language, tag, introduce, explain, reason, status },
+    }) => {
+      const tagArr: Array<TagNode[]> = [[], [], []] as any;
+      pickerData().forEach((item, i) => {
+        item.children.forEach((child) => {
+          if (tag && tag.includes(child.name) && tag.length) {
+            tagArr[i].push(child as any);
+            tag.shift();
+          }
+        });
+      });
+      onLabel(tagArr);
+      set((v) => ({
+        ...v,
+        status,
+        reason,
+        song_name,
+        sect: songStyle.find((item) => item.name === sect)?.id as any,
+        language: langData.find((item) => item.name === language)?.id as any,
+        introduce,
+        explain,
+      }));
+    },
+  });
+
+  useEffect(() => {
+    if (ids) {
+      detailReq.run({ ids });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ids]);
 
   const onSubmit = () => {
     const hasInvalidField = validateFields(payload, fields);
@@ -117,7 +176,12 @@ export default () => {
       showToast({ icon: 'none', title: '作品名最多输20个字' });
       return;
     }
-    navigateTo({ url: `/pages/sell/next?params=${JSON.stringify(payload)}` });
+    navigateTo({
+      url: `/pages/sell/next?params=${JSON.stringify({
+        ...payload,
+        ids,
+      })}&ids=${ids || ''}&listStatus=${params.listStatus}`,
+    });
   };
 
   const closeModal = () => setVisible(false);
@@ -158,10 +222,48 @@ export default () => {
     };
   }, [payload.tag]);
 
+  /**
+   * 点击按钮返回
+   */
+  function onBack() {
+    const result = Object.values(payload).some((item) => {
+      if (typeof item === 'object') {
+        return false;
+      }
+      return !!item;
+    });
+    if (result && [null, 2].includes(payload.status as any)) {
+      // 没有值直接返回
+      setBackVisible(true);
+    } else {
+      navigateBack();
+    }
+  }
+
   return (
     <>
+      <TabNavigationBar
+        onIcon={onBack}
+        icon="icon-nav_icon_fanhui"
+        isRead={false}
+        mode="light"
+        title="出售词曲"
+        fixedHeight
+      />
+      {payload.reason && payload.status === 2 && (
+        <Flex align="start" className="settlein-reason">
+          <Typography.Text>驳回原因：</Typography.Text>
+          <Typography.Text style={{ flex: '1' }} type="danger">
+            {payload.reason}
+          </Typography.Text>
+        </Flex>
+      )}
       <SellSteps />
-      <AtForm className="custom-form">
+      <AtForm
+        className={cls('custom-form', {
+          'form-disabled': ![null, 2].includes(payload.status as any),
+        })}
+      >
         <AtInput
           name="song_name"
           placeholder="请输入作品名称"
@@ -251,6 +353,17 @@ export default () => {
           </AtModalContent>
         </AtModal>
       )}
+      <AtModal
+        className="back-pop"
+        isOpened={backVisible}
+        title="您填写的信息尚未保存，是否离开"
+        cancelText="取消"
+        confirmText="确认"
+        onClose={() => setBackVisible(false)}
+        onCancel={() => setBackVisible(false)}
+        onConfirm={() => navigateBack()}
+        content="离开后编辑的内容可能会消失"
+      />
     </>
   );
 };

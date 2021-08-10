@@ -6,7 +6,8 @@ import { View } from '@tarojs/components';
 import { useEffect, useRef, useState } from 'react';
 import Button from '@/components/Button';
 import Icon from '@/components/Icon';
-import { AtInput, AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import { AtForm, AtCheckbox, AtModal, AtModalContent } from 'taro-ui';
+import MyAtInput from '@/components/MyAtInput';
 import { SongUploader } from '@/components/Uploader';
 import CustomPicker from '@/components/CustomPicker';
 import { singerApply } from '@/services/settlein';
@@ -40,7 +41,7 @@ export default () => {
     // @hack 获取上一个页面传递的数据
     eventCenter.once('page:message:settle-next', (response) => {
       prevStepPayloadRef.current = response.payload;
-      if (isAudit) {
+      if (response.detail) {
         set((v) => ({
           ...v,
           song_url: response.detail.song_url,
@@ -94,6 +95,11 @@ export default () => {
     closeModal();
     reLaunch({ url: '/pages/me/index' });
   };
+
+  function onProtocol(e) {
+    e.stopPropagation();
+    navigateTo({ url: '/pages/protocol/index' });
+  }
   return (
     <>
       <Flex className="settlein-reason" align="start">
@@ -117,10 +123,11 @@ export default () => {
           </Flex>
           <View className="settlein-list__wrapper">
             <Flex className="input--border">
-              <AtInput
+              <MyAtInput
                 disabled={isAudit}
                 name="website_url"
                 type="text"
+                maxlength={200}
                 placeholder="请输入平台个人链接"
                 value={payload.website_url}
                 onChange={(value) => set((v: any) => ({ ...v, website_url: value }))}
@@ -151,10 +158,7 @@ export default () => {
                       <Typography.Text size="sm" type="secondary">
                         我已阅读
                       </Typography.Text>
-                      <Typography.Link
-                        onClick={() => navigateTo({ url: '/pages/protocol/index' })}
-                        size="sm"
-                      >
+                      <Typography.Link onClick={onProtocol.bind(this)} size="sm">
                         《平台协议》
                       </Typography.Link>
                     </Flex>
@@ -185,7 +189,7 @@ export default () => {
             提交成功，请耐心等待审核结果
           </Typography.Title>
           <Typography.Text center>
-            审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
+            审核结果将在48小时内通过系统消息通知，如有疑问请联系在线客服
           </Typography.Text>
           <View className="text-center">
             <Button onClick={onSubmitAfter} circle className="mt40" type="primary" inline>

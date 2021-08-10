@@ -1,12 +1,12 @@
 import cls from 'classnames';
-import { View } from '@tarojs/components';
+import { ITouchEvent, View } from '@tarojs/components';
 import './index.less';
 
 type TypographyProps = {
   center?: boolean;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
+  onClick?: (e: ITouchEvent) => void;
   ellipsis?: boolean | number;
 };
 

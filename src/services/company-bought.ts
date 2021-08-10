@@ -40,6 +40,20 @@ export function getSingerByName(data: AppointNode): Promise<PromiseResponseType<
   );
 }
 
+// 获取指定歌手列表
+export function getAppointSongList(data: {
+  ids: string;
+}): Promise<PromiseResponseType<appointNode>> {
+  return request(
+    '/song/getAppointSongList',
+    {
+      method: 'GET',
+      data,
+    },
+    false,
+  );
+}
+
 // 指定歌手接口
 export function appointMusicSong(data: AppointNode): Promise<PromiseResponseType<appointNode>> {
   return request(

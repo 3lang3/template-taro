@@ -14,11 +14,14 @@ type CustomTabBarProps = {
   /**
    * 背景色
    */
+  isRead?: boolean; // 是否显示圆点
   bgColor?: string;
   children?: React.ReactNode;
   title?: React.ReactNode | string;
   titleColor?: string;
   className?: string;
+  onIcon?: () => void; // 单击图标
+  icon?: string; // 左边按钮图标
   /**
    * 是否展示主页按钮
    * @default true
@@ -35,6 +38,8 @@ type CustomTabBarProps = {
    *  - dark 黑色背景 @todo
    */
   mode?: 'light' | 'default';
+  /** 小字号标题 */
+  smallTitle?: boolean;
 };
 
 const CustomNavigation = ({
@@ -45,6 +50,7 @@ const CustomNavigation = ({
   home = true,
   delta = 1,
   mode,
+  smallTitle,
   ...props
 }: CustomTabBarProps) => {
   const navigation = useSelector((state: any) => state.navigation);
@@ -58,7 +64,9 @@ const CustomNavigation = ({
   return (
     <>
       <View
-        className={cls('custom-navi', `custom-navi--${mode}`)}
+        className={cls('custom-navi', {
+          [`custom-navi--${mode}`]: mode,
+        })}
         style={{ height: navigation.navBarHeight }}
       >
         <View
@@ -103,7 +111,10 @@ const CustomNavigation = ({
             );
           })()}
           {title ? (
-            <View style={{ color: titleColor }} className="custom-navi__title">
+            <View
+              style={{ color: titleColor }}
+              className={cls('custom-navi__title', { 'custom-navi__title-sm': smallTitle })}
+            >
               {title}
             </View>
           ) : null}
@@ -114,7 +125,12 @@ const CustomNavigation = ({
   );
 };
 
-export const TabNavigationBar = ({ title = '娱当家', ...props }: CustomTabBarProps) => {
+export const TabNavigationBar = ({
+  title = '娱当家',
+  icon = 'icon-nav_xiaoxi',
+  isRead = true,
+  ...props
+}: CustomTabBarProps) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.common.data);
   const messageReducer = useSelector(({ message }) => message);
@@ -145,8 +161,12 @@ export const TabNavigationBar = ({ title = '娱当家', ...props }: CustomTabBar
   return (
     <CustomNavigation title={title} {...props}>
       <View className="message-box">
-        <Icon icon="icon-nav_xiaoxi" className="message-box__icon" onClick={handleClick} />
-        {messageReducer.isReadAll ? <View className="message-box__dot" /> : ''}
+        <Icon
+          icon={icon}
+          className="message-box__icon"
+          onClick={props.onIcon ? props.onIcon : handleClick}
+        />
+        {messageReducer.isReadAll && isRead ? <View className="message-box__dot" /> : ''}
       </View>
     </CustomNavigation>
   );

@@ -158,7 +158,7 @@ function processBankList(data: BankItem[]) {
     if (idx > -1) {
       a[idx].items.push({ name: v.bank_name, ...v });
     } else {
-      a.push({ title: v.name_initial, key: v.name_initial, items: [] });
+      a.push({ title: v.name_initial, key: v.name_initial, items: [{ name: v.bank_name, ...v }] });
     }
     return a;
   }, []);

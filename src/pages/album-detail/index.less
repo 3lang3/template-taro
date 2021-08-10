@@ -1,9 +1,5 @@
 @import '../../style/var.less';
 
-page {
-  background: @gradient-primary;
-}
-
 .album-detail__bg {
   overflow: hidden;
   background-repeat: no-repeat;
@@ -37,9 +33,15 @@ page {
     &-label {
       margin-right: 20px;
       color: #ddd;
+      white-space: nowrap;
     }
     &-text {
       color: #fff;
     }
+  }
+  &__desc {
+    margin-top: 50px;
+    color: #fff;
+    font-size: 28px;
   }
 }

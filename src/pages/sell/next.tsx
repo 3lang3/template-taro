@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import cls from 'classnames';
 import Typography from '@/components/Typography';
 import { useState, useRef, useEffect } from 'react';
 import {
@@ -87,18 +88,24 @@ export type MyState = {
   lyricist_content: string; // 歌词
   composer_content: string[]; // 曲谱照片
   composer_url: string;
+  reason: string; // 驳回原因
+  status: number; // 审核状态
 };
 
 type RouterParams = {
-  /** 认领模式 */
-  pageType: 'claim';
+  /**
+   * 词曲管理列表状态
+   * - 1 认领者
+   * - 2 发起者
+   */
+  listStatus: string;
   /** 歌曲ids */
   ids: string;
 } & Record<string, any>;
 
 export default () => {
   const { params } = useRouter<RouterParams>();
-  const isClaimType = params.pageType === 'claim';
+  const isClaimType = +params.listStatus === 1 || +params.listStatus === 2;
   const [detail, setDetail] = useState<any>({});
   const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
@@ -114,13 +121,15 @@ export default () => {
     lyricist_content: '', // 歌词
     composer_content: [], // 曲谱照片
     composer_url: '',
+    reason: '', // 驳回原因
+    status: -1, // 状态
   });
 
   useEffect(() => {
     // 动态设置标题
     setNavigationBarTitle({ title: isClaimType ? '词曲认领' : '出售词曲' });
     // 认领状态 获取词曲详情
-    if (params.ids && isClaimType) {
+    if (params.ids) {
       const getDetail = async () => {
         showLoading({ title: '加载中...' });
         const { data } = await getSaleSongDetail({ ids: params.ids });
@@ -128,6 +137,8 @@ export default () => {
         // 写入默认值
         set((v) => ({
           ...v,
+          status: data.status,
+          reason: data.reason,
           composer: data.composer,
           is_composer: Boolean(data.is_composer),
           composer_original_price: +data.composer_original_price,
@@ -143,7 +154,7 @@ export default () => {
       };
       getDetail();
     }
-  }, [params.ids, isClaimType]);
+  }, [isClaimType, params.ids]);
 
   useShareAppMessage(() => {
     if (isClaimType) return {};
@@ -154,7 +165,7 @@ export default () => {
   });
 
   const onSubmit = async () => {
-    if (isClaimType) return;
+    if (payload.status !== -1 && payload.status !== 2) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     if (payload.lyricist_content.length < 80 || payload.lyricist_content.length > 10000) {
@@ -230,24 +241,35 @@ export default () => {
 
   // 不是原创
   const isNotOriginal = !payload.is_composer || !payload.is_lyricist;
-
+  console.log(params);
   return (
     <>
+      {payload.reason && payload.status === 2 && (
+        <Flex align="start" className="settlein-reason">
+          <Typography.Text>驳回原因：</Typography.Text>
+          <Typography.Text style={{ flex: '1' }} type="danger">
+            {payload.reason}
+          </Typography.Text>
+        </Flex>
+      )}
       <SellSteps current={1} />
-      <AtForm className="custom-form">
+      <AtForm
+        className={cls('custom-form', {
+          'form-disabled': payload.status !== -1 && payload.status !== 2,
+        })}
+      >
         <Flex justify="between" className="bg-white">
           <AtInput
             name="composer"
             title={fields.composer.label}
             type="text"
-            disabled={radioDisabledRef.current.composer || isClaimType}
+            disabled={radioDisabledRef.current.composer}
             value={payload.composer as string}
             onChange={(value) => set((v: MyState) => ({ ...v, composer: value }))}
           />
           <Radio
             style={{ flex: '1 0 auto' }}
             className="px24"
-            disabled={isClaimType}
             value={payload.is_composer}
             onChange={(v) => radioClick(v, 'composer')}
             label="我是作曲人"
@@ -259,15 +281,10 @@ export default () => {
           arrow
           data={priceData}
           mode="selector"
-          disabled={isClaimType}
           value={payload.composer_original_price}
           onChange={(value) => set((v: MyState) => ({ ...v, composer_original_price: value }))}
         />
-        <SongUploader
-          disabled={isClaimType}
-          value={payload.composer_url}
-          onChange={onSongUploader}
-        />
+        <SongUploader value={payload.composer_url} onChange={onSongUploader} />
         <ImagePicker
           onRemove={onImgRemove}
           files={payload.composer_content}
@@ -280,11 +297,10 @@ export default () => {
             title="作词人姓名"
             type="text"
             value={payload.lyricist as string}
-            disabled={radioDisabledRef.current.lyricist || isClaimType}
+            disabled={radioDisabledRef.current.lyricist}
             onChange={(value) => set((v: MyState) => ({ ...v, lyricist: value }))}
           />
           <Radio
-            disabled={isClaimType}
             style={{ flex: '1 0 auto' }}
             className="px24"
             value={payload.is_lyricist}
@@ -293,7 +309,6 @@ export default () => {
           />
         </Flex>
         <CustomPicker
-          disabled={isClaimType}
           title="请选择期望的词价格（最终以实际成功为准）"
           arrow
           data={priceData}
@@ -304,7 +319,7 @@ export default () => {
         <AtListItem title="上传歌词" />
         <View className="board bg-white px24 pb20">
           <AtTextarea
-            disabled={isClaimType}
+            maxLength={1000}
             className="border--bolder"
             count={false}
             placeholder="上传歌词，请输入80-1000字"
@@ -313,18 +328,18 @@ export default () => {
           />
         </View>
         <View className="h24 bg-light" />
-        {isClaimType && (
+        {!!params.listStatus && (
           <Flex justify="between" className="cell-item bg-white">
             <Flex style={{ flex: 1 }}>
               <Typography.Text type="secondary">
                 该词或曲作者
-                <Text className={detail.is_claim ? 'text-success' : 'text-danger'}>
-                  {detail.is_claim ? '已' : '未'}认领
+                <Text className={+detail.is_claim === 1 ? 'text-success' : 'text-danger'}>
+                  {+detail.is_claim === 1 ? '已' : '未'}认领
                 </Text>
               </Typography.Text>
               <InviteHelpIcon />
             </Flex>
-            <ClaimButton detail={detail} />
+            {+detail.is_claim === 0 ? <ClaimButton detail={detail} /> : null}
           </Flex>
         )}
 
@@ -336,9 +351,11 @@ export default () => {
                 <Typography.Text type="secondary">该词或曲作者尚未入驻，作者需认证</Typography.Text>
                 <InviteHelpIcon />
               </Flex>
-              <Button openType="share" type="primary" circle size="sm">
-                邀请作者
-              </Button>
+              {+detail.is_claim !== 1 && (
+                <Button openType="share" type="primary" circle size="sm">
+                  邀请作者
+                </Button>
+              )}
             </Flex>
             <View className="px24 bg-white pb20">
               <View className="input--border">
@@ -361,14 +378,16 @@ export default () => {
             3、上传者本人需拥有词曲的完整权利。禁止盗用他人作品，一经发现娱当家将严厉追究相关法律责任，且永久冻结违规账号
           </Typography.Text>
         </View>
-        {/* 认领模式没有提交按钮 */}
+        {/* 认领模式没有提交按钮  出售词曲驳回才显示按钮 */}
         {!isClaimType && (
           <View className="p-default">
             <Button className="mt50 mb50" onClick={onSubmit} circle type="primary" size="lg">
               {(() => {
                 if (+detail.status === 0) return '审核中';
                 if (+detail.status === 1) return '已通过';
+                if (+detail.status === 2) return '提交';
                 if (+detail.status === 3) return '交易完成';
+                if (+detail.status) return '返回';
                 return '提交';
               })()}
             </Button>
@@ -384,7 +403,7 @@ export default () => {
             提交成功，请耐心等待审核结果
           </Typography.Title>
           <Typography.Text center>
-            审核结果将在48小时内通过系统消息 通知，如有疑问请联系在线客服
+            审核结果将在48小时内通过系统消息通知，如有疑问请联系在线客服
           </Typography.Text>
           <View className="text-center">
             <Button
@@ -440,8 +459,6 @@ function ClaimButton({ detail }) {
       reLaunch({ url: '/pages/me/index' });
     }, 1500);
   };
-
-  if (detail.is_claim) return null;
   return (
     <>
       <Button onClick={() => setVisible(true)} type="primary" circle size="sm">

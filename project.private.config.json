@@ -130,7 +130,17 @@
           "name": "pages/account/index",
           "pathName": "pages/account/index",
           "query": "ids=523604468",
-          "scene": 1034
+          "scene": 1038,
+          "referrerInfo": {
+            "appId": "wxa023b292fd19d41d",
+            "extraData": "{ \"a\": 123 }"
+          }
+        },
+        {
+          "name": "pages/help/index",
+          "pathName": "pages/help/index",
+          "query": "",
+          "scene": null
         }
       ]
     }

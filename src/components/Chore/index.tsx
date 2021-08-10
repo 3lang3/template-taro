@@ -43,14 +43,19 @@ type LibSongItemProps = {
   title: string;
   tags?: string[];
   actionRender?: () => React.ReactNode | string;
+  isRead?: boolean;
   onClick?: () => void;
 };
 // 曲库歌曲子项
-export const LibSongItem = ({ title, tags, actionRender, ...props }: LibSongItemProps) => {
+export const LibSongItem = ({ title, isRead, tags, actionRender, ...props }: LibSongItemProps) => {
   return (
     <Flex justify="between" className="lib-song-item" {...props}>
       <View className="lib-song-item__content">
-        <Typography.Title className="lib-song-item__title" level={3} ellipsis>
+        <Typography.Title
+          className={`lib-song-item__title ${isRead && 'lib-song-item__title--read'}`}
+          level={3}
+          ellipsis
+        >
           {title}
         </Typography.Title>
         {Array.isArray(tags) && (
@@ -73,7 +78,8 @@ type ManageSongItemProps = {
   /** 词价格 */
   price2: string | number;
   actionRender?: () => React.ReactNode | string;
-  onClick?: () => void;
+  iconRender?: () => React.ReactNode | string;
+  onClick?: (e) => void;
 };
 // 词曲管理子项
 export const ManageSongItem = ({
@@ -81,6 +87,7 @@ export const ManageSongItem = ({
   price1,
   price2,
   actionRender,
+  iconRender,
   ...props
 }: ManageSongItemProps) => {
   return (
@@ -97,6 +104,7 @@ export const ManageSongItem = ({
         </Flex>
       </View>
       {actionRender ? actionRender() : null}
+      {iconRender ? iconRender() : null}
     </Flex>
   );
 };

@@ -5,6 +5,11 @@ page {
 }
 
 .page-company {
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
+  height: calc(100vh - @custom-tabbar-height);
+
   .company-header {
     height: 240px;
     padding: 0 24px;
@@ -22,5 +27,11 @@ page {
     &__name {
       flex: 1;
     }
+  }
+
+  .company-body {
+    flex: 1;
+    height: 1px;
+    padding-bottom: @custom-tabbar-height;
   }
 }

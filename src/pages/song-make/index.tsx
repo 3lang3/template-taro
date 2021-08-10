@@ -23,7 +23,9 @@ export default () => {
     <View className="mt20">
       {list.map((song, i) => (
         <LibSongItem
-          onClick={() => navigateTo({ url: '/pages/song-detail/index' })}
+          onClick={() =>
+            navigateTo({ url: `/pages/song-detail/index?ids=${song.ids}&title=${song.song_name}` })
+          }
           key={i}
           title={song.song_name}
           tags={[song.sect, song.language]}

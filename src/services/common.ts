@@ -90,7 +90,7 @@ export function getSongStyleList() {
 }
 
 type GetDecryptedDataParams = {
-  code: string;
+  code?: string;
   encryptedData: string;
   iv: string;
 };
@@ -121,6 +121,17 @@ export function getBankList() {
 export function getPcSongUrl(data: { memberIds: string | number }) {
   return request(
     '/pc/getSongUrl',
+    {
+      method: 'GET',
+      data,
+    },
+    false,
+  );
+}
+// 删除大文件上传信息
+export function rmPcSongUrl(data: { memberIds: string | number }) {
+  return request(
+    '/pc/delSongUrl',
     {
       method: 'GET',
       data,

@@ -3,13 +3,13 @@ import { CircleIndexList } from '@/components/Chore';
 import Flex from '@/components/Flex';
 import Icon from '@/components/Icon';
 import Image from '@/components/Image';
+import ProScrollView from '@/components/ProScrollView';
 import Typography from '@/components/Typography';
-import config from '@/config';
 import { IDENTITY } from '@/config/constant';
 import { getDecryptedData } from '@/services/common';
 import { getHomePageDetail, MePageResType } from '@/services/me';
 import { updateUserData } from '@/state/common';
-import { checkCodeSession, generateCode, userLogin } from '@/utils/login';
+import { getWechatCode, userLogin } from '@/utils/login';
 import { View } from '@tarojs/components';
 import { getStorageSync, navigateTo, setStorageSync, showToast } from '@tarojs/taro';
 import { useRequest } from 'ahooks';
@@ -37,11 +37,8 @@ export default () => {
   );
 
   useEffect(() => {
-    const getDetail = async () => {
-      await detailReq.run();
-    };
-    if (isLogin && !page.ids) {
-      getDetail();
+    if (isLogin) {
+      detailReq.run();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLogin]);
@@ -88,8 +85,7 @@ export default () => {
      * @see https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html
      * @summary 在回调中调用 wx.login 登录，可能会刷新登录态。此时服务器使用 code 换取的 sessionKey 不是加密时使用的 sessionKey，导致解密失败。建议开发者提前进行 login；或者在回调中先使用 checkSession 进行登录态检查，避免 login 刷新登录态。
      */
-    const localCodeAvailable = await checkCodeSession();
-    const code = localCodeAvailable ? getStorageSync(config.storage.code) : await generateCode();
+    const code = await getWechatCode();
     try {
       const { data } = await getDecryptedData({
         code,
@@ -135,7 +131,7 @@ export default () => {
   };
 
   return (
-    <>
+    <ProScrollView onRefresherRefresh={detailReq.run} style={{ height: '100vh' }}>
       <Flex justify="between" direction="column" className="page-me">
         <View style={{ flex: 1, width: '100%' }}>
           <Flex className="me-header">
@@ -362,6 +358,6 @@ export default () => {
           </View>
         </AtModalContent>
       </AtModal>
-    </>
+    </ProScrollView>
   );
 };

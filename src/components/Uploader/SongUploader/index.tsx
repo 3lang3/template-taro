@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import cls from 'classnames';
 import { View, Text } from '@tarojs/components';
 import Button from '@/components/Button';
-import { chooseMessageFile, setClipboardData } from '@tarojs/taro';
+import { chooseMessageFile, setClipboardData, showToast } from '@tarojs/taro';
 import config from '@/config';
 import { AtInput } from 'taro-ui';
 import { useRequest } from 'ahooks';
-import { getPcSongUrl } from '@/services/common';
+import { getPcSongUrl, rmPcSongUrl } from '@/services/common';
 import Icon from '@/components/Icon';
 import Flex from '@/components/Flex';
 import Typography from '@/components/Typography';
@@ -19,12 +19,14 @@ import './index.less';
 const WEB_UPLOAD_URL = config.boss + '/user/file';
 
 export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
+  const [pollingFileName, setPollingFileName] = useState('');
   const userData = useSelector((state) => state.common.data);
   // 轮询获取pc上传信息
   const pcReq = useRequest(getPcSongUrl, {
     manual: true,
     pollingInterval: 5000,
     onSuccess: ({ data }) => {
+      if (data.file_name) setPollingFileName(data.file_name);
       if (props.onChange && data.url) props.onChange(data.url, undefined, data);
     },
   });
@@ -34,9 +36,23 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
     if (userData.ids) {
       pcReq.run({ memberIds: userData.ids });
     }
-    return () => pcReq.cancel();
+    return () => {
+      pcReq.cancel();
+      rmPcSongUrl({ memberIds: userData.ids });
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData.ids]);
+
+  const pollingFileRemove = async () => {
+    try {
+      showToast({ icon: 'loading', title: '正在删除...', mask: true });
+      await rmPcSongUrl({ memberIds: userData.ids });
+      setPollingFileName('');
+      showToast({ icon: 'success', title: '删除成功' });
+    } catch (error) {
+      showToast({ icon: 'none', title: '删除失败，请重试' });
+    }
+  };
 
   return (
     <UploaderWrapper
@@ -47,6 +63,7 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
       onChange={props.onChange}
     >
       {({ file, remove, upload }) => {
+        const fileName = pollingFileName || file?.name;
         return (
           <>
             <Flex className="settlein-list__item border">
@@ -96,7 +113,14 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                 >
                   {!props.disabled && (
                     <Icon
-                      onClick={remove}
+                      onClick={() => {
+                        remove();
+                        if (pollingFileName) {
+                          pollingFileRemove();
+                          return;
+                        }
+                        pcReq.run({ memberIds: userData.ids });
+                      }}
                       className="settlein-uploader__delete"
                       icon="icon-ashbin"
                     />
@@ -107,14 +131,20 @@ export default (props: BaseUploadProps<chooseMessageFile.ChooseFile>) => {
                       歌曲添加成功!
                     </Typography.Title>
                   </Flex>
-                  {file ? (
+                  {fileName ? (
                     <Typography.Text center type="light" size="sm">
-                      {file.name}
+                      {fileName}
                     </Typography.Text>
                   ) : null}
                 </Flex>
               ) : (
-                <View onClick={upload} className="border--bolder p-default">
+                <View
+                  onClick={() => {
+                    upload();
+                    pcReq.cancel();
+                  }}
+                  className="border--bolder p-default"
+                >
                   <Flex justify="center">
                     <Typography.Text type="secondary">添加歌曲</Typography.Text>
                     <Icon className="settlein-uploader__icon" icon="icon-quku_bofang" />
