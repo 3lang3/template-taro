@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Text, View } from '@tarojs/components';
 import cls from 'classnames';
 import CustomTabBar from '@/components/CustomTabBar';
@@ -13,7 +13,7 @@ import ScrollLoadList from '@/components/ScrollLoadList';
 import { getMusicSongList, Node } from '@/services/lib';
 import { stringToHtml } from '@/utils/utils';
 import { LibSongItem } from '@/components/Chore';
-import ContentPop from '@/components/ContentPop';
+import ContentPop, { ContentPopAction } from '@/components/ContentPop';
 import './index.less';
 
 export type P = {
@@ -99,6 +99,7 @@ const LibTabs = ({ onChange, data = [], params = {} }: P) => {
 };
 
 const LibPageContent = () => {
+  const popRef = useRef<ContentPopAction>();
   const { songStyle, languageVersion } = useSelector((state) => state.common);
   const tabsData = useMemo(() => {
     return () => [
@@ -159,14 +160,19 @@ const LibPageContent = () => {
                 return (
                   <Flex justify="end">
                     {song.lyricist_content && (
-                      <ContentPop
-                        title="歌词查看"
-                        content={
-                          <EditorRender text center content={stringToHtml(song.lyricist_content)} />
+                      <Icon
+                        onClick={() =>
+                          popRef.current?.show(
+                            <EditorRender
+                              text
+                              center
+                              content={stringToHtml(song.lyricist_content)}
+                            />,
+                          )
                         }
-                      >
-                        <Icon icon="icon-quku-geci" className="lib-song-action__item" />
-                      </ContentPop>
+                        icon="icon-quku-geci"
+                        className="lib-song-action__item"
+                      />
                     )}
                     <Icon
                       onClick={() =>
@@ -184,6 +190,7 @@ const LibPageContent = () => {
           )}
         />
       </View>
+      <ContentPop ref={popRef} title="歌词查看" />
     </>
   );
 };

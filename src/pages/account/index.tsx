@@ -54,9 +54,6 @@ export default () => {
     },
   });
   const detail = _detail || {};
-
-  const schemaDataRef = useRef<any>({});
-
   // 签约
   const onSignClick = async () => {
     if (+detail.is_upload && !payload.id_card_image)
@@ -67,7 +64,6 @@ export default () => {
     try {
       showLoading({ title: '请稍后...', mask: true });
       const { data } = await createSchemeUrl({ ids: params.ids, ...payload });
-      schemaDataRef.current = data;
       hideLoading();
       navigateToMiniProgram({
         appId: MP_E_SIGN_APPID,
