@@ -241,7 +241,7 @@ export default () => {
 
   // 不是原创
   const isNotOriginal = !payload.is_composer || !payload.is_lyricist;
-
+  console.log(params);
   return (
     <>
       {payload.reason && payload.status === 2 && (
@@ -328,7 +328,7 @@ export default () => {
           />
         </View>
         <View className="h24 bg-light" />
-        {+params.listStatus === 2 && (
+        {!!params.listStatus && (
           <Flex justify="between" className="cell-item bg-white">
             <Flex style={{ flex: 1 }}>
               <Typography.Text type="secondary">
@@ -339,7 +339,7 @@ export default () => {
               </Typography.Text>
               <InviteHelpIcon />
             </Flex>
-            {+params.listStatus === 1 ? <ClaimButton detail={detail} /> : null}
+            {+detail.is_claim === 0 ? <ClaimButton detail={detail} /> : null}
           </Flex>
         )}
 
@@ -351,9 +351,11 @@ export default () => {
                 <Typography.Text type="secondary">该词或曲作者尚未入驻，作者需认证</Typography.Text>
                 <InviteHelpIcon />
               </Flex>
-              <Button openType="share" type="primary" circle size="sm">
-                邀请作者
-              </Button>
+              {+detail.is_claim !== 1 && (
+                <Button openType="share" type="primary" circle size="sm">
+                  邀请作者
+                </Button>
+              )}
             </Flex>
             <View className="px24 bg-white pb20">
               <View className="input--border">
