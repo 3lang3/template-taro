@@ -143,6 +143,7 @@ const LibPageContent = () => {
 
   return (
     <>
+      <ContentPop ref={popRef} title="歌词查看" />
       <TabNavigationBar />
       <View className="lib-page">
         <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
@@ -190,7 +191,6 @@ const LibPageContent = () => {
           )}
         />
       </View>
-      <ContentPop ref={popRef} title="歌词查看" />
     </>
   );
 };

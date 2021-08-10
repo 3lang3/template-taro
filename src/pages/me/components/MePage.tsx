@@ -131,7 +131,7 @@ export default () => {
   };
 
   return (
-    <ProScrollView onRefresherRefresh={detailReq.run}>
+    <ProScrollView onRefresherRefresh={detailReq.run} style={{ height: '100vh' }}>
       <Flex justify="between" direction="column" className="page-me">
         <View style={{ flex: 1, width: '100%' }}>
           <Flex className="me-header">

@@ -28,7 +28,6 @@ import {
   abandonMusicSong,
   operationMusicSongPrice,
   applyWantSong,
-  delWantSong,
 } from '@/services/song';
 import config from '@/config';
 import CustomSwiper from '@/components/CustomSwiper';
@@ -328,7 +327,7 @@ function ApplySingButton({ detail }) {
   // 取消申请
   const onCancelApplay = async () => {
     showToast({ icon: 'loading', title: '取消中...', mask: true });
-    const { msg } = await delWantSong({ ids: detail.ids });
+    const { msg } = await applyWantSong({ ids: detail.ids });
     setStatus(0);
     showToast({ icon: 'success', title: msg });
   };
