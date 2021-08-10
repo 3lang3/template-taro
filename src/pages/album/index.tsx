@@ -76,7 +76,7 @@ function PageContent({ data, params }) {
               <Typography.Text className="mb15" strong size="lg" type="light">
                 {data.album_name}
               </Typography.Text>
-              <Typography.Text type="light">{data.singer_name.join('、')}</Typography.Text>
+              <Typography.Text type="light">{data.singer.join('、')}</Typography.Text>
             </View>
             <View style={{ width: '100%', overflow: 'hidden' }}>
               <Typography.Text className="mb10" size="sm" type="light">
@@ -108,7 +108,7 @@ function PageContent({ data, params }) {
               <View className="album-body__item-content">
                 <Typography.Title level={3}>{item.song_name}</Typography.Title>
                 <Typography.Text size="sm" type="secondary">
-                  {item.singer}
+                  {item.singer.join('、')}
                 </Typography.Text>
               </View>
             </Flex>
