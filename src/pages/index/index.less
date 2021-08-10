@@ -96,16 +96,20 @@ page {
   &-item {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     width: 586px;
     margin-bottom: 30px;
     &__rank {
       display: flex;
+      flex: 1 0 auto;
       align-items: center;
       justify-content: center;
       width: 42px;
       height: 42px;
       margin-right: 20px;
+    }
+
+    &__content {
+      width: 100%;
     }
 
     &__title {

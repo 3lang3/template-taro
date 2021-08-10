@@ -79,7 +79,7 @@ const LatestNewsItem = (props) => {
       className="latest-news-item"
       onClick={() => navigateTo({ url: `/pages/news-detail/index?id=${props.id}` })}
     >
-      <Image className="latest-news-item__img" src={props.image} />
+      <Image mode="scaleToFill" className="latest-news-item__img" src={props.image} />
       <Typography.Text className="latest-news-item__title" ellipsis={2}>
         {props.title}
       </Typography.Text>

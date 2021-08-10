@@ -59,7 +59,7 @@ const PageContent = ({ detail, routerParams }: PageContentProps) => {
   useShareAppMessage(({ from }) => {
     if (from === 'button') {
       return {
-        title: `${detail.song_name}-${detail.singer}`,
+        title: `${detail.song_name}-${detail.singer.join('、')}`,
         imageUrl: getHttpPath(bgImg),
       };
     }

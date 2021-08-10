@@ -2,7 +2,7 @@
 import cls from 'classnames';
 import { IDENTITY } from '@/config/constant';
 import { useSelector } from 'react-redux';
-import { CoverImage, CoverView, View } from '@tarojs/components';
+import { CoverImage, CoverView } from '@tarojs/components';
 import { getCurrentInstance, useRouter, switchTab } from '@tarojs/taro';
 import './index.less';
 
@@ -46,32 +46,29 @@ export default () => {
   const idx = getInitialTabIdx(router.path);
 
   return (
-    <>
-      <CoverView
-        className={cls('custom-tabbar', {
-          'custom-tabbar--nosinger': isNotSinger,
-        })}
-      >
-        {tabBar.list.map((item, i) => (
-          <CoverView
-            key={item.pagePath}
-            className={cls('custom-tabbar__item', {
-              'custom-tabbar__item-ac': idx === i,
-            })}
-            onClick={() => handleClick(item)}
-          >
-            <CoverImage
-              className="custom-tabbar__img"
-              src={`../../${idx === i ? item.selectedIconPath : item.iconPath}`}
-            />
-            <CoverView>
-              {data.identity === IDENTITY.COMPANY && item.text === '我的' ? '机构' : item.text}
-            </CoverView>
+    <CoverView
+      className={cls('custom-tabbar', {
+        'custom-tabbar--nosinger': isNotSinger,
+      })}
+    >
+      {tabBar.list.map((item, i) => (
+        <CoverView
+          key={item.pagePath}
+          className={cls('custom-tabbar__item', {
+            'custom-tabbar__item-ac': idx === i,
+          })}
+          onClick={() => handleClick(item)}
+        >
+          <CoverImage
+            className="custom-tabbar__img"
+            src={`../../${idx === i ? item.selectedIconPath : item.iconPath}`}
+          />
+          <CoverView>
+            {data.identity === IDENTITY.COMPANY && item.text === '我的' ? '机构' : item.text}
           </CoverView>
-        ))}
-      </CoverView>
-      <View className="custom-tabbar-placeholder" />
-    </>
+        </CoverView>
+      ))}
+    </CoverView>
   );
 };
 

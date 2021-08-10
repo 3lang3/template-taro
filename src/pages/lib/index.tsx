@@ -146,11 +146,7 @@ const LibPageContent = () => {
         <LibTabs onChange={onTabChange} params={params} data={tabsData()} />
         <ScrollLoadList<Node>
           refresh={{ className: 'lib-page__list' }}
-          headerRender={() => (
-            <>
-              <View className="lib-page__list-plc" />
-            </>
-          )}
+          headerRender={() => <View className="lib-page__list-plc" />}
           params={getParams(params)}
           request={getMusicSongList}
           row={(song, i) => (
@@ -189,7 +185,7 @@ const LibPageContent = () => {
           )}
         />
       </View>
-      <ContentPop ref={popRef} title="歌词查看" center />
+      <ContentPop ref={popRef} forceRender title="歌词查看" center />
     </>
   );
 };

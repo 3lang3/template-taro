@@ -6,7 +6,7 @@ import './index.less';
 export type P = {
   children: React.ReactElement;
   overlayProps?: ViewProps;
-  style: React.CSSProperties;
+  style?: React.CSSProperties;
 };
 
 export default ({ children, overlayProps, style }: P) => {

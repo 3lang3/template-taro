@@ -9,7 +9,6 @@ export type ProScrollViewAction = {
 
 export type ProScrollViewProps = {
   children?: React.ReactNode;
-  withExtraPadding?: boolean;
 } & ScrollViewProps;
 
 /**
@@ -18,14 +17,7 @@ export type ProScrollViewProps = {
  */
 export default forwardRef<unknown, ProScrollViewProps>((props, ref) => {
   const [refresherTriggered, setRefresherTriggered] = useState(false);
-  const {
-    onRefresherPulling,
-    onRefresherRefresh,
-    onRefresherRestore,
-    withExtraPadding,
-    style,
-    ...restProps
-  } = props;
+  const { onRefresherPulling, onRefresherRefresh, onRefresherRestore, style, ...restProps } = props;
   const _onRefresherPulling = useCallback(async (event) => {
     setRefresherTriggered(true);
     onRefresherPulling?.(event);

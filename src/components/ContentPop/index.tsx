@@ -23,16 +23,58 @@ export type P = {
   center?: boolean;
   /** 点击蒙层是否允许关闭	 */
   maskClosable?: boolean;
+  /** 强制渲染pop */
+  forceRender?: boolean;
 };
 
 export default forwardRef<unknown, P>(
-  ({ title, content, children, footer = true, maskClosable = true, center }, ref) => {
+  ({ title, content, children, footer = true, maskClosable = true, forceRender, center }, ref) => {
     const contentRef = useRef(content);
     const [visible, setVisible] = useState(false);
 
     const show = (c) => {
       contentRef.current = c;
       setVisible(true);
+    };
+
+    const renderContent = () => {
+      return (
+        <View className="select-pop">
+          <Flex className="content" direction="column" justify="between">
+            <Text className="select-pop-title">{title}</Text>
+            <View
+              className={cls('select-pop-content', {
+                'select-pop-content--center': center,
+              })}
+            >
+              {contentRef.current}
+            </View>
+            {footer && (
+              <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
+                知道了
+              </AtButton>
+            )}
+          </Flex>
+        </View>
+      );
+    };
+
+    const renderPop = () => {
+      if (forceRender)
+        return (
+          <Pop
+            style={{ display: visible ? 'block' : 'none' }}
+            overlayProps={{ onClick: () => (maskClosable ? setVisible(false) : null) }}
+          >
+            {renderContent()}
+          </Pop>
+        );
+      if (!visible) return null;
+      return (
+        <Pop overlayProps={{ onClick: () => (maskClosable ? setVisible(false) : null) }}>
+          {renderContent()}
+        </Pop>
+      );
     };
 
     useImperativeHandle(ref, () => ({
@@ -51,28 +93,7 @@ export default forwardRef<unknown, P>(
               setVisible(true);
             },
           })}
-        <Pop
-          style={{ display: visible ? 'block' : 'none' }}
-          overlayProps={{ onClick: () => (maskClosable ? setVisible(false) : null) }}
-        >
-          <View className="select-pop">
-            <Flex className="content" direction="column" justify="between">
-              <Text className="select-pop-title">{title}</Text>
-              <View
-                className={cls('select-pop-content', {
-                  'select-pop-content--center': center,
-                })}
-              >
-                {contentRef.current}
-              </View>
-              {footer && (
-                <AtButton onClick={() => setVisible(false)} className="select-pop-btn">
-                  知道了
-                </AtButton>
-              )}
-            </Flex>
-          </View>
-        </Pop>
+        {renderPop()}
       </>
     );
   },
