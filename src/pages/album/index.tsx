@@ -42,7 +42,7 @@ function PageContent({ data, params }) {
 
   useShareAppMessage(() => {
     return {
-      title: `${data.album_name}-${data.singer?.[0]}`,
+      title: `${data.album_name}${data.singer?.[0] ? `-${data.singer?.[0]}` : ''}`,
       imageUrl: getHttpPath(data.album_image),
     };
   });
