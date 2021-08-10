@@ -93,19 +93,19 @@ export type MyState = {
 };
 
 type RouterParams = {
-  /** 认领模式 */
-  pageType: 'claim';
-  /** 受邀认领 */
-  invited: string;
-  /** 词曲状态 */
-  status: string;
+  /**
+   * 词曲管理列表状态
+   * - 1 认领者
+   * - 2 发起者
+   */
+  listStatus: string;
   /** 歌曲ids */
   ids: string;
 } & Record<string, any>;
 
 export default () => {
   const { params } = useRouter<RouterParams>();
-  const isClaimType = params.pageType === 'claim';
+  const isClaimType = +params.listStatus === 1 || +params.listStatus === 2;
   const [detail, setDetail] = useState<any>({});
   const userData = useSelector((state) => state.common.data);
   const [visible, setVisible] = useState(false);
@@ -154,7 +154,7 @@ export default () => {
       };
       getDetail();
     }
-  }, [params.ids, isClaimType]);
+  }, [isClaimType, params.ids]);
 
   useShareAppMessage(() => {
     if (isClaimType) return {};
@@ -165,7 +165,7 @@ export default () => {
   });
 
   const onSubmit = async () => {
-    if (isClaimType || (payload.status !== -1 && payload.status !== 2)) return;
+    if (payload.status !== -1 && payload.status !== 2) return;
     const hasInvalidField = validateFields(payload, fields);
     if (hasInvalidField) return;
     if (payload.lyricist_content.length < 80 || payload.lyricist_content.length > 10000) {
@@ -328,7 +328,7 @@ export default () => {
           />
         </View>
         <View className="h24 bg-light" />
-        {isClaimType && (
+        {+params.listStatus === 2 && (
           <Flex justify="between" className="cell-item bg-white">
             <Flex style={{ flex: 1 }}>
               <Typography.Text type="secondary">
@@ -339,7 +339,7 @@ export default () => {
               </Typography.Text>
               <InviteHelpIcon />
             </Flex>
-            {!!params.invited ? <ClaimButton detail={detail} /> : null}
+            {+params.listStatus === 1 ? <ClaimButton detail={detail} /> : null}
           </Flex>
         )}
 

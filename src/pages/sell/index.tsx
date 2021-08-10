@@ -1,6 +1,6 @@
 import cls from 'classnames';
 import Typography from '@/components/Typography';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { TabNavigationBar } from '@/components/CustomNavigation';
 import {
   AtInput,
@@ -14,13 +14,7 @@ import {
 import { validateFields } from '@/utils/form';
 import { useSelector } from 'react-redux';
 import { View } from '@tarojs/components';
-import {
-  setClipboardData,
-  navigateTo,
-  showToast,
-  getCurrentInstance,
-  navigateBack,
-} from '@tarojs/taro';
+import { setClipboardData, navigateTo, showToast, useRouter, navigateBack } from '@tarojs/taro';
 import Button from '@/components/Button';
 import CustomPicker from '@/components/CustomPicker';
 import MoreSelect from '@/components/MoreSelect';
@@ -85,7 +79,21 @@ export type State = {
   status: number | null;
 };
 
+type RouterParams = {
+  /**
+   * 词曲管理列表状态
+   * - 1 认领者
+   * - 2 发起者
+   */
+  listStatus: string;
+  /** 歌曲ids */
+  ids: string;
+} & Record<string, any>;
+
 export default () => {
+  const { params } = useRouter<RouterParams>();
+  const { ids } = params;
+
   const [visible, setVisible] = useState(false);
   const [backVisible, setBackVisible] = useState(false);
   const store = useSelector((state) => state.common);
@@ -122,37 +130,40 @@ export default () => {
     status: null,
   });
 
-  const { router } = getCurrentInstance();
-  const { ids } = (router as any).params;
-  if (ids) {
-    useRequest(getSaleSongDetail, {
-      defaultParams: [{ ids }],
-      onSuccess: ({
-        data: { song_name, sect, language, tag, introduce, explain, reason, status },
-      }) => {
-        const tagArr: Array<TagNode[]> = [[], [], []] as any;
-        pickerData().forEach((item, i) => {
-          item.children.forEach((child) => {
-            if (tag && tag.includes(child.name) && tag.length) {
-              tagArr[i].push(child as any);
-              tag.shift();
-            }
-          });
+  const detailReq = useRequest(getSaleSongDetail, {
+    manual: true,
+    onSuccess: ({
+      data: { song_name, sect, language, tag, introduce, explain, reason, status },
+    }) => {
+      const tagArr: Array<TagNode[]> = [[], [], []] as any;
+      pickerData().forEach((item, i) => {
+        item.children.forEach((child) => {
+          if (tag && tag.includes(child.name) && tag.length) {
+            tagArr[i].push(child as any);
+            tag.shift();
+          }
         });
-        onLabel(tagArr);
-        set((v) => ({
-          ...v,
-          status,
-          reason,
-          song_name,
-          sect: songStyle.find((item) => item.name === sect)?.id as any,
-          language: langData.find((item) => item.name === language)?.id as any,
-          introduce,
-          explain,
-        }));
-      },
-    });
-  }
+      });
+      onLabel(tagArr);
+      set((v) => ({
+        ...v,
+        status,
+        reason,
+        song_name,
+        sect: songStyle.find((item) => item.name === sect)?.id as any,
+        language: langData.find((item) => item.name === language)?.id as any,
+        introduce,
+        explain,
+      }));
+    },
+  });
+
+  useEffect(() => {
+    if (ids) {
+      detailReq.run({ ids });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ids]);
 
   const onSubmit = () => {
     const hasInvalidField = validateFields(payload, fields);
@@ -169,7 +180,7 @@ export default () => {
       url: `/pages/sell/next?params=${JSON.stringify({
         ...payload,
         ids,
-      })}&ids=${ids || ''}`,
+      })}&ids=${ids || ''}&listStatus=${params.listStatus}`,
     });
   };
 

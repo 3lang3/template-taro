@@ -50,14 +50,6 @@ export default () => {
     });
   };
 
-  // 认领
-  const onClaimClick = (record, e, isInvited?) => {
-    e.stopPropagation();
-    let url = `/pages/sell/index?pageType=claim&ids=${record.ids}&status=${record.status}`;
-    if (isInvited) url += '&invited=1';
-    navigateTo({ url });
-  };
-
   // 还价确认
   const onCounterOfferConfirm = async (values) => {
     showToast({ icon: 'loading', title: '提交中' });
@@ -112,30 +104,19 @@ export default () => {
               price1={song.composer_price}
               price2={song.lyricist_price}
               onClick={() => {
-                navigateTo({ url: `/pages/sell/index?ids=${song.ids}&status=${song.status}` });
+                navigateTo({ url: `/pages/sell/index?ids=${song.ids}&listStatus=${song.status}` });
               }}
               iconRender={() => <Icon className="icon-icon_xiangqing" icon="icon-icon_xiangqing" />}
               actionRender={() => {
                 if (+song.status === 1)
                   return (
-                    <Button
-                      onClick={(e) => onClaimClick(song, e, true)}
-                      circle
-                      size="xs"
-                      type="primary"
-                    >
+                    <Button circle size="xs" type="primary">
                       待认领
                     </Button>
                   );
                 if (+song.status === 2)
                   return (
-                    <Button
-                      onClick={(e) => onClaimClick(song, e)}
-                      circle
-                      size="xs"
-                      type="primary"
-                      outline
-                    >
+                    <Button circle size="xs" type="primary" outline>
                       词曲认领中
                     </Button>
                   );
