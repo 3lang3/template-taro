@@ -255,6 +255,8 @@ export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
       }
       const splitChar = lyricStr[splitIdx];
       const [timeStr, lyricFtm] = lyricStr.split(splitChar);
+      if (!timeStr.trim().length) return false;
+      if (!lyricFtm.trim().length) return false;
 
       return { time: formatMsToSec(timeStr), text: lyricFtm };
     })
