@@ -250,7 +250,7 @@ export function processLyricData(lyrics: string[] | string): ScrollLyricItem[] {
       const lyricStr = lyric.substr(1);
       const splitIdx = lyricStr.search(/\]/);
       if (splitIdx === -1) {
-        console.warn(`原歌词第${i}条格式不正确，无法解析，已忽略`);
+        console.warn(`原歌词第${i + 1}条格式不正确，无法解析，已忽略`);
         return false;
       }
       const splitChar = lyricStr[splitIdx];

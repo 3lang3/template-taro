@@ -457,7 +457,6 @@ function ClaimButton({ detail }) {
       reLaunch({ url: '/pages/me/index' });
     }, 1500);
   };
-  if (+detail.is_claim === 1) return null;
   return (
     <>
       <Button onClick={() => setVisible(true)} type="primary" circle size="sm">

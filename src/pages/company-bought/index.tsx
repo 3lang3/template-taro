@@ -82,7 +82,10 @@ export default () => {
                   initRequest={(() => listRun({ ids: song.ids })) as any}
                   onSubmit={(members) => onSubmit(song, members, i)}
                 >
-                  <Typography.Text type="primary">{song.singer[0]}</Typography.Text>
+                  <Typography.Text type="primary">
+                    {song.singer[0]}
+                    {song.singer.length > 1 ? ',...' : ''}
+                  </Typography.Text>
                 </InputSelect>
               )
             }
