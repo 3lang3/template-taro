@@ -75,7 +75,7 @@
 		"@types/webpack-env": "1.16.0",
 		"@typescript-eslint/eslint-plugin": "4.27.0",
 		"@typescript-eslint/parser": "4.27.0",
-		"@umijs/fabric": "2.6.2",
+		"@umijs/fabric": "2.8.1",
 		"babel-preset-taro": "3.3.0",
 		"dotenv": "10.0.0",
 		"dotenv-expand": "5.1.0",
