@@ -54,7 +54,7 @@
 		"@tarojs/components": "3.3.0",
 		"@tarojs/react": "3.3.0",
 		"@tarojs/runtime": "3.3.0",
-		"@tarojs/taro": "3.3.0",
+		"@tarojs/taro": "3.3.18",
 		"ahooks": "2.10.6",
 		"classnames": "2.3.1",
 		"querystring": "0.2.1",
