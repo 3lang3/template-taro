@@ -2461,6 +2461,16 @@
     lodash-es "4.17.15"
     reflect-metadata "^0.1.13"
 
+"@tarojs/runtime@3.3.18":
+  version "3.3.18"
+  resolved "https://registry.yarnpkg.com/@tarojs/runtime/-/runtime-3.3.18.tgz#24f175ddc071e40a04b792d50518337e42c83136"
+  integrity sha512-J5HQSsCBOJL3MOr4oSsp9tgLrlwIl7BsSPf9l/KM6ClA74m85eNKC4MgGL2EFmH8W8yMC1y+YEPO+lZ8jIAYnQ==
+  dependencies:
+    "@tarojs/shared" "3.3.18"
+    inversify "5.1.1"
+    lodash-es "4.17.15"
+    reflect-metadata "^0.1.13"
+
 "@tarojs/service@3.3.0":
   version "3.3.0"
   resolved "https://registry.nlark.com/@tarojs/service/download/@tarojs/service-3.3.0.tgz#9e54e9f0595cdfec375d31f84c075f3754ed4415"
@@ -2498,6 +2508,11 @@
   version "3.3.14"
   resolved "https://registry.yarnpkg.com/@tarojs/shared/-/shared-3.3.14.tgz#dcb6a149cdafb97369a06d7bf74c8249894bb3ec"
   integrity sha512-iowfmHKVV0cKLMtdNdYoYLQ/CCQ6cl9L2eJh/sJj1OvytxdxjCzyjyR1pJQYkyTPkwRtDweNwzRsezLQlRfBAA==
+
+"@tarojs/shared@3.3.18":
+  version "3.3.18"
+  resolved "https://registry.yarnpkg.com/@tarojs/shared/-/shared-3.3.18.tgz#8dc6c034bd03292074a4383d7865f7f1e8da319f"
+  integrity sha512-OxDQWpE9+6Lh6bk2WcZZWrIaS79F9QC9Qv5+cRTI3u5zDA88+XhvtGaJGqx4adcPiByLMAsrjftqyEMvg2dnnw==
 
 "@tarojs/taro-h5@3.3.0":
   version "3.3.0"
