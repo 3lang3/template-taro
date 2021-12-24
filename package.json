@@ -52,7 +52,7 @@
 	"dependencies": {
 		"@babel/runtime": "7.14.6",
 		"@tarojs/components": "3.3.0",
-		"@tarojs/react": "3.3.0",
+		"@tarojs/react": "3.3.18",
 		"@tarojs/runtime": "3.3.0",
 		"@tarojs/taro": "3.3.0",
 		"ahooks": "2.10.6",
