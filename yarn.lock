@@ -7259,18 +7259,18 @@ eslint-config-prettier@^6.13.0:
   dependencies:
     get-stdin "^6.0.0"
 
-eslint-config-taro@3.3.0:
-  version "3.3.0"
-  resolved "https://registry.nlark.com/eslint-config-taro/download/eslint-config-taro-3.3.0.tgz#d1a9cbd7f5b7a2bb66948eb5637247fd92a67520"
-  integrity sha1-0anL1/W3ortmlI61Y3JH/ZKmdSA=
-  dependencies:
-    "@typescript-eslint/parser" "^4.15.1"
-    babel-eslint "^10.0.0"
-
 eslint-config-taro@3.3.14:
   version "3.3.14"
   resolved "https://registry.yarnpkg.com/eslint-config-taro/-/eslint-config-taro-3.3.14.tgz#fbab7a02b9c7d2333a434423bdf04b726650ef1f"
   integrity sha512-lCv28vWUPNuCQUBA+xGWMllIOuyQxafNEHIeD7cVIqk88pYY4bzQY73f0ECTSVlUsTLRsp/JoKYQxf7uf94caQ==
+  dependencies:
+    "@typescript-eslint/parser" "^4.15.1"
+    babel-eslint "^10.0.0"
+
+eslint-config-taro@3.3.18:
+  version "3.3.18"
+  resolved "https://registry.yarnpkg.com/eslint-config-taro/-/eslint-config-taro-3.3.18.tgz#ce8b80c7f37084197fa1fb4bdedeec57ec2bef4c"
+  integrity sha512-qG3jPPmfuTnIW2uAfJto4/qyh0dFdLgFjAbFU9Ry1B/XFaw8rkG7mK6Y7GrqFgz0gkEZJEAtl1S04hBudRhLaQ==
   dependencies:
     "@typescript-eslint/parser" "^4.15.1"
     babel-eslint "^10.0.0"
